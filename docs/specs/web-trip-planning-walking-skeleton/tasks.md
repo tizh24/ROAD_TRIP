@@ -164,9 +164,9 @@ Mỗi task hoàn thành phải để repository ở trạng thái build/test đ�
 
 ### T015 — Web production Dockerfile
 
-- [ ] Cấu hình Next.js production output phù hợp container.
-- [ ] Tạo multi-stage Dockerfile với pinned base và non-root runtime.
-- [ ] Không đưa server secrets hoặc development cache vào image.
+- [x] Cấu hình Next.js production output phù hợp container.
+- [x] Tạo multi-stage Dockerfile với pinned base và non-root runtime.
+- [x] Không đưa server secrets hoặc development cache vào image.
 
 **Dependency:** T007.
 **Verify:** Web image build và trả trang health/public thành công.
