@@ -20,7 +20,14 @@ const authShape = {
 
 const redisShape = {
   REDIS_URL: url,
-  REDIS_KEY_PREFIX: z.string().min(1).default('roadtrip'),
+};
+
+const redisCacheShape = {
+  REDIS_CACHE_PREFIX: z.string().min(1).default('roadtrip:cache'),
+};
+
+const redisRateLimitShape = {
+  REDIS_RATE_LIMIT_PREFIX: z.string().min(1).default('roadtrip:rate-limit'),
 };
 
 const bullMqShape = {
@@ -36,6 +43,7 @@ export const gatewayConfigSchema = z.object({
   ...commonShape,
   ...authShape,
   ...redisShape,
+  ...redisRateLimitShape,
   PORT: positiveInteger.default(4100),
   CORE_TRIP_SERVICE_URL: url,
   GEO_LOCATION_SERVICE_URL: url,
@@ -59,6 +67,7 @@ export const geoLocationConfigSchema = z.object({
   ...commonShape,
   ...authShape,
   ...redisShape,
+  ...redisCacheShape,
   PORT: positiveInteger.default(4102),
   INTERNAL_SERVICE_TOKEN: z.string().min(32),
   GEO_CACHE_TTL_SECONDS: positiveInteger.default(300),

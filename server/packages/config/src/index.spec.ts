@@ -21,6 +21,7 @@ describe('runtime configuration', () => {
     expect(config.PORT).toBe(4200);
     expect(config.NODE_ENV).toBe('development');
     expect(config.RATE_LIMIT_MAX).toBe(100);
+    expect(config.REDIS_RATE_LIMIT_PREFIX).toBe('roadtrip:rate-limit');
   });
 
   it('fails fast without exposing secret values', () => {

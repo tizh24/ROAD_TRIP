@@ -15,6 +15,7 @@
     "test": "turbo run test",
     "test:integration": "turbo run test:integration",
     "test:e2e": "turbo run test:e2e",
+    "verify:redis-durability": "node scripts/verify-redis-durability.mjs",
     "check:cycles": "madge --circular --extensions ts apps packages",
     "format": "prettier --write \"*.{json,mjs}\" \"apps/{api-gateway,core-trip-service,geo-location-service,notification-worker}/**/*.{ts,json,mjs}\" \"packages/{config,contracts,db-client,health,observability,shared-types}/**/*.{ts,json,mjs}\"",
     "format:check": "prettier --check \"*.{json,mjs}\" \"apps/{api-gateway,core-trip-service,geo-location-service,notification-worker}/**/*.{ts,json,mjs}\" \"packages/{config,contracts,db-client,health,observability,shared-types}/**/*.{ts,json,mjs}\""
@@ -22,10 +23,12 @@
   "devDependencies": {
     "@eslint/js": "^9.39.5",
     "@types/node": "^26.2.0",
+    "bullmq": "^6.1.1",
     "eslint": "^9.39.5",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.6",
     "globals": "^17.11.0",
+    "ioredis": "^5.11.1",
     "madge": "^8.0.0",
     "prettier": "^3.9.6",
     "turbo": "^2.10.9",

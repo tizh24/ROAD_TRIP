@@ -173,10 +173,10 @@ Mỗi task hoàn thành phải để repository ở trạng thái build/test đ�
 
 ### T016 — Redis durability configuration
 
-- [ ] Cấu hình Redis local persistence.
-- [ ] Đặt key prefix riêng cho cache, rate limit và BullMQ.
-- [ ] Bật `noeviction` cho queue-safe local baseline.
-- [ ] Ghi chú production split strategy cho cache/queue.
+- [x] Cấu hình Redis local persistence.
+- [x] Đặt key prefix riêng cho cache, rate limit và BullMQ.
+- [x] Bật `noeviction` cho queue-safe local baseline.
+- [x] Ghi chú production split strategy cho cache/queue.
 
 **Dependency:** T004.
 **Verify:** Redis restart không làm mất BullMQ job test đang chờ.
