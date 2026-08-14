@@ -154,10 +154,10 @@ Mỗi task hoàn thành phải để repository ở trạng thái build/test đ�
 
 ### T014 — Backend Docker build strategy
 
-- [ ] Thay Dockerfile backend đang dùng npm/`dist/server.js` sai cấu trúc.
-- [ ] Dùng pnpm lockfile và workspace-aware multi-stage build.
-- [ ] Hỗ trợ target cho Gateway, Core Trip, Geo và Notification Worker.
-- [ ] Chạy runtime non-root và nhận termination signal đúng.
+- [x] Thay Dockerfile backend đang dùng npm/`dist/server.js` sai cấu trúc.
+- [x] Dùng pnpm lockfile và workspace-aware multi-stage build.
+- [x] Hỗ trợ target cho Gateway, Core Trip, Geo và Notification Worker.
+- [x] Chạy runtime non-root và nhận termination signal đúng.
 
 **Dependency:** T007–T013.
 **Verify:** Mỗi active backend image build và boot đúng `dist/main.js`.

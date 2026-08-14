@@ -14,6 +14,7 @@ async function bootstrap() {
     level: config.LOG_LEVEL,
   });
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
+  app.enableShutdownHooks();
   app.useLogger(logger);
   app.use(correlationIdMiddleware());
   await app.listen(config.PORT);

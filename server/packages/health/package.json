@@ -2,6 +2,9 @@
   "name": "@roadtrip/health",
   "version": "1.0.0",
   "private": true,
+  "files": [
+    "dist"
+  ],
   "main": "dist/index.js",
   "types": "src/index.ts",
   "scripts": {
