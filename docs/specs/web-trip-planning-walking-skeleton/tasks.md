@@ -183,12 +183,12 @@ Mỗi task hoàn thành phải để repository ở trạng thái build/test đ�
 
 ### T017 — Minimal Docker Compose
 
-- [ ] Compose Web, Gateway, Core Trip, Geo, Notification Worker và Redis.
-- [ ] Tích hợp Supabase local bằng CLI hoặc profile được tài liệu hóa.
-- [ ] Thêm healthchecks, internal network và named volumes.
-- [ ] Không dùng `container_name`.
-- [ ] Đặt Bull Board trong development-only profile.
-- [ ] Không chạy Social Community/Monetization mặc định.
+- [x] Compose Web, Gateway, Core Trip, Geo, Notification Worker và Redis.
+- [x] Tích hợp Supabase local bằng CLI hoặc profile được tài liệu hóa.
+- [x] Thêm healthchecks, internal network và named volumes.
+- [x] Không dùng `container_name`.
+- [x] Đặt Bull Board trong development-only profile.
+- [x] Không chạy Social Community/Monetization mặc định.
 
 **Dependency:** T014–T016.
 **Verify:** Một lệnh/documented sequence đưa toàn bộ active stack về healthy.

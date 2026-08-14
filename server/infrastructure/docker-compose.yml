@@ -1,13 +1,261 @@
 services:
   redis:
     image: redis:7-alpine@sha256:e7723ff73d963f5cc6d9c4643ea3d989527a402a319239054e9472a7fb9219a2
+    command: ['redis-server', '/usr/local/etc/redis/redis.conf']
     ports:
       - '127.0.0.1:6379:6379'
-    command: ['redis-server', '/usr/local/etc/redis/redis.conf']
     volumes:
       - redis_data:/data
       - ./redis/redis.conf:/usr/local/etc/redis/redis.conf:ro
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 3s
+      retries: 10
     restart: unless-stopped
+    networks:
+      - roadtrip_internal
+
+  core-trip-service:
+    image: roadtrip/core-trip-service:local
+    build:
+      context: ..
+      dockerfile: Dockerfile
+      target: core-trip-service
+    init: true
+    environment:
+      NODE_ENV: production
+      LOG_LEVEL: debug
+      PORT: 4101
+      SUPABASE_URL: http://host.docker.internal:54321
+      SUPABASE_JWKS_URL: http://host.docker.internal:54321/auth/v1/.well-known/jwks.json
+      SUPABASE_JWT_ISSUER: http://127.0.0.1:54321/auth/v1
+      SUPABASE_JWT_AUDIENCE: authenticated
+      DATABASE_URL: postgresql://postgres:postgres@host.docker.internal:54322/postgres
+      REDIS_URL: redis://redis:6379
+      BULLMQ_QUEUE_NAME: integration-events
+      BULLMQ_QUEUE_PREFIX: roadtrip:bullmq
+      BULLMQ_CONCURRENCY: 5
+      BULLMQ_ATTEMPTS: 5
+      BULLMQ_BACKOFF_MS: 1000
+      BULLMQ_FAILED_RETENTION: 1000
+      INTERNAL_SERVICE_TOKEN: local-compose-token-change-before-production
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://127.0.0.1:4101/health/ready').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 5s
+      timeout: 3s
+      start_period: 10s
+      retries: 10
+    restart: unless-stopped
+    networks:
+      - roadtrip_internal
+
+  geo-location-service:
+    image: roadtrip/geo-location-service:local
+    build:
+      context: ..
+      dockerfile: Dockerfile
+      target: geo-location-service
+    init: true
+    environment:
+      NODE_ENV: production
+      LOG_LEVEL: debug
+      PORT: 4102
+      SUPABASE_URL: http://host.docker.internal:54321
+      SUPABASE_JWKS_URL: http://host.docker.internal:54321/auth/v1/.well-known/jwks.json
+      SUPABASE_JWT_ISSUER: http://127.0.0.1:54321/auth/v1
+      SUPABASE_JWT_AUDIENCE: authenticated
+      REDIS_URL: redis://redis:6379
+      REDIS_CACHE_PREFIX: roadtrip:cache
+      INTERNAL_SERVICE_TOKEN: local-compose-token-change-before-production
+      GEO_CACHE_TTL_SECONDS: 300
+      VIETMAP_BASE_URL: https://maps.vietmap.vn
+      VIETMAP_API_KEY: local-compose-placeholder
+      VIETMAP_TIMEOUT_MS: 5000
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://127.0.0.1:4102/health/ready').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 5s
+      timeout: 3s
+      start_period: 10s
+      retries: 10
+    restart: unless-stopped
+    networks:
+      - roadtrip_internal
+
+  notification-worker:
+    image: roadtrip/notification-worker:local
+    build:
+      context: ..
+      dockerfile: Dockerfile
+      target: notification-worker
+    init: true
+    environment:
+      NODE_ENV: production
+      LOG_LEVEL: debug
+      PORT: 4105
+      DATABASE_URL: postgresql://postgres:postgres@host.docker.internal:54322/postgres
+      REDIS_URL: redis://redis:6379
+      BULLMQ_QUEUE_NAME: integration-events
+      BULLMQ_QUEUE_PREFIX: roadtrip:bullmq
+      BULLMQ_CONCURRENCY: 5
+      BULLMQ_ATTEMPTS: 5
+      BULLMQ_BACKOFF_MS: 1000
+      BULLMQ_FAILED_RETENTION: 1000
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://127.0.0.1:4105/health/ready').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 5s
+      timeout: 3s
+      start_period: 10s
+      retries: 10
+    restart: unless-stopped
+    networks:
+      - roadtrip_internal
+
+  api-gateway:
+    image: roadtrip/api-gateway:local
+    build:
+      context: ..
+      dockerfile: Dockerfile
+      target: api-gateway
+    init: true
+    ports:
+      - '127.0.0.1:4100:4100'
+    environment:
+      NODE_ENV: production
+      LOG_LEVEL: debug
+      PORT: 4100
+      SUPABASE_URL: http://host.docker.internal:54321
+      SUPABASE_JWKS_URL: http://host.docker.internal:54321/auth/v1/.well-known/jwks.json
+      SUPABASE_JWT_ISSUER: http://127.0.0.1:54321/auth/v1
+      SUPABASE_JWT_AUDIENCE: authenticated
+      REDIS_URL: redis://redis:6379
+      REDIS_RATE_LIMIT_PREFIX: roadtrip:rate-limit
+      CORE_TRIP_SERVICE_URL: http://core-trip-service:4101
+      GEO_LOCATION_SERVICE_URL: http://geo-location-service:4102
+      INTERNAL_SERVICE_TOKEN: local-compose-token-change-before-production
+      CORS_ALLOWED_ORIGINS: http://localhost:3000
+      RATE_LIMIT_WINDOW_MS: 60000
+      RATE_LIMIT_MAX: 100
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    depends_on:
+      redis:
+        condition: service_healthy
+      core-trip-service:
+        condition: service_healthy
+      geo-location-service:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://127.0.0.1:4100/health/ready').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 5s
+      timeout: 3s
+      start_period: 10s
+      retries: 10
+    restart: unless-stopped
+    networks:
+      - roadtrip_internal
+
+  web:
+    image: roadtrip/web:local
+    build:
+      context: ../../web
+      dockerfile: Dockerfile
+      target: runtime
+    init: true
+    ports:
+      - '127.0.0.1:3000:3000'
+    depends_on:
+      api-gateway:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://127.0.0.1:3000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 5s
+      timeout: 3s
+      start_period: 10s
+      retries: 10
+    restart: unless-stopped
+    networks:
+      - roadtrip_internal
+
+  bull-board:
+    image: venatum/bull-board:latest@sha256:257b57712adc1f17d3dc64da2c53bd59f0f951d62d4bcb73bb2d40bb89e67b1b
+    profiles: ['development-tools']
+    init: true
+    ports:
+      - '127.0.0.1:3001:3000'
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      BULL_VERSION: BULLMQ
+      BULL_PREFIX: roadtrip:bullmq
+      BULL_BOARD_TITLE: Road Trip Local Queues
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://127.0.0.1:3000/healthcheck').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 5s
+      timeout: 3s
+      start_period: 10s
+      retries: 10
+    restart: unless-stopped
+    networks:
+      - roadtrip_internal
+
+networks:
+  roadtrip_internal:
+    driver: bridge
 
 volumes:
   redis_data:
