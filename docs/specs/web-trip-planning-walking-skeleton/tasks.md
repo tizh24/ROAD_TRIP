@@ -211,9 +211,9 @@ gia Nest shutdown lifecycle và tiếp tục pass smoke test này.
 
 ### T019 — Audit migrations hiện tại
 
-- [ ] Xác định migration 2024/2026 nào trùng hoặc xung đột.
-- [ ] Không chỉnh migration đã được coi là applied.
-- [ ] Chọn corrective migration strategy và clean-reset expectation.
+- [x] Xác định migration 2024/2026 nào trùng hoặc xung đột.
+- [x] Không chỉnh migration đã được coi là applied.
+- [x] Chọn corrective migration strategy và clean-reset expectation.
 
 **Dependency:** T005.
 **Verify:** Có migration audit note và thứ tự apply rõ ràng.
