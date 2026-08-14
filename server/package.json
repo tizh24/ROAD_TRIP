@@ -9,15 +9,15 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
-    "lint": "turbo run lint --filter=api-gateway --filter=core-trip-service --filter=geo-location-service --filter=notification-worker --filter=@roadtrip/config --filter=@roadtrip/contracts --filter=@roadtrip/observability --filter=@roadtrip/db-client --filter=@roadtrip/shared-types",
+    "lint": "turbo run lint --filter=api-gateway --filter=core-trip-service --filter=geo-location-service --filter=notification-worker --filter=@roadtrip/config --filter=@roadtrip/contracts --filter=@roadtrip/health --filter=@roadtrip/observability --filter=@roadtrip/db-client --filter=@roadtrip/shared-types",
     "lint:fix": "turbo run lint:fix --filter=api-gateway --filter=core-trip-service --filter=geo-location-service --filter=notification-worker",
-    "typecheck": "turbo run typecheck --filter=api-gateway --filter=core-trip-service --filter=geo-location-service --filter=notification-worker --filter=@roadtrip/config --filter=@roadtrip/contracts --filter=@roadtrip/observability --filter=@roadtrip/db-client --filter=@roadtrip/shared-types",
+    "typecheck": "turbo run typecheck --filter=api-gateway --filter=core-trip-service --filter=geo-location-service --filter=notification-worker --filter=@roadtrip/config --filter=@roadtrip/contracts --filter=@roadtrip/health --filter=@roadtrip/observability --filter=@roadtrip/db-client --filter=@roadtrip/shared-types",
     "test": "turbo run test",
     "test:integration": "turbo run test:integration",
     "test:e2e": "turbo run test:e2e",
     "check:cycles": "madge --circular --extensions ts apps packages",
-    "format": "prettier --write \"*.{json,mjs}\" \"apps/{api-gateway,core-trip-service,geo-location-service,notification-worker}/**/*.{ts,json,mjs}\" \"packages/{config,contracts,db-client,observability,shared-types}/**/*.{ts,json,mjs}\"",
-    "format:check": "prettier --check \"*.{json,mjs}\" \"apps/{api-gateway,core-trip-service,geo-location-service,notification-worker}/**/*.{ts,json,mjs}\" \"packages/{config,contracts,db-client,observability,shared-types}/**/*.{ts,json,mjs}\""
+    "format": "prettier --write \"*.{json,mjs}\" \"apps/{api-gateway,core-trip-service,geo-location-service,notification-worker}/**/*.{ts,json,mjs}\" \"packages/{config,contracts,db-client,health,observability,shared-types}/**/*.{ts,json,mjs}\"",
+    "format:check": "prettier --check \"*.{json,mjs}\" \"apps/{api-gateway,core-trip-service,geo-location-service,notification-worker}/**/*.{ts,json,mjs}\" \"packages/{config,contracts,db-client,health,observability,shared-types}/**/*.{ts,json,mjs}\""
   },
   "devDependencies": {
     "@eslint/js": "^9.39.5",

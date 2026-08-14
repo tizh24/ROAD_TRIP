@@ -142,10 +142,10 @@ Mỗi task hoàn thành phải để repository ở trạng thái build/test đ�
 
 ### T013 — Health/readiness foundation
 
-- [ ] Thêm `/health/live` và `/health/ready` cho active services.
-- [ ] Liveness không phụ thuộc external provider.
-- [ ] Readiness phản ánh dependency bắt buộc của từng service.
-- [ ] Thay generated Hello World endpoints/tests.
+- [x] Thêm `/health/live` và `/health/ready` cho active services.
+- [x] Liveness không phụ thuộc external provider.
+- [x] Readiness phản ánh dependency bắt buộc của từng service.
+- [x] Thay generated Hello World endpoints/tests.
 
 **Dependency:** T010–T011.
 **Verify:** Health tests pass và trả status phù hợp khi dependency unavailable.
