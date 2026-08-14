@@ -132,7 +132,12 @@ Supabase CLI version used by the project:
 4. Database lint and the constraint/RLS integration suites pass on the reset
    database.
 
-The current baseline is intentionally **red** because the seed contains an
-invalid UUID and the approved corrective migrations do not exist yet. Supabase
-CLI is not installed in the present environment, so T019 records the audit and
-expected gate; T020 onward must execute it rather than claiming reset success.
+T020 completed the first corrective gate with Supabase CLI `2.114.0`:
+
+- two clean applications of the full migration chain and seed succeeded;
+- local and repository migration versions match through `20260815010000`;
+- database lint reports no schema errors;
+- all 14 pgTAP role, privilege and security-definer assertions pass.
+
+The baseline remains incomplete until T021-T023 add and verify the approved
+constraints, collaboration tables and RLS behavior.

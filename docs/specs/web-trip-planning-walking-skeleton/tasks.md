@@ -220,10 +220,10 @@ gia Nest shutdown lifecycle và tiếp tục pass smoke test này.
 
 ### T020 — Corrective schemas và roles migration
 
-- [ ] Bổ sung `notification_schema`.
-- [ ] Chuẩn hóa least-privilege roles/grants/default privileges.
-- [ ] Hạn chế execute trên security-definer functions.
-- [ ] Cố định function `search_path` an toàn.
+- [x] Bổ sung `notification_schema`.
+- [x] Chuẩn hóa least-privilege roles/grants/default privileges.
+- [x] Hạn chế execute trên security-definer functions.
+- [x] Cố định function `search_path` an toàn.
 
 **Dependency:** T019.
 **Verify:** Clean database reset tạo đủ schema/role không lỗi.
