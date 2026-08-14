@@ -36,6 +36,27 @@ database/Redis readiness probes; those adapters are added with their owning
 feature tasks. Do not treat these placeholder-ready endpoints as proof that
 Supabase is reachable.
 
+### Graceful shutdown verification
+
+Run the repeatable stop/restart smoke test from `server/`:
+
+```powershell
+pnpm verify:platform-shutdown
+```
+
+The script starts the active stack under an isolated Compose project, creates a
+waiting BullMQ job, sends the normal Compose stop signal with a ten-second
+timeout, rejects forced `SIGKILL` exits and unhandled runtime errors, restarts to
+healthy, and confirms the job is still waiting. It always removes its test
+containers, network, and volume.
+
+At this foundation stage the services own HTTP listeners only. The BullMQ smoke
+client explicitly closes its queue and Redis connection. No PostgreSQL pool,
+runtime Redis client, or BullMQ worker is instantiated yet. When those adapters
+are added, their owning Nest providers must implement shutdown lifecycle hooks
+and this smoke test must continue to pass; configuration values alone do not
+represent open connections.
+
 ### Development tools profile
 
 Bull Board is excluded from the default stack. Start it only for local queue

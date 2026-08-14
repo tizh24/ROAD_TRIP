@@ -195,12 +195,17 @@ Mỗi task hoàn thành phải để repository ở trạng thái build/test đ�
 
 ### T018 — Graceful shutdown smoke test
 
-- [ ] Enable Nest shutdown hooks.
-- [ ] Đóng HTTP, PostgreSQL, Redis và BullMQ connections sạch.
-- [ ] Kiểm tra container stop không để job ở trạng thái sai vĩnh viễn.
+- [x] Enable Nest shutdown hooks.
+- [x] Đóng HTTP, PostgreSQL, Redis và BullMQ connections sạch.
+- [x] Kiểm tra container stop không để job ở trạng thái sai vĩnh viễn.
 
 **Dependency:** T017.
 **Verify:** Stop/restart stack không gây unhandled error hoặc mất test job.
+
+**Implementation note:** Foundation runtime hiện chỉ sở hữu HTTP listeners; chưa
+khởi tạo PostgreSQL pool, Redis application client hoặc BullMQ worker. Smoke
+client đóng BullMQ/Redis connection tường minh. Các adapter ở task sau phải tham
+gia Nest shutdown lifecycle và tiếp tục pass smoke test này.
 
 ## Phase 3 — Database foundation
 

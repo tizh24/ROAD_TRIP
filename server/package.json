@@ -20,6 +20,7 @@
     "platform:up:tools": "docker compose -f infrastructure/docker-compose.yml --profile development-tools up --build --wait",
     "platform:down": "docker compose -f infrastructure/docker-compose.yml down",
     "verify:redis-durability": "node scripts/verify-redis-durability.mjs",
+    "verify:platform-shutdown": "node scripts/verify-platform-shutdown.mjs",
     "check:cycles": "madge --circular --extensions ts apps packages",
     "format": "prettier --write \"*.{json,mjs}\" \"apps/{api-gateway,core-trip-service,geo-location-service,notification-worker}/**/*.{ts,json,mjs}\" \"packages/{config,contracts,db-client,health,observability,shared-types}/**/*.{ts,json,mjs}\"",
     "format:check": "prettier --check \"*.{json,mjs}\" \"apps/{api-gateway,core-trip-service,geo-location-service,notification-worker}/**/*.{ts,json,mjs}\" \"packages/{config,contracts,db-client,health,observability,shared-types}/**/*.{ts,json,mjs}\""
