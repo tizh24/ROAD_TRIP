@@ -146,4 +146,10 @@ T021 added corrective migration `20260817010000` without changing historical
 versions. It normalizes the four Core Trip tables, migrates legacy member roles,
 adds optimistic versions, audit/soft-delete metadata, checks, unique constraints,
 indexes and the composite trip/day stop guard. A clean reset, schema lint and all
-30 pgTAP assertions pass. T022-T023 remain outstanding.
+30 pgTAP assertions pass.
+
+T022 added migration `20260817020000` for hashed-token invitations, durable
+outbox polling, processed-event idempotency and notification delivery retries.
+The new tables use owning-service grants and RLS policies; user-facing
+owner/editor/viewer policies remain T023 scope. A clean reset, schema lint and
+all 52 pgTAP assertions pass. T023 remains outstanding.

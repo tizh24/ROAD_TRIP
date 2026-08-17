@@ -240,10 +240,10 @@ gia Nest shutdown lifecycle và tiếp tục pass smoke test này.
 
 ### T022 — Invitation/outbox/notification tables migration
 
-- [ ] Tạo trip invitations và token-hash fields.
-- [ ] Tạo outbox events cùng polling indexes.
-- [ ] Tạo processed events và notification deliveries.
-- [ ] Thiết lập ownership/grants đúng schema.
+- [x] Tạo trip invitations và token-hash fields.
+- [x] Tạo outbox events cùng polling indexes.
+- [x] Tạo processed events và notification deliveries.
+- [x] Thiết lập ownership/grants đúng schema.
 
 **Dependency:** T021.
 **Verify:** Clean migration apply và database integration smoke pass.
