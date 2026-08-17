@@ -152,4 +152,11 @@ T022 added migration `20260817020000` for hashed-token invitations, durable
 outbox polling, processed-event idempotency and notification delivery retries.
 The new tables use owning-service grants and RLS policies; user-facing
 owner/editor/viewer policies remain T023 scope. A clean reset, schema lint and
-all 52 pgTAP assertions pass. T023 remains outstanding.
+all 52 pgTAP assertions pass.
+
+T023 added migration `20260818010000`, replacing legacy member-wide mutation
+policies with the owner/editor/viewer/outsider matrix. Column-level grants keep
+identity, ownership and trip linkage immutable; invitation responses require a
+matching JWT email and user ID. The non-recursive access helper uses a fixed
+empty `search_path` with restricted execute grants. A clean reset, schema lint
+and all 79 pgTAP assertions pass.

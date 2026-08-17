@@ -250,10 +250,10 @@ gia Nest shutdown lifecycle và tiếp tục pass smoke test này.
 
 ### T023 — RLS policies
 
-- [ ] Viết owner/editor/viewer/outsider policies.
-- [ ] Sửa policy hiện tại đang cho mọi member quản lý itinerary.
-- [ ] Viết invitation access/acceptance policies.
-- [ ] Không tạo recursion hoặc privilege escalation.
+- [x] Viết owner/editor/viewer/outsider policies.
+- [x] Sửa policy hiện tại đang cho mọi member quản lý itinerary.
+- [x] Viết invitation access/acceptance policies.
+- [x] Không tạo recursion hoặc privilege escalation.
 
 **Dependency:** T021–T022.
 **Verify:** RLS permission matrix test đạt toàn bộ read/write cases.
