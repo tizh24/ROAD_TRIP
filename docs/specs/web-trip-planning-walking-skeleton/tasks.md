@@ -230,10 +230,10 @@ gia Nest shutdown lifecycle và tiếp tục pass smoke test này.
 
 ### T021 — Core Trip tables migration
 
-- [ ] Chuẩn hóa trips, members, days và stops theo Plan.
-- [ ] Thêm enums/check constraints, currency và version.
-- [ ] Thêm unique constraints và indexes.
-- [ ] Thêm updated-at behavior và soft-delete metadata.
+- [x] Chuẩn hóa trips, members, days và stops theo Plan.
+- [x] Thêm enums/check constraints, currency và version.
+- [x] Thêm unique constraints và indexes.
+- [x] Thêm updated-at behavior và soft-delete metadata.
 
 **Dependency:** T020.
 **Verify:** Constraint tests từ chối date, budget, role, order và coordinate sai.

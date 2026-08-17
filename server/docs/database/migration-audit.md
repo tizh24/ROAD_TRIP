@@ -139,5 +139,11 @@ T020 completed the first corrective gate with Supabase CLI `2.114.0`:
 - database lint reports no schema errors;
 - all 14 pgTAP role, privilege and security-definer assertions pass.
 
-The baseline remains incomplete until T021-T023 add and verify the approved
-constraints, collaboration tables and RLS behavior.
+The baseline remains incomplete until T022-T023 add and verify the approved
+collaboration tables and RLS behavior.
+
+T021 added corrective migration `20260817010000` without changing historical
+versions. It normalizes the four Core Trip tables, migrates legacy member roles,
+adds optimistic versions, audit/soft-delete metadata, checks, unique constraints,
+indexes and the composite trip/day stop guard. A clean reset, schema lint and all
+30 pgTAP assertions pass. T022-T023 remain outstanding.
