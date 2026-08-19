@@ -4,11 +4,13 @@ import { randomUUID } from 'node:crypto';
 import { CurrentUser } from './current-user.decorator';
 import { SupabaseAuthGuard } from './supabase-auth.guard';
 import type { AuthenticatedUserContext } from './auth.types';
+import { RateLimit } from '../security/rate-limit.types';
 
 @Controller('api/v1')
 export class AuthController {
   @Get('me')
   @UseGuards(SupabaseAuthGuard)
+  @RateLimit('authenticated')
   me(@CurrentUser() user: AuthenticatedUserContext) {
     return {
       data: {

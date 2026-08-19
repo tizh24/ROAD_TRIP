@@ -306,13 +306,18 @@ guard. Web tạm dùng convention `middleware.ts` còn được hỗ trợ; đ�
 
 ### T028 — Gateway security middleware
 
-- [ ] Cấu hình CORS allowlist, Helmet và body-size limits.
-- [ ] Redis-backed rate limits theo route class.
-- [ ] Correlation ID validation và propagation.
-- [ ] Không log authorization headers.
+- [x] Cấu hình CORS allowlist, Helmet và body-size limits.
+- [x] Redis-backed rate limits theo route class.
+- [x] Correlation ID validation và propagation.
+- [x] Không log authorization headers.
 
 **Dependency:** T011, T016, T027.
 **Verify:** Security/rate-limit/correlation integration tests đạt.
+
+**Implementation note:** Chỉ `/api/v1` bị rate limit; public routes dùng IP,
+authenticated routes dùng verified user ID và mọi tracker được SHA-256 trước khi
+đưa vào Redis key. Bộ đếm fixed-window dùng Lua `INCR` + `PEXPIRE` nguyên tử;
+Gateway fail-open với log đã redaction khi Redis tạm unavailable.
 
 ### T029 — Gateway upstream adapters
 

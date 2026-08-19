@@ -1,10 +1,9 @@
 import { NestFactory } from '@nestjs/core';
+import type { NestExpressApplication } from '@nestjs/platform-express';
 import { loadGatewayConfig } from '@roadtrip/config';
-import {
-  correlationIdMiddleware,
-  StructuredLogger,
-} from '@roadtrip/observability';
+import { StructuredLogger } from '@roadtrip/observability';
 import { AppModule } from './app.module';
+import { configureGatewaySecurity } from './gateway-security';
 
 async function bootstrap() {
   const config = loadGatewayConfig();
@@ -13,10 +12,13 @@ async function bootstrap() {
     environment: config.NODE_ENV,
     level: config.LOG_LEVEL,
   });
-  const app = await NestFactory.create(AppModule, { bufferLogs: true });
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    bodyParser: false,
+    bufferLogs: true,
+  });
   app.enableShutdownHooks();
   app.useLogger(logger);
-  app.use(correlationIdMiddleware());
+  configureGatewaySecurity(app, config);
   await app.listen(config.PORT);
 }
 void bootstrap();

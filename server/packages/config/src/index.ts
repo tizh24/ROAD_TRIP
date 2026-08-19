@@ -5,6 +5,29 @@ const logLevel = z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace']);
 const url = z.url();
 const positiveInteger = z.coerce.number().int().positive();
 const nonNegativeInteger = z.coerce.number().int().nonnegative();
+const requestBodyLimit = positiveInteger.max(10_485_760);
+const corsAllowedOrigins = z
+  .string()
+  .min(1)
+  .refine((value) =>
+    value.split(',').every((entry) => {
+      const candidate = entry.trim();
+      if (!candidate || candidate === '*') return false;
+      try {
+        const parsed = new URL(candidate);
+        return (
+          (parsed.protocol === 'http:' || parsed.protocol === 'https:') &&
+          parsed.username === '' &&
+          parsed.password === '' &&
+          parsed.pathname === '/' &&
+          parsed.search === '' &&
+          parsed.hash === ''
+        );
+      } catch {
+        return false;
+      }
+    }),
+  );
 
 const commonShape = {
   NODE_ENV: environment.default('development'),
@@ -48,9 +71,11 @@ export const gatewayConfigSchema = z.object({
   CORE_TRIP_SERVICE_URL: url,
   GEO_LOCATION_SERVICE_URL: url,
   INTERNAL_SERVICE_TOKEN: z.string().min(32),
-  CORS_ALLOWED_ORIGINS: z.string().min(1),
+  CORS_ALLOWED_ORIGINS: corsAllowedOrigins,
+  REQUEST_BODY_LIMIT_BYTES: requestBodyLimit.default(1_048_576),
   RATE_LIMIT_WINDOW_MS: positiveInteger.default(60_000),
   RATE_LIMIT_MAX: positiveInteger.default(100),
+  RATE_LIMIT_AUTHENTICATED_MAX: positiveInteger.default(300),
 });
 
 export const coreTripConfigSchema = z.object({

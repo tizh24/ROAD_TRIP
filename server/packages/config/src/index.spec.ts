@@ -21,6 +21,8 @@ describe('runtime configuration', () => {
     expect(config.PORT).toBe(4200);
     expect(config.NODE_ENV).toBe('development');
     expect(config.RATE_LIMIT_MAX).toBe(100);
+    expect(config.RATE_LIMIT_AUTHENTICATED_MAX).toBe(300);
+    expect(config.REQUEST_BODY_LIMIT_BYTES).toBe(1_048_576);
     expect(config.REDIS_RATE_LIMIT_PREFIX).toBe('roadtrip:rate-limit');
   });
 
@@ -47,5 +49,15 @@ describe('runtime configuration', () => {
       expect(String(error)).not.toContain(secret);
       expect(String(error)).not.toContain('not-a-url');
     }
+  });
+
+  it('rejects wildcard CORS origins and unsafe body limits', () => {
+    expect(() =>
+      parseConfig(gatewayConfigSchema, {
+        ...validGatewayEnv,
+        CORS_ALLOWED_ORIGINS: '*',
+        REQUEST_BODY_LIMIT_BYTES: '10485761',
+      }),
+    ).toThrow(ConfigurationError);
   });
 });

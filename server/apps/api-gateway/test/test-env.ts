@@ -13,6 +13,10 @@ export function setGatewayTestEnv(
     GEO_LOCATION_SERVICE_URL: 'http://127.0.0.1:4102',
     INTERNAL_SERVICE_TOKEN: 'test-internal-token-at-least-32-characters',
     CORS_ALLOWED_ORIGINS: 'http://localhost:3000',
+    REQUEST_BODY_LIMIT_BYTES: '1048576',
+    RATE_LIMIT_WINDOW_MS: '60000',
+    RATE_LIMIT_MAX: '100',
+    RATE_LIMIT_AUTHENTICATED_MAX: '300',
     ...overrides,
   });
 }

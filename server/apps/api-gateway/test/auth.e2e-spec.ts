@@ -6,6 +6,8 @@ import type { AddressInfo } from 'node:net';
 import request from 'supertest';
 import { App } from 'supertest/types';
 import { AppModule } from '../src/app.module';
+import { RATE_LIMIT_STORE } from '../src/security/rate-limit.types';
+import { FakeRateLimitStore } from './fake-rate-limit.store';
 import { setGatewayTestEnv } from './test-env';
 
 const issuer = 'https://issuer.test/auth/v1';
@@ -17,6 +19,7 @@ describe('Gateway authentication (e2e)', () => {
   let jwksServer: Server;
   let privateKey: CryptoKey;
   let invalidPrivateKey: CryptoKey;
+  const rateLimitStore = new FakeRateLimitStore();
 
   beforeAll(async () => {
     const jose = await import('jose');
@@ -40,15 +43,21 @@ describe('Gateway authentication (e2e)', () => {
     const address = jwksServer.address() as AddressInfo;
     setGatewayTestEnv({
       SUPABASE_JWKS_URL: `http://127.0.0.1:${address.port}/jwks`,
+      RATE_LIMIT_AUTHENTICATED_MAX: '2',
     });
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
-    }).compile();
+    })
+      .overrideProvider(RATE_LIMIT_STORE)
+      .useValue(rateLimitStore)
+      .compile();
     app = moduleFixture.createNestApplication();
     app.use(correlationIdMiddleware());
     await app.init();
   });
+
+  beforeEach(() => rateLimitStore.reset());
 
   afterAll(async () => {
     await app.close();
@@ -107,6 +116,28 @@ describe('Gateway authentication (e2e)', () => {
           meta: { correlationId: 'auth-e2e-missing' },
         });
       });
+  });
+
+  it('rate-limits authenticated routes by a hashed user tracker', async () => {
+    const token = await sign(privateKey);
+
+    await request(app.getHttpServer())
+      .get('/api/v1/me')
+      .set('authorization', `Bearer ${token}`)
+      .expect(200);
+    await request(app.getHttpServer())
+      .get('/api/v1/me')
+      .set('authorization', `Bearer ${token}`)
+      .expect(200);
+    await request(app.getHttpServer())
+      .get('/api/v1/me')
+      .set('authorization', `Bearer ${token}`)
+      .expect(429);
+
+    expect(rateLimitStore.consumedKeys).toHaveLength(3);
+    expect(rateLimitStore.consumedKeys[0]).toContain(':authenticated:');
+    expect(rateLimitStore.consumedKeys[0]).not.toContain(userId);
+    expect(rateLimitStore.consumedKeys[0]).not.toContain(token);
   });
 
   it.each([
