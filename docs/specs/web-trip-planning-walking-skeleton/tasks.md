@@ -296,10 +296,10 @@ guard. Web tạm dùng convention `middleware.ts` còn được hỗ trợ; đ�
 
 ### T027 — Gateway JWT verification
 
-- [ ] Xác minh Supabase JWT bằng JWKS và cache key rotation an toàn.
-- [ ] Chuẩn hóa authenticated user context.
-- [ ] Không gọi remote `getUser` cho mọi request.
-- [ ] Trả stable auth errors.
+- [x] Xác minh Supabase JWT bằng JWKS và cache key rotation an toàn.
+- [x] Chuẩn hóa authenticated user context.
+- [x] Không gọi remote `getUser` cho mọi request.
+- [x] Trả stable auth errors.
 
 **Dependency:** T010–T013.
 **Verify:** Valid/expired/invalid/missing token tests đạt.

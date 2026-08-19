@@ -66,12 +66,18 @@ importers:
       '@roadtrip/config':
         specifier: workspace:*
         version: link:../../packages/config
+      '@roadtrip/contracts':
+        specifier: workspace:*
+        version: link:../../packages/contracts
       '@roadtrip/health':
         specifier: workspace:*
         version: link:../../packages/health
       '@roadtrip/observability':
         specifier: workspace:*
         version: link:../../packages/observability
+      jose:
+        specifier: ^6.2.9
+        version: 6.2.9
       reflect-metadata:
         specifier: ^0.2.2
         version: 0.2.2
