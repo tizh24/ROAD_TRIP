@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "@roadtrip/config": "workspace:*",
+    "@roadtrip/db-client": "workspace:*",
     "@roadtrip/health": "workspace:*",
     "@roadtrip/observability": "workspace:*",
     "@nestjs/common": "^11.0.1",

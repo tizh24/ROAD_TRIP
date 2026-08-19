@@ -6,6 +6,11 @@
     "node": ">=22 <23",
     "pnpm": ">=10 <11"
   },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "supabase"
+    ]
+  },
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
@@ -21,9 +26,10 @@
     "platform:down": "docker compose -f infrastructure/docker-compose.yml down",
     "verify:redis-durability": "node scripts/verify-redis-durability.mjs",
     "verify:platform-shutdown": "node scripts/verify-platform-shutdown.mjs",
+    "db:types": "supabase gen types typescript --local --schema public,trip_schema,notification_schema > packages/db-client/src/database.types.ts && prettier --write packages/db-client/src/database.types.ts",
     "check:cycles": "madge --circular --extensions ts apps packages",
-    "format": "prettier --write \"*.{json,mjs}\" \"apps/{api-gateway,core-trip-service,geo-location-service,notification-worker}/**/*.{ts,json,mjs}\" \"packages/{config,contracts,db-client,health,observability,shared-types}/**/*.{ts,json,mjs}\"",
-    "format:check": "prettier --check \"*.{json,mjs}\" \"apps/{api-gateway,core-trip-service,geo-location-service,notification-worker}/**/*.{ts,json,mjs}\" \"packages/{config,contracts,db-client,health,observability,shared-types}/**/*.{ts,json,mjs}\""
+    "format": "prettier --write \"*.{json,mjs}\" \"scripts/*.mjs\" \"apps/{api-gateway,core-trip-service,geo-location-service,notification-worker}/**/*.{ts,json,mjs}\" \"packages/{config,contracts,db-client,health,observability,shared-types}/**/*.{ts,json,mjs}\"",
+    "format:check": "prettier --check \"*.{json,mjs}\" \"scripts/*.mjs\" \"apps/{api-gateway,core-trip-service,geo-location-service,notification-worker}/**/*.{ts,json,mjs}\" \"packages/{config,contracts,db-client,health,observability,shared-types}/**/*.{ts,json,mjs}\""
   },
   "devDependencies": {
     "@eslint/js": "^9.39.5",
@@ -36,6 +42,7 @@
     "ioredis": "^5.11.1",
     "madge": "^8.0.0",
     "prettier": "^3.9.6",
+    "supabase": "2.114.0",
     "turbo": "^2.10.9",
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.67.0"

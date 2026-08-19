@@ -1,3 +1,5 @@
+import type { FactoryProvider } from '@nestjs/common';
+
 export type ReadinessProbe = () => boolean | Promise<boolean>;
 
 export interface ReadinessCheck {
@@ -8,6 +10,15 @@ export interface ReadinessCheck {
 export interface HealthModuleOptions {
   service: string;
   readinessChecks?: readonly ReadinessCheck[];
+}
+
+export interface HealthModuleAsyncOptions<
+  Dependencies extends readonly unknown[] = readonly unknown[],
+> {
+  inject?: FactoryProvider['inject'];
+  useFactory: (
+    ...dependencies: Dependencies
+  ) => HealthModuleOptions | Promise<HealthModuleOptions>;
 }
 
 export interface LivenessResult {

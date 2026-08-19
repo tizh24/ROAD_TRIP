@@ -2,17 +2,19 @@
   "name": "@roadtrip/db-client",
   "version": "1.0.0",
   "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "types": "src/index.ts",
   "scripts": {
     "build": "tsc",
     "typecheck": "tsc --noEmit",
+    "test:integration": "pnpm build && node ../../scripts/verify-database.mjs",
     "dev": "tsc -w",
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.39.0"
+    "pg": "^8.23.0"
   },
   "devDependencies": {
+    "@types/pg": "^8.23.1",
     "typescript": "^5.0.0"
   }
 }

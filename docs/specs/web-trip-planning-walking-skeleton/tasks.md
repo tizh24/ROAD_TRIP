@@ -260,10 +260,10 @@ gia Nest shutdown lifecycle và tiếp tục pass smoke test này.
 
 ### T024 — Database types và repository primitives
 
-- [ ] Generate database types từ schema mới.
-- [ ] Tạo PostgreSQL connection/transaction abstraction.
-- [ ] Không expose generated type qua public contracts.
-- [ ] Thêm database readiness check.
+- [x] Generate database types từ schema mới.
+- [x] Tạo PostgreSQL connection/transaction abstraction.
+- [x] Không expose generated type qua public contracts.
+- [x] Thêm database readiness check.
 
 **Dependency:** T021–T023.
 **Verify:** Type generation reproducible và connection test đạt.

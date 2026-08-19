@@ -3,6 +3,7 @@ import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { App } from 'supertest/types';
 import { AppModule } from './../src/app.module';
+import { DatabaseService } from './../src/infrastructure/database/database.service';
 
 describe('Health endpoints (e2e)', () => {
   let app: INestApplication<App>;
@@ -10,7 +11,10 @@ describe('Health endpoints (e2e)', () => {
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
-    }).compile();
+    })
+      .overrideProvider(DatabaseService)
+      .useValue({ isReady: () => true })
+      .compile();
 
     app = moduleFixture.createNestApplication();
     await app.init();
@@ -36,7 +40,7 @@ describe('Health endpoints (e2e)', () => {
         expect(body).toMatchObject({
           status: 'ready',
           service: 'core-trip-service',
-          checks: {},
+          checks: { database: 'up' },
         });
       });
   });

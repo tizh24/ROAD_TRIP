@@ -1,16 +1,5 @@
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
+export * from './postgres-database';
 
-// Base DB client configuration
-export function getSupabaseClient(
-  supabaseUrl: string,
-  supabaseKey: string,
-): SupabaseClient {
-  if (!supabaseUrl || !supabaseKey) {
-    throw new Error('Supabase URL and Key must be provided.');
-  }
-
-  return createClient(supabaseUrl, supabaseKey);
-}
-
-// Export specific database types here if generated from Supabase later
-export * from './database.types'; // Assuming this will be generated
+// Generated schema types stay in this persistence-only package and must not be
+// reused as public API contracts.
+export type { Database, Json } from './database.types';
