@@ -46,9 +46,18 @@ export default function UserProfileView() {
                   <Link href="/profile/settings" className="flex-1 bg-gray-50 hover:bg-gray-100 text-gray-600 font-bold py-3 rounded-xl flex justify-center items-center gap-2 text-xs transition-colors">
                     <Settings size={14} /> Cài đặt
                   </Link>
-                  <Link href="/login" className="flex-1 bg-red-50 hover:bg-red-100 text-red-600 font-bold py-3 rounded-xl flex justify-center items-center gap-2 text-xs transition-colors">
-                    <LogOut size={14} /> Thoát
-                  </Link>
+                  <form
+                    action="/auth/signout"
+                    method="post"
+                    className="flex-1"
+                  >
+                    <button
+                      type="submit"
+                      className="w-full bg-red-50 hover:bg-red-100 text-red-600 font-bold py-3 rounded-xl flex justify-center items-center gap-2 text-xs transition-colors"
+                    >
+                      <LogOut size={14} /> Thoát
+                    </button>
+                  </form>
                 </div>
               </div>
             </div>

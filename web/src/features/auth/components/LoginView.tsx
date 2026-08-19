@@ -1,10 +1,39 @@
 "use client";
-import React from "react";
-import CTAButton from "@/components/ui/CTAButton";
+import React, { useActionState } from "react";
+import { useFormStatus } from "react-dom";
 import Link from "next/link";
-import { Map, ArrowRight } from "lucide-react";
+import { LoaderCircle, LogIn, Map } from "lucide-react";
+import { login, type LoginState } from "@/features/auth/actions";
 
-export default function LoginView() {
+const initialState: LoginState = { error: null };
+
+function SubmitButton() {
+  const { pending } = useFormStatus();
+
+  return (
+    <button
+      type="submit"
+      disabled={pending}
+      className="w-full bg-gray-900 hover:bg-black disabled:cursor-not-allowed disabled:opacity-60 text-white font-bold py-3.5 px-4 rounded-xl flex items-center justify-center gap-3 transition-colors shadow-sm"
+    >
+      {pending ? (
+        <LoaderCircle size={18} className="animate-spin" />
+      ) : (
+        <LogIn size={18} />
+      )}
+      {pending ? "Đang đăng nhập..." : "Đăng nhập"}
+    </button>
+  );
+}
+
+type LoginViewProps = {
+  callbackError?: boolean;
+  nextPath?: string;
+};
+
+export default function LoginView({ callbackError, nextPath }: LoginViewProps) {
+  const [state, formAction] = useActionState(login, initialState);
+
   return (
     <div className="min-h-screen w-full flex bg-[#F8FAFC] font-sans">
       
@@ -27,20 +56,56 @@ export default function LoginView() {
             Đăng nhập để tiếp tục lên kế hoạch, lưu trữ lộ trình và chia sẻ chi phí cùng nhóm bè bạn.
           </p>
 
-          <div className="space-y-4">
-            <button className="w-full bg-white hover:bg-gray-50 border-2 border-gray-100 text-gray-700 font-bold py-3.5 px-4 rounded-xl flex items-center justify-center gap-3 transition-colors shadow-sm">
-              <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" className="w-5 h-5" />
-              Tiếp tục với Google
-            </button>
-            <button className="w-full bg-[#1877F2] hover:bg-[#1865F2] border-2 border-[#1877F2] text-white font-bold py-3.5 px-4 rounded-xl flex items-center justify-center gap-3 transition-colors shadow-sm">
-              <img src="https://www.svgrepo.com/show/448224/facebook.svg" alt="Facebook" className="w-5 h-5 invert" />
-              Tiếp tục với Facebook
-            </button>
-            <button className="w-full bg-gray-900 hover:bg-black border-2 border-gray-900 text-white font-bold py-3.5 px-4 rounded-xl flex items-center justify-center gap-3 transition-colors shadow-sm">
-              <img src="https://www.svgrepo.com/show/511330/apple-173.svg" alt="Apple" className="w-5 h-5 invert" />
-              Tiếp tục với Apple
-            </button>
-          </div>
+          <form action={formAction} className="space-y-5">
+            {nextPath ? (
+              <input type="hidden" name="next" value={nextPath} />
+            ) : null}
+            <div>
+              <label
+                htmlFor="email"
+                className="block text-sm font-bold text-gray-700 mb-2"
+              >
+                Email
+              </label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                autoComplete="email"
+                required
+                className="w-full rounded-xl border-2 border-gray-100 bg-white px-4 py-3 text-gray-900 outline-none transition focus:border-primary"
+                placeholder="ban@example.com"
+              />
+            </div>
+            <div>
+              <label
+                htmlFor="password"
+                className="block text-sm font-bold text-gray-700 mb-2"
+              >
+                Mật khẩu
+              </label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                autoComplete="current-password"
+                minLength={6}
+                required
+                className="w-full rounded-xl border-2 border-gray-100 bg-white px-4 py-3 text-gray-900 outline-none transition focus:border-primary"
+                placeholder="Ít nhất 6 ký tự"
+              />
+            </div>
+            {state.error || callbackError ? (
+              <p
+                role="alert"
+                className="rounded-xl bg-red-50 px-4 py-3 text-sm font-medium text-red-700"
+              >
+                {state.error ??
+                  "Liên kết đăng nhập không hợp lệ hoặc đã hết hạn."}
+              </p>
+            ) : null}
+            <SubmitButton />
+          </form>
 
           <div className="mt-12 pt-8 border-t border-gray-100">
             <p className="text-xs text-center text-gray-400 font-medium leading-relaxed">
