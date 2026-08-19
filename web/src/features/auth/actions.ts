@@ -2,21 +2,10 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { getSafeInternalPath } from "@/lib/auth/route-protection";
 import { createClient } from "@/lib/supabase/server";
 
 export type LoginState = { error: string | null };
-
-function safeNextPath(value: FormDataEntryValue | null) {
-  if (
-    typeof value !== "string" ||
-    !value.startsWith("/") ||
-    value.startsWith("//")
-  ) {
-    return "/profile";
-  }
-
-  return value;
-}
 
 export async function login(
   _previousState: LoginState,
@@ -45,5 +34,5 @@ export async function login(
   }
 
   revalidatePath("/", "layout");
-  redirect(safeNextPath(formData.get("next")));
+  redirect(getSafeInternalPath(formData.get("next")) ?? "/profile");
 }

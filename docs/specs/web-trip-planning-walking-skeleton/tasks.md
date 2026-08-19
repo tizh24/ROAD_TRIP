@@ -282,12 +282,17 @@ gia Nest shutdown lifecycle và tiếp tục pass smoke test này.
 
 ### T026 — Protected web routes
 
-- [ ] Bảo vệ `/trips`, `/trips/new`, `/trips/[tripId]`.
-- [ ] Redirect về login và giữ return URL.
-- [ ] Xử lý expired session rõ ràng.
+- [x] Bảo vệ `/trips`, `/trips/new`, `/trips/[tripId]`.
+- [x] Redirect về login và giữ return URL.
+- [x] Xử lý expired session rõ ràng.
 
 **Dependency:** T025.
 **Verify:** Guest không vào protected route; login xong quay lại đúng URL.
+
+**Implementation note:** Next.js 16.3/Turbopack trên Windows hiện tạo
+`middleware-manifest.json` rỗng cho `proxy.ts`, khiến production runtime bỏ qua
+guard. Web tạm dùng convention `middleware.ts` còn được hỗ trợ; đổi lại
+`proxy.ts` khi upstream Windows issue được sửa.
 
 ### T027 — Gateway JWT verification
 

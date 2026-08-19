@@ -1,11 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { getSafeInternalPath } from "@/lib/auth/route-protection";
 import { createClient } from "@/lib/supabase/server";
-
-function safeNextPath(value: string | null) {
-  return value?.startsWith("/") && !value.startsWith("//")
-    ? value
-    : "/profile";
-}
 
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url);
@@ -18,7 +13,8 @@ export async function GET(request: NextRequest) {
     if (!error) {
       return NextResponse.redirect(
         new URL(
-          safeNextPath(requestUrl.searchParams.get("next")),
+          getSafeInternalPath(requestUrl.searchParams.get("next")) ??
+            "/profile",
           requestUrl.origin,
         ),
       );

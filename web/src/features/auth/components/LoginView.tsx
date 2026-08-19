@@ -27,11 +27,16 @@ function SubmitButton() {
 }
 
 type LoginViewProps = {
-  callbackError?: boolean;
+  authError?: "callback" | "session_expired";
   nextPath?: string;
 };
 
-export default function LoginView({ callbackError, nextPath }: LoginViewProps) {
+const authErrorMessages = {
+  callback: "Liên kết đăng nhập không hợp lệ hoặc đã hết hạn.",
+  session_expired: "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.",
+} as const;
+
+export default function LoginView({ authError, nextPath }: LoginViewProps) {
   const [state, formAction] = useActionState(login, initialState);
 
   return (
@@ -95,13 +100,12 @@ export default function LoginView({ callbackError, nextPath }: LoginViewProps) {
                 placeholder="Ít nhất 6 ký tự"
               />
             </div>
-            {state.error || callbackError ? (
+            {state.error || authError ? (
               <p
                 role="alert"
                 className="rounded-xl bg-red-50 px-4 py-3 text-sm font-medium text-red-700"
               >
-                {state.error ??
-                  "Liên kết đăng nhập không hợp lệ hoặc đã hết hạn."}
+                {state.error ?? (authError && authErrorMessages[authError])}
               </p>
             ) : null}
             <SubmitButton />

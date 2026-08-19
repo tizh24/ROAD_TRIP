@@ -1,4 +1,5 @@
 import LoginView from "@/features/auth/components/LoginView";
+import { getSafeInternalPath } from "@/lib/auth/route-protection";
 
 type LoginPageProps = {
   searchParams: Promise<{ authError?: string; next?: string }>;
@@ -6,14 +7,16 @@ type LoginPageProps = {
 
 export default async function Page({ searchParams }: LoginPageProps) {
   const params = await searchParams;
-  const nextPath =
-    params.next?.startsWith("/") && !params.next.startsWith("//")
-      ? params.next
-      : undefined;
+  const nextPath = getSafeInternalPath(params.next) ?? undefined;
 
   return (
     <LoginView
-      callbackError={params.authError === "callback"}
+      authError={
+        params.authError === "callback" ||
+        params.authError === "session_expired"
+          ? params.authError
+          : undefined
+      }
       nextPath={nextPath}
     />
   );
