@@ -272,10 +272,10 @@ gia Nest shutdown lifecycle và tiếp tục pass smoke test này.
 
 ### T025 — Supabase web authentication
 
-- [ ] Cấu hình SSR-compatible Supabase client.
-- [ ] Thực hiện ít nhất một login method và callback.
-- [ ] Thiết lập session refresh/logout.
-- [ ] Không lưu service-role key hoặc VietMap key trong browser.
+- [x] Cấu hình SSR-compatible Supabase client.
+- [x] Thực hiện ít nhất một login method và callback.
+- [x] Thiết lập session refresh/logout.
+- [x] Không lưu service-role key hoặc VietMap key trong browser.
 
 **Dependency:** T010, T015, T020.
 **Verify:** User đăng nhập/logout và session còn hợp lệ sau refresh.
