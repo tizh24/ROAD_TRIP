@@ -124,6 +124,21 @@ export class Trip {
   getStatus(): TripStatus {
     return this.status;
   }
+  getId(): TripId {
+    return this.input.id;
+  }
+  getOwnerId(): UserId {
+    return this.input.ownerId;
+  }
+  getTitle(): TripTitle {
+    return this.input.title;
+  }
+  getDateRange(): DateRange {
+    return this.input.dateRange;
+  }
+  getBudget(): Money {
+    return this.input.budget;
+  }
   getVersion(): Version {
     return this.version;
   }
