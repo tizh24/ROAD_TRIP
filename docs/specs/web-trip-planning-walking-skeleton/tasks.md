@@ -331,9 +331,9 @@ Gateway fail-open với log đã redaction khi Redis tạm unavailable.
 
 ### T030 — Public OpenAPI
 
-- [ ] Xuất `/api/v1` contracts và auth requirements.
-- [ ] Document stable errors, idempotency và version headers.
-- [ ] Không expose internal-only endpoints.
+- [x] Xuất `/api/v1` contracts và auth requirements.
+- [x] Document stable errors, idempotency và version headers.
+- [x] Không expose internal-only endpoints.
 
 **Dependency:** T012, T029.
 **Verify:** OpenAPI generation pass và contract không chứa persistence model.
