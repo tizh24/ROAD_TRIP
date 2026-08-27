@@ -342,9 +342,9 @@ Gateway fail-open với log đã redaction khi Redis tạm unavailable.
 
 ### T031 — Core value objects
 
-- [ ] Implement TripId/UserId, TripTitle, DateRange, Money, Currency và Version.
-- [ ] Enforce 30-day limit, title trim và non-negative budget.
-- [ ] Unit test valid/invalid boundaries.
+- [x] Implement TripId/UserId, TripTitle, DateRange, Money, Currency và Version.
+- [x] Enforce 30-day limit, title trim và non-negative budget.
+- [x] Unit test valid/invalid boundaries.
 
 **Dependency:** T012.
 **Verify:** Domain unit suite đạt.
