@@ -361,9 +361,9 @@ Gateway fail-open với log đã redaction khi Redis tạm unavailable.
 
 ### T033 — Stop ordering domain behavior
 
-- [ ] Add, update, remove, reorder và move-day operations.
-- [ ] Giữ order liên tục và không trùng.
-- [ ] Enforce editor permission và trip/day ownership.
+- [x] Add, update, remove, reorder và move-day operations.
+- [x] Giữ order liên tục và không trùng.
+- [x] Enforce editor permission và trip/day ownership.
 
 **Dependency:** T032.
 **Verify:** Unit tests bao phủ reorder/move edge cases.

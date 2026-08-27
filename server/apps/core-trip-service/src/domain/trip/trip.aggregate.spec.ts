@@ -69,7 +69,60 @@ describe('Trip aggregate', () => {
       'TRIP_STATE_TRANSITION_INVALID',
     );
   });
+
+  it('allows editors to add, edit, reorder, and remove stops with contiguous order', () => {
+    const trip = createTrip();
+    trip.addMember(owner, member, 'EDIT');
+    trip.addStop(member, stop('first', 1));
+    trip.addStop(member, stop('second', 1));
+    trip.updateStop(member, 'first', '  sunrise  ');
+    trip.reorderStops(member, 1, ['second', 'first']);
+    expect(trip.getStops(1)).toEqual([
+      expect.objectContaining({ id: 'second', stopIndex: 1 }),
+      expect.objectContaining({ id: 'first', stopIndex: 2, notes: 'sunrise' }),
+    ]);
+    trip.removeStop(member, 'second');
+    expect(trip.getStops(1)).toEqual([
+      expect.objectContaining({ id: 'first', stopIndex: 1 }),
+    ]);
+  });
+
+  it('moves a stop between owned days and rejects invalid ordering or outsider edits', () => {
+    const trip = createTrip();
+    trip.addStop(owner, stop('first', 1));
+    trip.addStop(owner, stop('second', 1));
+    trip.addStop(owner, stop('third', 2));
+    trip.moveStop(owner, 'second', 2, 1);
+    expect(trip.getStops(1)).toEqual([
+      expect.objectContaining({ id: 'first', stopIndex: 1 }),
+    ]);
+    expect(trip.getStops(2)).toEqual([
+      expect.objectContaining({ id: 'second', stopIndex: 1 }),
+      expect.objectContaining({ id: 'third', stopIndex: 2 }),
+    ]);
+    expectRule(
+      () => trip.reorderStops(owner, 2, ['second']),
+      'TRIP_STOP_ORDER_INVALID',
+    );
+    expectRule(
+      () => trip.addStop(outsider, stop('outside', 1)),
+      'TRIP_PERMISSION_DENIED',
+    );
+    expectRule(() => trip.moveStop(owner, 'first', 4), 'TRIP_DAY_NOT_FOUND');
+  });
 });
+
+function stop(id: string, dayIndex: number) {
+  return {
+    id,
+    dayIndex,
+    placeId: `place-${id}`,
+    name: `Stop ${id}`,
+    address: 'Hà Nội, Việt Nam',
+    latitude: 21.0285,
+    longitude: 105.8542,
+  };
+}
 
 function createTrip(): Trip {
   return Trip.create({
