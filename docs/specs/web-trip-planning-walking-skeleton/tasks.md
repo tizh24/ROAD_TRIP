@@ -370,10 +370,10 @@ Gateway fail-open với log đã redaction khi Redis tạm unavailable.
 
 ### T034 — Trip repositories
 
-- [ ] Map domain ↔ persistence models rõ ràng.
-- [ ] Implement create/list/detail/update/soft-delete.
-- [ ] Implement atomic trip + owner + days + outbox transaction.
-- [ ] Implement optimistic version check.
+- [x] Map domain ↔ persistence models rõ ràng.
+- [x] Implement create/list/detail/update/soft-delete.
+- [x] Implement atomic trip + owner + days + outbox transaction.
+- [x] Implement optimistic version check.
 
 **Dependency:** T024, T032.
 **Verify:** Repository integration suite trên PostgreSQL thật đạt.

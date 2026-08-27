@@ -17,6 +17,14 @@ export interface TripListRow {
   readonly version: number;
 }
 
+export interface TripDetailRow extends TripListRow {
+  readonly ownerId: string;
+  readonly description: string | null;
+  readonly budgetAmount: number;
+  readonly currency: string;
+  readonly deletedAt: Date | null;
+}
+
 export interface TripUpdate {
   readonly title: string;
   readonly description: string | null;
@@ -101,6 +109,22 @@ export class TripRepository {
       [userId],
     );
     return result.rows;
+  }
+
+  async getByIdForUser(
+    id: string,
+    userId: string,
+  ): Promise<TripDetailRow | undefined> {
+    const result = await this.database.query<TripDetailRow>(
+      `SELECT t.id, t.owner_id AS "ownerId", t.title, t.description,
+              t.start_date AS "startDate", t.end_date AS "endDate", t.status,
+              t.budget_amount AS "budgetAmount", t.currency, t.version,
+              t.deleted_at AS "deletedAt", m.role, m.permission
+         FROM trip_schema.trips t JOIN trip_schema.trip_members m ON m.trip_id = t.id
+        WHERE t.id = $1 AND m.user_id = $2 AND m.status = 'ACTIVE'`,
+      [id, userId],
+    );
+    return result.rows[0];
   }
 
   async update(id: string, update: TripUpdate): Promise<Version> {
