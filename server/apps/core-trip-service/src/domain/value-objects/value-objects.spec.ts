@@ -24,7 +24,7 @@ describe('trip value objects', () => {
     );
     expectDomainCode(() => TripTitle.from('   '), 'TRIP_TITLE_INVALID');
     expectDomainCode(
-      () => TripTitle.from('x'.repeat(161)),
+      () => TripTitle.from('x'.repeat(121)),
       'TRIP_TITLE_INVALID',
     );
   });

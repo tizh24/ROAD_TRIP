@@ -1,7 +1,7 @@
 import { DomainValidationError } from './domain-validation.error';
 
 export class TripTitle {
-  static readonly maxLength = 160;
+  static readonly maxLength = 120;
 
   private constructor(readonly value: string) {}
 

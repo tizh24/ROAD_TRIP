@@ -351,10 +351,10 @@ Gateway fail-open với log đã redaction khi Redis tạm unavailable.
 
 ### T032 — Trip aggregate
 
-- [ ] Implement trip lifecycle, owner/member permissions và state rules.
-- [ ] Generate sequential days khi tạo trip.
-- [ ] Phát domain fact khi tạo thành công.
-- [ ] Không phụ thuộc NestJS/PostgreSQL trong domain.
+- [x] Implement trip lifecycle, owner/member permissions và state rules.
+- [x] Generate sequential days khi tạo trip.
+- [x] Phát domain fact khi tạo thành công.
+- [x] Không phụ thuộc NestJS/PostgreSQL trong domain.
 
 **Dependency:** T031.
 **Verify:** Aggregate tests đạt, gồm owner invariant và invalid transitions.
