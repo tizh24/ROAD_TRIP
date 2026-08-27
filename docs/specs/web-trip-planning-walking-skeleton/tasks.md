@@ -321,10 +321,10 @@ Gateway fail-open với log đã redaction khi Redis tạm unavailable.
 
 ### T029 — Gateway upstream adapters
 
-- [ ] Tạo proxy/client cho Core Trip và Geo.
-- [ ] Đặt timeout và stable upstream error mapping.
-- [ ] Propagate identity và correlation context.
-- [ ] Không đưa domain logic vào gateway.
+- [x] Tạo proxy/client cho Core Trip và Geo.
+- [x] Đặt timeout và stable upstream error mapping.
+- [x] Propagate identity và correlation context.
+- [x] Không đưa domain logic vào gateway.
 
 **Dependency:** T027–T028.
 **Verify:** Contract tests với upstream stub đạt.

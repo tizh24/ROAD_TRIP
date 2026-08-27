@@ -73,6 +73,7 @@ export const gatewayConfigSchema = z.object({
   INTERNAL_SERVICE_TOKEN: z.string().min(32),
   CORS_ALLOWED_ORIGINS: corsAllowedOrigins,
   REQUEST_BODY_LIMIT_BYTES: requestBodyLimit.default(1_048_576),
+  UPSTREAM_TIMEOUT_MS: positiveInteger.max(30_000).default(5_000),
   RATE_LIMIT_WINDOW_MS: positiveInteger.default(60_000),
   RATE_LIMIT_MAX: positiveInteger.default(100),
   RATE_LIMIT_AUTHENTICATED_MAX: positiveInteger.default(300),
