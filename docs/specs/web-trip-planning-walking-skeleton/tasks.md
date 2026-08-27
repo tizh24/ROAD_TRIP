@@ -380,9 +380,9 @@ Gateway fail-open với log đã redaction khi Redis tạm unavailable.
 
 ### T035 — Stop repositories
 
-- [ ] Implement add/update/delete/reorder/move transactionally.
-- [ ] Tránh temporary unique-order collision.
-- [ ] Không cho cross-trip day/stop mutation.
+- [x] Implement add/update/delete/reorder/move transactionally.
+- [x] Tránh temporary unique-order collision.
+- [x] Không cho cross-trip day/stop mutation.
 
 **Dependency:** T024, T033–T034.
 **Verify:** Integration tests đạt, gồm concurrent/cross-trip cases.
