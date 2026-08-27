@@ -370,7 +370,16 @@ function normalizeNotes(notes: string | undefined): string | undefined {
 }
 
 function replaceNotes(stop: TripStop, notes: string | undefined): TripStop {
-  const { notes: _previousNotes, ...withoutNotes } = stop;
+  const withoutNotes: Omit<TripStop, 'notes'> = {
+    id: stop.id,
+    dayIndex: stop.dayIndex,
+    stopIndex: stop.stopIndex,
+    placeId: stop.placeId,
+    name: stop.name,
+    address: stop.address,
+    latitude: stop.latitude,
+    longitude: stop.longitude,
+  };
   const normalizedNotes = normalizeNotes(notes);
   return normalizedNotes
     ? { ...withoutNotes, notes: normalizedNotes }

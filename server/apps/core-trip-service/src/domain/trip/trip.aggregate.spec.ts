@@ -28,13 +28,11 @@ describe('Trip aggregate', () => {
       { date: '2026-08-02', dayIndex: 2 },
       { date: '2026-08-03', dayIndex: 3 },
     ]);
-    expect(trip.pullDomainEvents()).toEqual([
-      expect.objectContaining({
-        type: 'TripCreated',
-        correlationId: 'aggregate-test',
-        payload: expect.objectContaining({ dayCount: 3, ownerId: owner }),
-      }),
-    ]);
+    const [event] = trip.pullDomainEvents();
+    expect(event?.type).toBe('TripCreated');
+    expect(event?.correlationId).toBe('aggregate-test');
+    expect(event?.payload.dayCount).toBe(3);
+    expect(event?.payload.ownerId).toBe(owner);
     expect(trip.pullDomainEvents()).toEqual([]);
   });
 

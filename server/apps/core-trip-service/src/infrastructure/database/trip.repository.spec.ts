@@ -23,9 +23,9 @@ class FakeDatabase {
   ): Promise<Result> {
     return work(this);
   }
-  async query(query: unknown, values?: unknown[]): Promise<unknown> {
+  query(query: unknown, values?: unknown[]): Promise<unknown> {
     this.queries.push({ query, values });
-    return { rows: this.nextRows };
+    return Promise.resolve({ rows: this.nextRows });
   }
 }
 

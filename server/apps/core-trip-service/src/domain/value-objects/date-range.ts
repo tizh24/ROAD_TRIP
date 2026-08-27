@@ -39,12 +39,19 @@ function parseDate(value: string): number {
       'Trip dates must use the YYYY-MM-DD format.',
     );
   }
-  const [year, month, day] = value.split('-').map(Number);
-  const timestamp = Date.UTC(year!, month! - 1, day!);
+  const parts = value.split('-').map(Number);
+  const [year, month, day] = parts;
+  if (year === undefined || month === undefined || day === undefined) {
+    throw new DomainValidationError(
+      'TRIP_DATE_RANGE_INVALID',
+      'Trip date is invalid.',
+    );
+  }
+  const timestamp = Date.UTC(year, month - 1, day);
   const parsed = new Date(timestamp);
   if (
     parsed.getUTCFullYear() !== year ||
-    parsed.getUTCMonth() !== month! - 1 ||
+    parsed.getUTCMonth() !== month - 1 ||
     parsed.getUTCDate() !== day
   ) {
     throw new DomainValidationError(

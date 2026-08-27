@@ -389,9 +389,9 @@ Gateway fail-open với log đã redaction khi Redis tạm unavailable.
 
 ### T036 — Core authorization policy
 
-- [ ] Tạo policy/service chung cho owner/editor/viewer/outsider.
-- [ ] Re-check permission trên mỗi command/query.
-- [ ] Không dựa duy nhất vào gateway hoặc RLS.
+- [x] Tạo policy/service chung cho owner/editor/viewer/outsider.
+- [x] Re-check permission trên mỗi command/query.
+- [x] Không dựa duy nhất vào gateway hoặc RLS.
 
 **Dependency:** T032, T034.
 **Verify:** Service authorization matrix đạt cùng expectation với RLS.
