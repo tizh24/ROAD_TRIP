@@ -37,6 +37,7 @@ export interface CreateTripInput {
   readonly id: TripId;
   readonly ownerId: UserId;
   readonly title: TripTitle;
+  readonly description?: string | null;
   readonly dateRange: DateRange;
   readonly budget: Money;
   readonly correlationId: string;
@@ -132,6 +133,9 @@ export class Trip {
   }
   getTitle(): TripTitle {
     return this.input.title;
+  }
+  getDescription(): string | null {
+    return this.input.description ?? null;
   }
   getDateRange(): DateRange {
     return this.input.dateRange;

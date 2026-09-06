@@ -23,6 +23,26 @@ export interface TripDetailRow extends TripListRow {
   readonly budgetAmount: number;
   readonly currency: string;
   readonly deletedAt: Date | null;
+  readonly days: readonly TripDayRow[];
+}
+
+export interface TripDayRow {
+  readonly id: string;
+  readonly date: string;
+  readonly dayIndex: number;
+  readonly stops: readonly TripStopRow[];
+}
+
+export interface TripStopRow {
+  readonly id: string;
+  readonly placeId: string;
+  readonly name: string;
+  readonly address: string;
+  readonly latitude: number;
+  readonly longitude: number;
+  readonly notes: string | null;
+  readonly stopIndex: number;
+  readonly version: number;
 }
 
 export interface TripUpdate {
@@ -49,12 +69,14 @@ export class TripRepository {
     await this.database.transaction(async (transaction) => {
       await transaction.query(
         `INSERT INTO trip_schema.trips
-          (id, owner_id, title, start_date, end_date, status, budget_amount, currency, version)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+          (id, owner_id, title, description, start_date, end_date, status, budget_amount, currency, version)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+         ON CONFLICT (id) DO NOTHING`,
         [
           trip.getId().value,
           trip.getOwnerId().value,
           trip.getTitle().value,
+          trip.getDescription(),
           trip.getDateRange().startDate,
           trip.getDateRange().endDate,
           trip.getStatus(),
@@ -124,7 +146,30 @@ export class TripRepository {
         WHERE t.id = $1 AND m.user_id = $2 AND m.status = 'ACTIVE'`,
       [id, userId],
     );
-    return result.rows[0];
+    const trip = result.rows[0];
+    if (!trip) return undefined;
+    const days = await this.database.query<{
+      id: string;
+      date: string;
+      dayIndex: number;
+    }>(
+      `SELECT id, date::text AS date, day_index AS "dayIndex"
+         FROM trip_schema.trip_days WHERE trip_id = $1 ORDER BY day_index`,
+      [id],
+    );
+    const stops = await this.database.query<TripStopRow & { dayId: string }>(
+      `SELECT id, day_id AS "dayId", place_id AS "placeId", name, address,
+              latitude, longitude, notes, stop_index AS "stopIndex", version
+         FROM trip_schema.trip_stops WHERE trip_id = $1 ORDER BY stop_index`,
+      [id],
+    );
+    return {
+      ...trip,
+      days: days.rows.map((day) => ({
+        ...day,
+        stops: stops.rows.filter((stop) => stop.dayId === day.id).map(({ dayId: _dayId, ...stop }) => stop),
+      })),
+    };
   }
 
   async update(id: string, update: TripUpdate): Promise<Version> {

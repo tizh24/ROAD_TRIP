@@ -62,6 +62,8 @@ export class StopRepository {
         `INSERT INTO trip_schema.trip_stops
           (id, trip_id, day_id, place_id, name, address, latitude, longitude, notes, stop_index)
          VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
+         ON CONFLICT (id) DO UPDATE SET id = EXCLUDED.id
+           WHERE trip_schema.trip_stops.trip_id = EXCLUDED.trip_id
          RETURNING id, trip_id AS "tripId", day_id AS "dayId",
                    stop_index AS "stopIndex", version`,
         [
