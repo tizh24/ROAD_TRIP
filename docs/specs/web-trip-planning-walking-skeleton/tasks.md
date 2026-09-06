@@ -398,20 +398,20 @@ Gateway fail-open với log đã redaction khi Redis tạm unavailable.
 
 ### T037 — Trip application use cases
 
-- [ ] Create, list, get, update và soft-delete trip.
-- [ ] Add/update/remove/reorder/move stops.
-- [ ] Idempotency cho create/mutation phù hợp.
-- [ ] Stable domain-to-application error mapping.
+- [x] Create, list, get, update và soft-delete trip.
+- [x] Add/update/remove/reorder/move stops.
+- [x] Idempotency cho create/mutation phù hợp.
+- [x] Stable domain-to-application error mapping.
 
 **Dependency:** T034–T036.
 **Verify:** Application tests bao phủ happy/error/conflict paths.
 
 ### T038 — Core Trip HTTP controllers
 
-- [ ] Implement endpoints theo Plan với runtime validation.
-- [ ] Xác minh identity trong Core Trip.
-- [ ] Propagate correlation ID và expected version.
-- [ ] Serialize response bằng DTO allowlist.
+- [x] Implement endpoints theo Plan với runtime validation.
+- [x] Xác minh identity trong Core Trip.
+- [x] Propagate correlation ID và expected version.
+- [x] Serialize response bằng DTO allowlist.
 
 **Dependency:** T012, T027, T037.
 **Verify:** HTTP integration/contract tests đạt.
@@ -420,39 +420,39 @@ Gateway fail-open với log đã redaction khi Redis tạm unavailable.
 
 ### T039 — BullMQ infrastructure adapter
 
-- [ ] Tạo event publisher port và BullMQ adapter.
-- [ ] Dùng event ID làm job ID.
-- [ ] Cấu hình queue prefix, attempts, backoff và retention.
-- [ ] Không dùng Redis Pub/Sub.
+- [x] Tạo event publisher port và BullMQ adapter.
+- [x] Dùng event ID làm job ID.
+- [x] Cấu hình queue prefix, attempts, backoff và retention.
+- [x] Không dùng Redis Pub/Sub.
 
 **Dependency:** T004, T012, T016.
 **Verify:** Duplicate enqueue không tạo duplicate job.
 
 ### T040 — Outbox publisher
 
-- [ ] Poll/claim pending outbox rows an toàn với nhiều publisher.
-- [ ] Enqueue BullMQ job và đánh dấu published.
-- [ ] Retry có backoff; không bỏ event khi Redis unavailable.
-- [ ] Ghi outbox lag/failure metrics.
+- [x] Poll/claim pending outbox rows an toàn với nhiều publisher.
+- [x] Enqueue BullMQ job và đánh dấu published.
+- [x] Retry có backoff; không bỏ event khi Redis unavailable.
+- [x] Ghi outbox lag/failure metrics.
 
 **Dependency:** T022, T034, T039.
 **Verify:** PostgreSQL/Redis failure integration tests chứng minh eventual publish.
 
 ### T041 — Notification idempotent consumer
 
-- [ ] Consume `TripCreatedV1` và `TripInvitationCreatedV1`.
-- [ ] Runtime validate event.
-- [ ] Ghi processed event và delivery state idempotently.
-- [ ] Phân biệt retryable và terminal failures.
+- [x] Consume `TripCreatedV1` và `TripInvitationCreatedV1`.
+- [x] Runtime validate event.
+- [x] Ghi processed event và delivery state idempotently.
+- [x] Phân biệt retryable và terminal failures.
 
 **Dependency:** T022, T039–T040.
 **Verify:** Retry/restart/duplicate tests không nhân side effect.
 
 ### T042 — Bull Board development profile
 
-- [ ] Thêm read-protected Bull Board chỉ trong development profile.
-- [ ] Không expose production mặc định.
-- [ ] Redact sensitive job data khỏi UI/logs.
+- [x] Thêm read-protected Bull Board chỉ trong development profile.
+- [x] Không expose production mặc định.
+- [x] Redact sensitive job data khỏi UI/logs.
 
 **Dependency:** T039, T017.
 **Verify:** Dev profile xem được queue; default/production không expose dashboard.
@@ -461,38 +461,38 @@ Gateway fail-open với log đã redaction khi Redis tạm unavailable.
 
 ### T043 — Geo contracts
 
-- [ ] Runtime schemas cho place search và route preview.
-- [ ] Chuẩn hóa coordinate, vehicle mode, pagination và geometry response.
-- [ ] Stable provider-independent errors.
+- [x] Runtime schemas cho place search và route preview.
+- [x] Chuẩn hóa coordinate, vehicle mode, pagination và geometry response.
+- [x] Stable provider-independent errors.
 
 **Dependency:** T012.
 **Verify:** Contract validation tests đạt.
 
 ### T044 — VietMap adapter
 
-- [ ] Implement place search và route calls phía server.
-- [ ] Validate provider response.
-- [ ] Timeout, bounded retry và circuit breaker.
-- [ ] Không leak API key/provider error ra client.
+- [x] Implement place search và route calls phía server.
+- [x] Validate provider response.
+- [x] Timeout, bounded retry và circuit breaker.
+- [x] Không leak API key/provider error ra client.
 
 **Dependency:** T010, T043.
 **Verify:** Adapter tests với fixtures cho success/malformed/timeout/rate-limit.
 
 ### T045 — Geo Redis cache
 
-- [ ] Normalize search và route cache keys.
-- [ ] Round coordinate ở độ chính xác được document.
-- [ ] Config TTL riêng.
-- [ ] Cache failure không phá correctness.
+- [x] Normalize search và route cache keys.
+- [x] Round coordinate ở độ chính xác được document.
+- [x] Config TTL riêng.
+- [x] Cache failure không phá correctness.
 
 **Dependency:** T016, T044.
 **Verify:** Hit/miss/expiry/provider-call-count tests đạt.
 
 ### T046 — Geo HTTP controllers
 
-- [ ] Implement place search và route preview endpoints.
-- [ ] Runtime validation, rate-limit compatibility và stable envelopes.
-- [ ] Metrics provider latency/cache hit/cost proxy.
+- [x] Implement place search và route preview endpoints.
+- [x] Runtime validation, rate-limit compatibility và stable envelopes.
+- [x] Metrics provider latency/cache hit/cost proxy.
 
 **Dependency:** T043–T045.
 **Verify:** Geo integration và Gateway contract tests đạt.
@@ -501,48 +501,48 @@ Gateway fail-open với log đã redaction khi Redis tạm unavailable.
 
 ### T047 — Web API client
 
-- [ ] Tạo authenticated Gateway client.
-- [ ] Runtime validate responses và map stable errors.
-- [ ] Propagate correlation/idempotency/version headers.
-- [ ] Không dùng hard-coded API data trong production path.
+- [x] Tạo authenticated Gateway client.
+- [x] Runtime validate responses và map stable errors.
+- [x] Propagate correlation/idempotency/version headers.
+- [x] Không dùng hard-coded API data trong production path.
 
 **Dependency:** T012, T025–T030, T038, T046.
 **Verify:** Client contract tests đạt.
 
 ### T048 — Trip list
 
-- [ ] Tạo `/trips` với loading/error/empty/content states.
-- [ ] Hiển thị owner/member role, dates và status.
-- [ ] Loại bỏ planner placeholder redirect.
+- [x] Tạo `/trips` với loading/error/empty/content states.
+- [x] Hiển thị owner/member role, dates và status.
+- [x] Loại bỏ planner placeholder redirect.
 
 **Dependency:** T026, T047.
 **Verify:** User chỉ thấy trips được phép và refresh giữ dữ liệu.
 
 ### T049 — Create trip form
 
-- [ ] Tạo `/trips/new` với title, dates, description và budget.
-- [ ] Client validation đồng nhất nhưng không thay server validation.
-- [ ] Dùng idempotency key và disable unsafe duplicate submit.
-- [ ] Redirect đến trip editor sau success.
+- [x] Tạo `/trips/new` với title, dates, description và budget.
+- [x] Client validation đồng nhất nhưng không thay server validation.
+- [x] Dùng idempotency key và disable unsafe duplicate submit.
+- [x] Redirect đến trip editor sau success.
 
 **Dependency:** T031, T047–T048.
 **Verify:** Invalid states rõ ràng; double submit không tạo duplicate.
 
 ### T050 — Trip editor shell
 
-- [ ] Tạo `/trips/[tripId]` và protected data loading.
-- [ ] Day navigation và role-aware controls.
-- [ ] Not-found/forbidden/deleted states.
-- [ ] Tái sử dụng UI hiện có khi phù hợp.
+- [x] Tạo `/trips/[tripId]` và protected data loading.
+- [x] Day navigation và role-aware controls.
+- [x] Not-found/forbidden/deleted states.
+- [x] Tái sử dụng UI hiện có khi phù hợp.
 
 **Dependency:** T048–T049.
 **Verify:** Owner/editor/viewer thấy đúng controls.
 
 ### T051 — Place search và add stop
 
-- [ ] Search combobox có debounce, cancellation và retry.
-- [ ] Thêm selected place snapshot vào day.
-- [ ] Search provider lỗi không làm mất itinerary.
+- [x] Search combobox có debounce, cancellation và retry.
+- [x] Thêm selected place snapshot vào day.
+- [x] Search provider lỗi không làm mất itinerary.
 
 **Dependency:** T046–T050.
 **Verify:** Search/add/error E2E paths đạt.

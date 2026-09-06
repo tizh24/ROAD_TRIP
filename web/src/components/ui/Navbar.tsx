@@ -58,7 +58,7 @@ export default function Navbar() {
 
         {/* Right Side: CTA Button */}
         <div className="flex items-center gap-4">
-          <Link href="/planner/new">
+          <Link href="/trips/new">
             <CTAButton 
               variant="primary" 
               size="sm" 

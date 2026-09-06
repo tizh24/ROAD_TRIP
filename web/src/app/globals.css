@@ -63,6 +63,20 @@ body {
   overflow-x: hidden;
 }
 
+.field {
+  width: 100%;
+  border: 1px solid var(--color-border-main);
+  border-radius: 0.75rem;
+  padding: 0.75rem;
+  font-weight: 400;
+}
+
+.field:focus {
+  border-color: var(--color-primary);
+  outline: 2px solid color-mix(in srgb, var(--color-primary) 25%, transparent);
+  outline-offset: 1px;
+}
+
 /* Typography styles based on the token sheet */
 .text-display {
   font-size: 64px;
@@ -129,5 +143,4 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #FF6B35;
 }
-
 
