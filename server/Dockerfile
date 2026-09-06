@@ -28,6 +28,9 @@ RUN pnpm --filter=geo-location-service --prod deploy /opt/service
 FROM build AS deploy-notification-worker
 RUN pnpm --filter=notification-worker --prod deploy /opt/service
 
+FROM build AS deploy-bull-board
+RUN pnpm --filter=bull-board --prod deploy /opt/service
+
 FROM ${NODE_IMAGE} AS runtime
 ENV NODE_ENV=production
 WORKDIR /app
@@ -56,3 +59,15 @@ FROM runtime AS notification-worker
 ENV PORT=4105
 COPY --from=deploy-notification-worker --chown=node:node /opt/service ./
 EXPOSE 4105
+
+FROM ${NODE_IMAGE} AS bull-board
+ENV NODE_ENV=development
+ENV PORT=3000
+WORKDIR /app
+USER node
+STOPSIGNAL SIGTERM
+COPY --from=deploy-bull-board --chown=node:node /opt/service ./
+EXPOSE 3000
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
+  CMD node -e "fetch('http://127.0.0.1:3000/healthcheck').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+CMD ["node", "src/main.mjs"]

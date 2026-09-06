@@ -63,11 +63,16 @@ Bull Board is excluded from the default stack. Start it only for local queue
 inspection with:
 
 ```powershell
+$env:BULL_BOARD_PASSWORD = 'choose-a-local-password'
 pnpm platform:up:tools
 ```
 
-The dashboard is then available only on <http://127.0.0.1:3001>. It is not a
-production deployment path and must not be exposed publicly.
+The dashboard is then available only on <http://127.0.0.1:3001>. Sign in with
+`BULL_BOARD_USER` (defaults to `admin`) and the required `BULL_BOARD_PASSWORD`.
+The local adapter is read-only and formats job data before rendering: event
+payloads, aggregate IDs, correlation IDs, and return values are replaced with
+`[REDACTED]`. This does not alter the full BullMQ payload consumed by workers.
+It is not a production deployment path and must not be exposed publicly.
 
 ## Redis baseline
 

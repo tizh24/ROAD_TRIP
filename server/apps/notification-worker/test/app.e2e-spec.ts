@@ -3,6 +3,8 @@ import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { App } from 'supertest/types';
 import { AppModule } from './../src/app.module';
+import { NotificationDatabaseService } from '../src/notification/notification-database.service';
+import { BullMqNotificationConsumer } from '../src/notification/bullmq-notification.consumer';
 
 describe('Health endpoints (e2e)', () => {
   let app: INestApplication<App>;
@@ -10,7 +12,12 @@ describe('Health endpoints (e2e)', () => {
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
-    }).compile();
+    })
+      .overrideProvider(NotificationDatabaseService)
+      .useValue({ close: () => Promise.resolve() })
+      .overrideProvider(BullMqNotificationConsumer)
+      .useValue({})
+      .compile();
 
     app = moduleFixture.createNestApplication();
     await app.init();
@@ -42,6 +49,6 @@ describe('Health endpoints (e2e)', () => {
   });
 
   afterEach(async () => {
-    await app.close();
+    await app?.close();
   });
 });

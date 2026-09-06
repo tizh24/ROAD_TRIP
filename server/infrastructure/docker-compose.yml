@@ -79,7 +79,8 @@ services:
       REDIS_URL: redis://redis:6379
       REDIS_CACHE_PREFIX: roadtrip:cache
       INTERNAL_SERVICE_TOKEN: ${INTERNAL_SERVICE_TOKEN:-local-compose-token-change-before-production}
-      GEO_CACHE_TTL_SECONDS: 300
+      GEO_SEARCH_CACHE_TTL_SECONDS: 300
+      GEO_ROUTE_CACHE_TTL_SECONDS: 120
       VIETMAP_BASE_URL: https://maps.vietmap.vn
       VIETMAP_API_KEY: local-compose-placeholder
       VIETMAP_TIMEOUT_MS: 5000
@@ -225,17 +226,23 @@ services:
       - roadtrip_internal
 
   bull-board:
-    image: venatum/bull-board:latest@sha256:257b57712adc1f17d3dc64da2c53bd59f0f951d62d4bcb73bb2d40bb89e67b1b
+    image: roadtrip/bull-board:local
+    build:
+      context: ..
+      dockerfile: Dockerfile
+      target: bull-board
     profiles: ['development-tools']
     init: true
     ports:
       - '127.0.0.1:3001:3000'
     environment:
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-      BULL_VERSION: BULLMQ
-      BULL_PREFIX: roadtrip:bullmq
-      BULL_BOARD_TITLE: Road Trip Local Queues
+      NODE_ENV: development
+      PORT: 3000
+      REDIS_URL: redis://redis:6379
+      BULLMQ_QUEUE_NAME: integration-events
+      BULLMQ_QUEUE_PREFIX: roadtrip:bullmq
+      USER_LOGIN: ${BULL_BOARD_USER:-admin}
+      USER_PASSWORD: ${BULL_BOARD_PASSWORD:?Set BULL_BOARD_PASSWORD before starting the development-tools profile}
     depends_on:
       redis:
         condition: service_healthy
