@@ -10,6 +10,7 @@ import {
   revokeInvitation,
 } from "../api/trips";
 import type { Invitation, Member } from "../api/trip-model";
+import { trackAnalytics } from "@/lib/analytics/analytics";
 
 type PendingAction = "invite" | `member:${string}` | `invitation:${string}`;
 
@@ -58,6 +59,7 @@ export default function CollaborationPanel({ tripId }: { tripId: string }) {
     setError(undefined);
     try {
       const invitation = await createInvitation(tripId, email, permission);
+      trackAnalytics("member_invited", { permission }, { dedupeKey: invitation.id });
       const link = `${window.location.origin}/trip-invitations/${encodeURIComponent(invitation.token)}`;
       setShareLink(link);
       setEmail("");

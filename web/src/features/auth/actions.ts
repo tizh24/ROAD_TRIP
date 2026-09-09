@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 import { getSafeInternalPath } from "@/lib/auth/route-protection";
 import { createClient } from "@/lib/supabase/server";
 
@@ -34,5 +35,8 @@ export async function login(
   }
 
   revalidatePath("/", "layout");
+  (await cookies()).set("rt_login_completed", "password", {
+    path: "/", sameSite: "lax", secure: process.env.NODE_ENV === "production", maxAge: 120,
+  });
   redirect(getSafeInternalPath(formData.get("next")) ?? "/profile");
 }

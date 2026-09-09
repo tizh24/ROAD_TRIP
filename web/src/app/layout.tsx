@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
+import LoginAnalyticsMarker from "@/lib/analytics/LoginAnalyticsMarker";
 
 const plusJakarta = Plus_Jakarta_Sans({
   variable: "--font-plus-jakarta-sans",
@@ -20,6 +21,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${plusJakarta.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-text-main">
+        <LoginAnalyticsMarker />
         <div className="w-full flex-1 flex flex-col min-h-screen relative overflow-x-hidden">
           {children}
         </div>

@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { FormEvent, useState } from "react";
+import { FormEvent, useRef, useState } from "react";
 import { GatewayApiError } from "@/features/trip-planning/api/gateway-request";
 import { createTrip } from "@/features/trip-planning/api/trips";
 import { createTripInputSchema } from "@/features/trip-planning/api/trip-model";
+import { trackAnalytics } from "@/lib/analytics/analytics";
 
 type FormValues = { title: string; description: string; startDate: string; endDate: string; budgetAmount: string };
 type FieldErrors = Partial<Record<keyof FormValues, string>>;
@@ -18,6 +19,7 @@ export default function CreateTripForm() {
   const [errors, setErrors] = useState<FieldErrors>({});
   const [submitError, setSubmitError] = useState<string>();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const idempotencyKey = useRef<string | undefined>(undefined);
 
   function update(name: keyof FormValues, value: string) {
     setValues((current) => ({ ...current, [name]: value }));
@@ -47,8 +49,13 @@ export default function CreateTripForm() {
 
     setSubmitError(undefined);
     setIsSubmitting(true);
+    idempotencyKey.current ??= crypto.randomUUID();
+    const mutationKey = idempotencyKey.current;
+    trackAnalytics("trip_creation_started", {}, { dedupeKey: mutationKey });
     try {
-      const trip = await createTrip(parsed.data, crypto.randomUUID());
+      const trip = await createTrip(parsed.data, mutationKey);
+      const dayCount = Math.round((Date.parse(`${parsed.data.endDate}T00:00:00Z`) - Date.parse(`${parsed.data.startDate}T00:00:00Z`)) / 86_400_000) + 1;
+      trackAnalytics("trip_created", { dayCount }, { dedupeKey: mutationKey });
       router.replace(`/trips/${trip.id}`);
     } catch (error) {
       setSubmitError(error instanceof GatewayApiError ? error.message : "Không thể tạo chuyến đi. Vui lòng thử lại.");

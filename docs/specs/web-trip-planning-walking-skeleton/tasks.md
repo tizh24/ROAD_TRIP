@@ -617,12 +617,18 @@ cấu hình.
 
 ### T058 — Analytics events
 
-- [ ] Instrument các event đã duyệt trong Specification.
-- [ ] Không gửi precise location, token hoặc unnecessary PII.
-- [ ] Tránh duplicate analytics khi retry mutation.
+- [x] Instrument các event đã duyệt trong Specification.
+- [x] Không gửi precise location, token hoặc unnecessary PII.
+- [x] Tránh duplicate analytics khi retry mutation.
 
 **Dependency:** T048–T057.
 **Verify:** Analytics contract/test events đúng journey.
+
+**Implementation note:** Web dùng provider-neutral analytics adapter với strict
+event/property allowlist. Collector có thể cấu hình qua
+`NEXT_PUBLIC_ANALYTICS_URL`; raw token, email, user/trip ID và coordinate không
+được phép xuất hiện trong payload. Mutation events dùng idempotency/domain key
+trong session storage để chống phát trùng khi retry.
 
 ### T059 — Accessibility và responsive pass
 

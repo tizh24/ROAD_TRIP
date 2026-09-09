@@ -4,8 +4,9 @@ import { useEffect, useState } from "react";
 import { GatewayApiError } from "@/features/trip-planning/api/gateway-request";
 import { addStop, searchPlaces } from "@/features/trip-planning/api/trips";
 import type { Place } from "@/features/trip-planning/api/trip-model";
+import { trackAnalytics } from "@/lib/analytics/analytics";
 
-export default function PlaceSearch({ tripId, dayId, onAdded }: { tripId: string; dayId: string; onAdded: () => void }) {
+export default function PlaceSearch({ tripId, dayId, stopCount, onAdded }: { tripId: string; dayId: string; stopCount: number; onAdded: () => void }) {
   const [query, setQuery] = useState(""); const [places, setPlaces] = useState<readonly Place[]>([]); const [message, setMessage] = useState<string>(); const [busy, setBusy] = useState(false);
   useEffect(() => {
     if (query.trim().length < 2) { setPlaces([]); setMessage(undefined); return; }
@@ -20,7 +21,8 @@ export default function PlaceSearch({ tripId, dayId, onAdded }: { tripId: string
   }, [query]);
   async function select(place: Place) {
     setBusy(true); setMessage(undefined);
-    try { await addStop(tripId, dayId, place, crypto.randomUUID()); setQuery(""); setPlaces([]); onAdded(); }
+    const mutationKey = crypto.randomUUID();
+    try { await addStop(tripId, dayId, place, mutationKey); if (stopCount === 0) trackAnalytics("first_stop_added", {}, { dedupeKey: `${tripId}:first-stop` }); setQuery(""); setPlaces([]); onAdded(); }
     catch (error) { setMessage(error instanceof GatewayApiError ? error.message : "Không thể thêm điểm dừng."); }
     finally { setBusy(false); }
   }

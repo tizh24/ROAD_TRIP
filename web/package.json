@@ -9,6 +9,7 @@
     "lint": "eslint",
     "test:auth": "node --experimental-strip-types --test src/lib/auth/*.test.mjs",
     "test:api": "node --experimental-strip-types --test src/features/trip-planning/api/*.test.mjs",
+    "test:analytics": "node --experimental-strip-types --test src/lib/analytics/*.test.mjs",
     "test:e2e": "playwright test"
   },
   "dependencies": {

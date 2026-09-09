@@ -11,13 +11,17 @@ export async function GET(request: NextRequest) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error) {
-      return NextResponse.redirect(
+      const response = NextResponse.redirect(
         new URL(
           getSafeInternalPath(requestUrl.searchParams.get("next")) ??
             "/profile",
           requestUrl.origin,
         ),
       );
+      response.cookies.set("rt_login_completed", "pkce", {
+        path: "/", sameSite: "lax", secure: process.env.NODE_ENV === "production", maxAge: 120,
+      });
+      return response;
     }
   }
 
