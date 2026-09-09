@@ -1,0 +1,42 @@
+import { expect, test } from '@playwright/test';
+
+const ownerState = process.env.E2E_OWNER_STORAGE_STATE;
+const memberState = process.env.E2E_MEMBER_STORAGE_STATE;
+const tripId = process.env.E2E_TRIP_ID;
+const inviteeEmail = process.env.E2E_MEMBER_EMAIL;
+const ready = Boolean(process.env.E2E_BASE_URL && ownerState && memberState && tripId && inviteeEmail);
+
+test.describe('Journey C — controlled collaboration', () => {
+  test.skip(!ready, 'Requires E2E_BASE_URL, E2E_TRIP_ID, E2E_MEMBER_EMAIL, and authenticated owner/member storage-state files.');
+
+  test('owner invites, member views then edits, and revocation takes effect immediately', async ({ browser, baseURL }) => {
+    const owner = await browser.newContext({ storageState: ownerState });
+    const ownerPage = await owner.newPage();
+    await ownerPage.goto(`/trips/${tripId}`);
+    await ownerPage.getByLabel('Email người được mời').fill(inviteeEmail!);
+    await ownerPage.getByRole('button', { name: 'Mời' }).click();
+    const invitation = ownerPage.getByRole('status').getByRole('link', { name: 'mở liên kết mời' });
+    await expect(invitation).toBeVisible();
+    const invitationUrl = await invitation.getAttribute('href');
+    expect(invitationUrl).toBeTruthy();
+
+    const member = await browser.newContext({ storageState: memberState });
+    const memberPage = await member.newPage();
+    await memberPage.goto(new URL(invitationUrl!, baseURL).pathname);
+    await memberPage.getByRole('button', { name: 'Chấp nhận' }).click();
+    await memberPage.goto(`/trips/${tripId}`);
+    await expect(memberPage.getByText('Thành viên chỉ xem')).toBeVisible();
+    await expect(memberPage.getByText('Tìm một địa điểm để bắt đầu lập lịch trình.')).toHaveCount(0);
+
+    const memberRow = ownerPage.getByRole('list', { name: 'Thành viên chuyến đi' }).getByText('Thành viên').locator('..');
+    await memberRow.getByRole('combobox').selectOption('EDIT');
+    await memberPage.reload();
+    await expect(memberPage.getByText('Thành viên có thể chỉnh sửa')).toBeVisible();
+
+    await memberRow.getByRole('button', { name: 'Gỡ' }).click();
+    await memberPage.reload();
+    await expect(memberPage.getByText('Bạn không có quyền truy cập')).toBeVisible();
+    await owner.close();
+    await member.close();
+  });
+});

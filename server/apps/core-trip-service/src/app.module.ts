@@ -8,12 +8,17 @@ import { TripRepository } from './infrastructure/database/trip.repository';
 import { TripAuthorizationPolicy } from './application/authorization/trip-authorization.policy';
 import { TripUseCases } from './application/trip';
 import { InternalServiceGuard } from './presentation/internal-service.guard';
-import { TripController } from './presentation/trip.controller';
+import {
+  InvitationController,
+  TripController,
+} from './presentation/trip.controller';
 import { BullMqEventPublisher } from './infrastructure/events/bullmq-event-publisher';
 import { EVENT_PUBLISHER } from './application/events/event-publisher.port';
 import { OutboxPublisher } from './infrastructure/events/outbox-publisher';
 import { OutboxMetrics } from './infrastructure/observability/outbox-metrics';
 import { MetricsController } from './presentation/metrics.controller';
+import { InvitationRepository } from './infrastructure/database/invitation.repository';
+import { InvitationUseCases } from './application/trip/invitation.use-cases';
 
 @Module({
   imports: [
@@ -28,11 +33,14 @@ import { MetricsController } from './presentation/metrics.controller';
       }),
     }),
   ],
-  controllers: [TripController, MetricsController],
+  controllers: [TripController, InvitationController, MetricsController],
   providers: [
     InternalServiceGuard,
     OutboxMetrics,
-    BullMqEventPublisher,
+    {
+      provide: BullMqEventPublisher,
+      useFactory: () => new BullMqEventPublisher(),
+    },
     { provide: EVENT_PUBLISHER, useExisting: BullMqEventPublisher },
     {
       provide: OutboxPublisher,
@@ -67,6 +75,20 @@ import { MetricsController } from './presentation/metrics.controller';
         stops: StopRepository,
         authorization: TripAuthorizationPolicy,
       ) => new TripUseCases(trips, stops, authorization),
+    },
+    {
+      provide: InvitationRepository,
+      inject: [DatabaseService],
+      useFactory: (database: DatabaseService) =>
+        new InvitationRepository(database),
+    },
+    {
+      provide: InvitationUseCases,
+      inject: [InvitationRepository, TripAuthorizationPolicy],
+      useFactory: (
+        invitations: InvitationRepository,
+        authorization: TripAuthorizationPolicy,
+      ) => new InvitationUseCases(invitations, authorization),
     },
   ],
 })

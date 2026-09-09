@@ -18,12 +18,123 @@ import {
   type AddStopCommand,
   type UpdateStopCommand,
 } from '../application/trip';
+import { InvitationUseCases } from '../application/trip/invitation.use-cases';
 import { InternalServiceGuard } from './internal-service.guard';
 
 @Controller('api/v1/trips')
 @UseGuards(InternalServiceGuard)
 export class TripController {
-  constructor(private readonly trips: TripUseCases) {}
+  constructor(
+    private readonly trips: TripUseCases,
+    private readonly invitations: InvitationUseCases,
+  ) {}
+
+  @Post(':tripId/invitations')
+  async createInvitation(
+    @Param('tripId') tripId: string,
+    @Body() body: unknown,
+    @Headers('x-roadtrip-user-id') actorId: string | undefined,
+  ) {
+    try {
+      const input = object(body);
+      return success(
+        await this.invitations.create(
+          requiredHeader(actorId, 'x-roadtrip-user-id'),
+          tripId,
+          string(input.email, 'email'),
+          permission(input.permission),
+          correlationId(),
+        ),
+      );
+    } catch (error) {
+      throw responseError(error);
+    }
+  }
+  @Get(':tripId/invitations')
+  async listInvitations(
+    @Param('tripId') tripId: string,
+    @Headers('x-roadtrip-user-id') actorId: string | undefined,
+  ) {
+    try {
+      return success(
+        await this.invitations.list(
+          requiredHeader(actorId, 'x-roadtrip-user-id'),
+          tripId,
+        ),
+      );
+    } catch (error) {
+      throw responseError(error);
+    }
+  }
+  @Get(':tripId/members')
+  async listMembers(
+    @Param('tripId') tripId: string,
+    @Headers('x-roadtrip-user-id') actorId: string | undefined,
+  ) {
+    try {
+      return success(
+        await this.invitations.listMembers(
+          requiredHeader(actorId, 'x-roadtrip-user-id'),
+          tripId,
+        ),
+      );
+    } catch (error) {
+      throw responseError(error);
+    }
+  }
+  @Delete(':tripId/invitations/:invitationId')
+  async revokeInvitation(
+    @Param('tripId') tripId: string,
+    @Param('invitationId') invitationId: string,
+    @Headers('x-roadtrip-user-id') actorId: string | undefined,
+  ) {
+    try {
+      await this.invitations.revoke(
+        requiredHeader(actorId, 'x-roadtrip-user-id'),
+        tripId,
+        invitationId,
+      );
+      return success({});
+    } catch (error) {
+      throw responseError(error);
+    }
+  }
+  @Patch(':tripId/members/:userId')
+  async changeMemberPermission(
+    @Param('tripId') tripId: string,
+    @Param('userId') userId: string,
+    @Body() body: unknown,
+    @Headers('x-roadtrip-user-id') actorId: string | undefined,
+  ) {
+    try {
+      await this.invitations.setMemberPermission(
+        requiredHeader(actorId, 'x-roadtrip-user-id'),
+        tripId,
+        userId,
+        permission(object(body).permission),
+      );
+      return success({});
+    } catch (error) {
+      throw responseError(error);
+    }
+  }
+  @Delete(':tripId/members/:userId')
+  async removeMember(
+    @Param('tripId') tripId: string,
+    @Param('userId') userId: string,
+    @Headers('x-roadtrip-user-id') actorId: string | undefined,
+  ) {
+    try {
+      await this.invitations.removeMember(
+        requiredHeader(actorId, 'x-roadtrip-user-id'),
+        tripId,
+        userId,
+      );
+      return success({});
+    } catch (error) {
+      throw responseError(error);
+    }
+  }
 
   @Post()
   async create(
@@ -251,6 +362,64 @@ export class TripController {
     }
   }
 }
+@Controller('api/v1/trip-invitations')
+@UseGuards(InternalServiceGuard)
+export class InvitationController {
+  constructor(private readonly invitations: InvitationUseCases) {}
+  @Get(':token') async view(
+    @Param('token') token: string,
+    @Headers('x-roadtrip-user-id') actorId: string | undefined,
+    @Headers('x-roadtrip-user-email') email: string | undefined,
+  ) {
+    try {
+      return success(
+        await this.invitations.view(
+          requiredHeader(actorId, 'x-roadtrip-user-id'),
+          requiredHeader(email, 'x-roadtrip-user-email'),
+          token,
+        ),
+      );
+    } catch (error) {
+      throw responseError(error);
+    }
+  }
+  @Post(':token/accept') async accept(
+    @Param('token') token: string,
+    @Headers('x-roadtrip-user-id') actorId: string | undefined,
+    @Headers('x-roadtrip-user-email') email: string | undefined,
+  ) {
+    try {
+      return success(
+        await this.invitations.respond(
+          requiredHeader(actorId, 'x-roadtrip-user-id'),
+          requiredHeader(email, 'x-roadtrip-user-email'),
+          token,
+          'ACCEPTED',
+        ),
+      );
+    } catch (error) {
+      throw responseError(error);
+    }
+  }
+  @Post(':token/decline') async decline(
+    @Param('token') token: string,
+    @Headers('x-roadtrip-user-id') actorId: string | undefined,
+    @Headers('x-roadtrip-user-email') email: string | undefined,
+  ) {
+    try {
+      return success(
+        await this.invitations.respond(
+          requiredHeader(actorId, 'x-roadtrip-user-id'),
+          requiredHeader(email, 'x-roadtrip-user-email'),
+          token,
+          'DECLINED',
+        ),
+      );
+    } catch (error) {
+      throw responseError(error);
+    }
+  }
+}
 
 function success(data: unknown) {
   return { data, meta: { correlationId: correlationId() } };
@@ -292,12 +461,21 @@ function optionalNumber(value: unknown, field: string): number | undefined {
   return value === undefined ? undefined : number(value, field);
 }
 function strings(value: unknown, field: string): string[] {
-  if (!Array.isArray(value) || value.some((entry) => typeof entry !== 'string'))
+  if (!Array.isArray(value))
     throw new TripApplicationError(
       'VALIDATION_FAILED',
       `${field} must be an array of strings.`,
     );
-  return value;
+  const result: string[] = [];
+  for (const entry of value as unknown[]) {
+    if (typeof entry !== 'string')
+      throw new TripApplicationError(
+        'VALIDATION_FAILED',
+        `${field} must be an array of strings.`,
+      );
+    result.push(entry);
+  }
+  return result;
 }
 function requiredHeader(value: string | undefined, name: string): string {
   if (!value)
@@ -318,6 +496,13 @@ function expectedVersion(value: string | undefined): number {
     );
   return parsed;
 }
+function permission(value: unknown): 'VIEW' | 'EDIT' {
+  if (value === 'VIEW' || value === 'EDIT') return value;
+  throw new TripApplicationError(
+    'VALIDATION_FAILED',
+    'permission must be VIEW or EDIT.',
+  );
+}
 function responseError(error: unknown): HttpException {
   const applicationError =
     error instanceof TripApplicationError
@@ -329,11 +514,15 @@ function responseError(error: unknown): HttpException {
   const status =
     applicationError.code === 'TRIP_NOT_FOUND'
       ? 404
-      : applicationError.code === 'FORBIDDEN'
-        ? 403
-        : applicationError.code === 'TRIP_VERSION_CONFLICT'
-          ? 409
-          : 400;
+      : applicationError.code === 'INVITATION_INVALID'
+        ? 404
+        : applicationError.code === 'INVITATION_EXPIRED'
+          ? 410
+          : applicationError.code === 'FORBIDDEN'
+            ? 403
+            : applicationError.code === 'TRIP_VERSION_CONFLICT'
+              ? 409
+              : 400;
   return new HttpException(
     {
       error: { code: applicationError.code, message: applicationError.message },

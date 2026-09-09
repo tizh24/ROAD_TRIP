@@ -36,6 +36,8 @@ export type TripApplicationErrorCode =
   | 'DAY_NOT_FOUND'
   | 'STOP_NOT_FOUND'
   | 'STOP_ORDER_INVALID'
+  | 'INVITATION_INVALID'
+  | 'INVITATION_EXPIRED'
   | 'VALIDATION_FAILED';
 
 export class TripApplicationError extends Error {

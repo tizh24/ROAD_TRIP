@@ -1,4 +1,5 @@
 import { UnrecoverableError } from 'bullmq';
+import type { QueryExecutor } from '@roadtrip/db-client';
 import { NotificationEventHandler } from './notification-event-handler';
 
 describe('NotificationEventHandler', () => {
@@ -26,8 +27,9 @@ describe('NotificationEventHandler', () => {
       .mockResolvedValue({ rows: [] });
     const database = {
       query,
-      transaction: (work: (tx: { query: typeof query }) => Promise<unknown>) =>
-        work({ query }),
+      transaction: <Result>(
+        work: (tx: QueryExecutor) => Promise<Result>,
+      ): Promise<Result> => work({ query }),
     };
     await new NotificationEventHandler(database).handle(event);
     expect(query).toHaveBeenCalledTimes(2);

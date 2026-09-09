@@ -51,6 +51,21 @@ describe('TripAuthorizationPolicy', () => {
       false,
       false,
     ],
+    [
+      'removed member',
+      {
+        tripExists: true,
+        ownerId,
+        membership: {
+          role: 'MEMBER' as const,
+          permission: 'EDIT' as const,
+          status: 'REMOVED' as const,
+        },
+      },
+      userId,
+      false,
+      true,
+    ],
     ['outsider', { tripExists: true, ownerId }, userId, false, true],
   ])(
     '%s follows the owner/editor/viewer/outsider matrix',

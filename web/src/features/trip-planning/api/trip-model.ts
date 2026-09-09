@@ -72,3 +72,10 @@ export const routePreviewSchema = z.object({
   geometry: z.object({ type: z.literal("LineString"), coordinates: z.array(z.tuple([z.number(), z.number()])).min(2) }).strict(),
   distanceMeters: z.number().nonnegative(), durationSeconds: z.number().nonnegative(), source: z.enum(["provider", "cache"]), calculatedAt: z.string(),
 }).strict();
+
+export const invitationSchema = z.object({
+  id: z.string().uuid(), tripId: z.string().uuid(), inviteeEmail: z.string().email(), permission: z.enum(["VIEW", "EDIT"]), status: z.enum(["PENDING", "ACCEPTED", "DECLINED", "EXPIRED", "REVOKED"]), expiresAt: z.string(), acceptedUserId: z.string().uuid().nullable(), createdAt: z.string(), token: z.string().optional(),
+}).strict();
+export type Invitation = z.infer<typeof invitationSchema>;
+export const memberSchema = z.object({ userId: z.string().uuid(), role: z.enum(["OWNER", "MEMBER"]), permission: z.enum(["VIEW", "EDIT"]), status: z.enum(["ACTIVE", "LEFT", "REMOVED"]) }).strict();
+export type Member = z.infer<typeof memberSchema>;

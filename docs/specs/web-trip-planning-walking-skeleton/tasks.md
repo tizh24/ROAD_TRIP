@@ -549,29 +549,29 @@ Gateway fail-open với log đã redaction khi Redis tạm unavailable.
 
 ### T052 — Stop editing và ordering
 
-- [ ] Edit notes, remove, reorder và move day.
-- [ ] Accessible keyboard controls hoặc tương đương.
-- [ ] Rollback/refresh an toàn khi mutation lỗi.
+- [x] Edit notes, remove, reorder và move day.
+- [x] Accessible keyboard controls hoặc tương đương.
+- [x] Rollback/refresh an toàn khi mutation lỗi.
 
 **Dependency:** T035, T050–T051.
 **Verify:** Persisted order đúng sau reload và failure.
 
 ### T053 — Save state và conflict handling
 
-- [ ] Hiển thị saving/saved/failed.
-- [ ] Debounce autosave có sequence/version protection.
-- [ ] Version conflict không ghi đè âm thầm.
-- [ ] Cho reload/retry và giữ local form state khi có thể.
+- [x] Hiển thị saving/saved/failed.
+- [x] Debounce autosave có sequence/version protection.
+- [x] Version conflict không ghi đè âm thầm.
+- [x] Cho reload/retry và giữ local form state khi có thể.
 
 **Dependency:** T037–T038, T050–T052.
 **Verify:** Concurrent-window E2E trả conflict và UI xử lý rõ ràng.
 
 ### T054 — Real map và route preview
 
-- [ ] Thay fake SVG/map marker bằng map thật.
-- [ ] Lazy-load map library.
-- [ ] Render persisted markers và route geometry.
-- [ ] Hiển thị distance/duration/source và fallback state.
+- [x] Thay fake SVG/map marker bằng map thật.
+- [x] Lazy-load map library.
+- [x] Render persisted markers và route geometry.
+- [x] Hiển thị distance/duration/source và fallback state.
 
 **Dependency:** T046, T050–T053.
 **Verify:** Journey A route path đạt; provider outage giữ được itinerary.
@@ -580,20 +580,20 @@ Gateway fail-open với log đã redaction khi Redis tạm unavailable.
 
 ### T055 — Invitation domain và repository
 
-- [ ] Implement invitation lifecycle và permission value.
-- [ ] Generate secure raw token, chỉ persist hash.
-- [ ] Enforce expiry, uniqueness và authorized inviter.
-- [ ] Ghi invitation event vào outbox transactionally.
+- [x] Implement invitation lifecycle và permission value.
+- [x] Generate secure raw token, chỉ persist hash.
+- [x] Enforce expiry, uniqueness và authorized inviter.
+- [x] Ghi invitation event vào outbox transactionally.
 
 **Dependency:** T022, T032, T034.
 **Verify:** Domain/repository tests cho accept/decline/revoke/expire đạt.
 
 ### T056 — Invitation/member use cases và APIs
 
-- [ ] Implement create/view/accept/decline/revoke invitation.
-- [ ] Implement change permission/remove member.
-- [ ] Không log raw token/email đầy đủ.
-- [ ] Revoke có hiệu lực ở request tiếp theo.
+- [x] Implement create/view/accept/decline/revoke invitation.
+- [x] Implement change permission/remove member.
+- [x] Không log raw token/email đầy đủ.
+- [x] Revoke có hiệu lực ở request tiếp theo.
 
 **Dependency:** T036, T038, T055.
 **Verify:** HTTP/authorization matrix tests đạt.
