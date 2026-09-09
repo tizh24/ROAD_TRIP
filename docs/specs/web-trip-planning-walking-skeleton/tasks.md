@@ -600,13 +600,18 @@ Gateway fail-open với log đã redaction khi Redis tạm unavailable.
 
 ### T057 — Collaboration web UI
 
-- [ ] Member list và permission controls cho owner.
-- [ ] Invitation creation/status UI.
-- [ ] Invitation token landing/accept/decline page.
-- [ ] Viewer/editor control states cập nhật đúng sau permission change.
+- [x] Member list và permission controls cho owner.
+- [x] Invitation creation/status UI.
+- [x] Invitation token landing/accept/decline page.
+- [x] Viewer/editor control states cập nhật đúng sau permission change.
 
 **Dependency:** T047, T050, T056.
 **Verify:** Journey C E2E đạt.
+
+**Implementation note:** Journey C Playwright test bao phủ invite → accept với
+quyền VIEW → nâng EDIT → remove member. Test cần live stack cùng owner/member
+storage-state và được skip rõ ràng khi các E2E environment variables chưa được
+cấu hình.
 
 ## Phase 10 — Product quality và production gate
 

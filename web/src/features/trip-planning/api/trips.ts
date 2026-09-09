@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { gatewayClient } from "./gateway-client";
-import { createTripInputSchema, invitationSchema, memberSchema, placeSchema, routePreviewSchema, stopMutationSchema, tripDetailSchema, tripListSchema, type CreateTripInput, type Place } from "./trip-model";
+import { createTripInputSchema, createdInvitationSchema, invitationSchema, memberSchema, placeSchema, routePreviewSchema, stopMutationSchema, tripDetailSchema, tripListSchema, type CreateTripInput, type Place } from "./trip-model";
 
 export function listTrips() {
   return gatewayClient.request("trips", tripListSchema);
@@ -51,7 +51,7 @@ export function updateStop(tripId: string, stop: { id: string; name: string; add
 export function previewRoute(coordinates: readonly { latitude: number; longitude: number }[]) {
   return gatewayClient.request("routes/preview", routePreviewSchema, { method: "POST", body: { coordinates, vehicle: "motorcycle" } });
 }
-export function createInvitation(tripId: string, email: string, permission: "VIEW" | "EDIT") { return gatewayClient.request(`trips/${encodeURIComponent(tripId)}/invitations`, invitationSchema, { method: "POST", body: { email, permission } }); }
+export function createInvitation(tripId: string, email: string, permission: "VIEW" | "EDIT") { return gatewayClient.request(`trips/${encodeURIComponent(tripId)}/invitations`, createdInvitationSchema, { method: "POST", body: { email, permission } }); }
 export function getInvitation(token: string) { return gatewayClient.request(`trip-invitations/${encodeURIComponent(token)}`, invitationSchema); }
 export function respondToInvitation(token: string, action: "accept" | "decline") { return gatewayClient.request(`trip-invitations/${encodeURIComponent(token)}/${action}`, invitationSchema, { method: "POST" }); }
 export function listInvitations(tripId: string) { return gatewayClient.request(`trips/${encodeURIComponent(tripId)}/invitations`, invitationSchema.array()); }

@@ -1,9 +1,9 @@
-const protectedTripsPath = /^\/trips(?:\/|$)/;
+const protectedTripPath = /^\/(?:trips|trip-invitations)(?:\/|$)/;
 
 type CookieWithName = { name: string };
 
 export function isProtectedRoute(pathname: string) {
-  return protectedTripsPath.test(pathname);
+  return protectedTripPath.test(pathname);
 }
 
 export function hasSupabaseAuthCookie(cookies: readonly CookieWithName[]) {

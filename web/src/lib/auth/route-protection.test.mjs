@@ -7,12 +7,14 @@ import {
   isProtectedRoute,
 } from "./route-protection.ts";
 
-test("protects the trips route tree only", () => {
+test("protects trip and invitation route trees", () => {
   assert.equal(isProtectedRoute("/trips"), true);
   assert.equal(isProtectedRoute("/trips/new"), true);
   assert.equal(isProtectedRoute("/trips/trip-123"), true);
+  assert.equal(isProtectedRoute("/trip-invitations/invitation-token"), true);
   assert.equal(isProtectedRoute("/trip/trip-123"), false);
   assert.equal(isProtectedRoute("/trips-archive"), false);
+  assert.equal(isProtectedRoute("/trip-invitations-archive"), false);
 });
 
 test("preserves the requested path and query in the login URL", () => {

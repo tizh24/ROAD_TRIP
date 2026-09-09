@@ -74,8 +74,9 @@ export const routePreviewSchema = z.object({
 }).strict();
 
 export const invitationSchema = z.object({
-  id: z.string().uuid(), tripId: z.string().uuid(), inviteeEmail: z.string().email(), permission: z.enum(["VIEW", "EDIT"]), status: z.enum(["PENDING", "ACCEPTED", "DECLINED", "EXPIRED", "REVOKED"]), expiresAt: z.string(), acceptedUserId: z.string().uuid().nullable(), createdAt: z.string(), token: z.string().optional(),
+  id: z.string().uuid(), tripId: z.string().uuid(), inviteeEmail: z.string().email(), permission: z.enum(["VIEW", "EDIT"]), status: z.enum(["PENDING", "ACCEPTED", "DECLINED", "EXPIRED", "REVOKED"]), expiresAt: z.string(), acceptedUserId: z.string().uuid().nullable(), createdAt: z.string(),
 }).strict();
 export type Invitation = z.infer<typeof invitationSchema>;
+export const createdInvitationSchema = invitationSchema.extend({ token: z.string().min(32) }).strict();
 export const memberSchema = z.object({ userId: z.string().uuid(), role: z.enum(["OWNER", "MEMBER"]), permission: z.enum(["VIEW", "EDIT"]), status: z.enum(["ACTIVE", "LEFT", "REMOVED"]) }).strict();
 export type Member = z.infer<typeof memberSchema>;
