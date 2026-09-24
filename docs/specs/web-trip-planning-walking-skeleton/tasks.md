@@ -632,12 +632,18 @@ trong session storage để chống phát trùng khi retry.
 
 ### T059 — Accessibility và responsive pass
 
-- [ ] Keyboard flow cho auth, form, day và stop controls.
-- [ ] Labels, focus, error association và contrast cơ bản.
-- [ ] Kiểm tra desktop, tablet và mobile-width web.
+- [x] Keyboard flow cho auth, form, day và stop controls.
+- [x] Labels, focus, error association và contrast cơ bản.
+- [x] Kiểm tra desktop, tablet và mobile-width web.
 
 **Dependency:** T048–T057.
 **Verify:** Automated accessibility smoke và manual critical-flow pass.
+
+**Implementation note:** Focus-visible và reduced-motion rules áp dụng toàn web;
+form errors liên kết bằng `aria-describedby`, planner day controls công bố trạng
+thái hiện tại, place search dùng combobox/listbox semantics và touch targets được
+mở rộng. Playwright smoke chạy login ở 375/768/1440 px và kiểm tra keyboard focus;
+live execution cần `E2E_BASE_URL`.
 
 ### T060 — Full automated test matrix
 

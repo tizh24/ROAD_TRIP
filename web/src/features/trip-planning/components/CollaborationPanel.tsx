@@ -138,7 +138,7 @@ export default function CollaborationPanel({ tripId }: { tripId: string }) {
         </p>
       )}
 
-      <form onSubmit={(event) => void invite(event)} className="mt-4 flex flex-wrap gap-2">
+      <form onSubmit={(event) => void invite(event)} className="mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
         <label className="sr-only" htmlFor="invite-email">
           Email người được mời
         </label>
@@ -148,21 +148,21 @@ export default function CollaborationPanel({ tripId }: { tripId: string }) {
           required
           value={email}
           onChange={(event) => setEmail(event.target.value)}
-          className="field flex-1 bg-white"
+          className="field min-w-0 bg-white sm:flex-1"
           placeholder="email@example.com"
         />
         <select
           aria-label="Quyền lời mời"
           value={permission}
           onChange={(event) => setPermission(event.target.value as "VIEW" | "EDIT")}
-          className="rounded-lg border px-3"
+          className="w-full rounded-lg border px-3 py-3 sm:w-auto"
         >
           <option value="VIEW">Chỉ xem</option>
           <option value="EDIT">Có thể sửa</option>
         </select>
         <button
           disabled={pendingAction !== undefined}
-          className="rounded-xl bg-primary px-4 py-2 text-sm font-bold text-white disabled:opacity-50"
+          className="w-full rounded-xl bg-primary px-4 py-3 text-sm font-bold text-white disabled:opacity-50 sm:w-auto"
         >
           {pendingAction === "invite" ? "Đang mời…" : "Mời"}
         </button>

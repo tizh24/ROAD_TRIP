@@ -78,7 +78,7 @@ export default function LoginView({ authError, nextPath }: LoginViewProps) {
                 type="email"
                 autoComplete="email"
                 required
-                className="w-full rounded-xl border-2 border-gray-100 bg-white px-4 py-3 text-gray-900 outline-none transition focus:border-primary"
+                className="w-full rounded-xl border-2 border-gray-200 bg-white px-4 py-3 text-gray-900 transition focus:border-primary"
                 placeholder="ban@example.com"
               />
             </div>
@@ -96,7 +96,7 @@ export default function LoginView({ authError, nextPath }: LoginViewProps) {
                 autoComplete="current-password"
                 minLength={6}
                 required
-                className="w-full rounded-xl border-2 border-gray-100 bg-white px-4 py-3 text-gray-900 outline-none transition focus:border-primary"
+                className="w-full rounded-xl border-2 border-gray-200 bg-white px-4 py-3 text-gray-900 transition focus:border-primary"
                 placeholder="Ít nhất 6 ký tự"
               />
             </div>
