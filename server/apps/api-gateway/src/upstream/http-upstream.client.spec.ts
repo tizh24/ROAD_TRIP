@@ -37,7 +37,7 @@ describe('HttpUpstreamClient', () => {
   );
 
   it('forwards safe gateway context and returns the upstream envelope', async () => {
-    const client = new HttpUpstreamClient(baseUrl, 100, 'internal-token');
+    const client = new HttpUpstreamClient(baseUrl, 1_000, 'internal-token');
 
     await expect(
       client.request({

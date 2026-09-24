@@ -21,5 +21,6 @@ import { SupabaseJwtVerifier } from './supabase-jwt.verifier';
       },
     },
   ],
+  exports: [AUTH_TOKEN_VERIFIER, SupabaseAuthGuard],
 })
 export class AuthModule {}

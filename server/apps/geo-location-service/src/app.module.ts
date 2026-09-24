@@ -1,9 +1,6 @@
 import { Module } from '@nestjs/common';
 import { HealthModule } from '@roadtrip/health';
-import {
-  loadGeoLocationConfig,
-  type GeoLocationConfig,
-} from '@roadtrip/config';
+import { loadGeoLocationConfig } from '@roadtrip/config';
 import { GeoService } from './application/geo.service';
 import { GeoRedisCache } from './infrastructure/cache/geo-redis-cache';
 import { GeoMetrics } from './infrastructure/observability/geo-metrics';
@@ -23,7 +20,7 @@ import { GeoInternalGuard } from './presentation/geo-internal.guard';
     {
       provide: VietMapAdapter,
       useFactory: () => {
-        const config = loadGeoLocationConfig() as GeoLocationConfig;
+        const config = loadGeoLocationConfig();
         return new VietMapAdapter({
           baseUrl: config.VIETMAP_BASE_URL,
           apiKey: config.VIETMAP_API_KEY,
@@ -34,7 +31,7 @@ import { GeoInternalGuard } from './presentation/geo-internal.guard';
     {
       provide: GeoRedisCache,
       useFactory: () => {
-        const config = loadGeoLocationConfig() as GeoLocationConfig;
+        const config = loadGeoLocationConfig();
         return new GeoRedisCache(config.REDIS_URL, config.REDIS_CACHE_PREFIX);
       },
     },
@@ -45,13 +42,7 @@ import { GeoInternalGuard } from './presentation/geo-internal.guard';
         adapter: VietMapAdapter,
         cache: GeoRedisCache,
         metrics: GeoMetrics,
-      ) =>
-        new GeoService(
-          adapter,
-          cache,
-          loadGeoLocationConfig() as GeoLocationConfig,
-          metrics,
-        ),
+      ) => new GeoService(adapter, cache, loadGeoLocationConfig(), metrics),
     },
   ],
 })

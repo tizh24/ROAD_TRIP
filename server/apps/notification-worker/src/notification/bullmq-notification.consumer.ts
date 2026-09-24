@@ -1,8 +1,5 @@
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
-import {
-  loadNotificationWorkerConfig,
-  type NotificationWorkerConfig,
-} from '@roadtrip/config';
+import { loadNotificationWorkerConfig } from '@roadtrip/config';
 import { Worker } from 'bullmq';
 import { NotificationEventHandler } from './notification-event-handler';
 
@@ -13,7 +10,7 @@ export class BullMqNotificationConsumer
   private worker: Worker | undefined;
   constructor(private readonly handler: NotificationEventHandler) {}
   onModuleInit(): void {
-    const config = loadNotificationWorkerConfig() as NotificationWorkerConfig;
+    const config = loadNotificationWorkerConfig();
     this.worker = new Worker(
       config.BULLMQ_QUEUE_NAME,
       async (job) => this.handler.handle(job.data),

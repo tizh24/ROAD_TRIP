@@ -7,7 +7,6 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
-import type { ErrorCode } from '@roadtrip/contracts';
 import { getCorrelationId } from '@roadtrip/observability';
 import type { Request, Response } from 'express';
 import { CurrentUser } from '../auth/current-user.decorator';

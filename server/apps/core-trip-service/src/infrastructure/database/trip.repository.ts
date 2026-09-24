@@ -167,7 +167,19 @@ export class TripRepository {
       ...trip,
       days: days.rows.map((day) => ({
         ...day,
-        stops: stops.rows.filter((stop) => stop.dayId === day.id).map(({ dayId: _dayId, ...stop }) => stop),
+        stops: stops.rows
+          .filter((stop) => stop.dayId === day.id)
+          .map((stop) => ({
+            id: stop.id,
+            placeId: stop.placeId,
+            name: stop.name,
+            address: stop.address,
+            latitude: stop.latitude,
+            longitude: stop.longitude,
+            notes: stop.notes,
+            stopIndex: stop.stopIndex,
+            version: stop.version,
+          })),
       })),
     };
   }

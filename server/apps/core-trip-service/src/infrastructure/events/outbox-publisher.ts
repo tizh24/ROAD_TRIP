@@ -58,7 +58,7 @@ export class OutboxPublisher
           await this.publisher.publish(toIntegrationEvent(event));
           await this.markPublished(event.id);
           this.metrics.recordPublished();
-        } catch (error) {
+        } catch {
           await this.markFailed(event.id);
           this.metrics.recordFailed();
           this.logger.warn(

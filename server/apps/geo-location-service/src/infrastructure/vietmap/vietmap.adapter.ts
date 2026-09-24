@@ -105,7 +105,8 @@ export class VietMapAdapter {
             response.status >= 500;
           throw new ProviderHttpError(retryable);
         }
-        return await response.json();
+        const payload: unknown = await response.json();
+        return payload;
       } finally {
         clearTimeout(timer);
       }

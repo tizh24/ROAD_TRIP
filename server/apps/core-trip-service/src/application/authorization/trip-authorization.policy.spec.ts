@@ -71,6 +71,14 @@ describe('TripAuthorizationPolicy', () => {
     '%s follows the owner/editor/viewer/outsider matrix',
     async (_name, record, actor, canEdit, deniedRead) => {
       const policy = new TripAuthorizationPolicy(new Reader(record));
+      if (_name !== 'owner') {
+        await expect(
+          policy.assertCanManageTrip('trip', actor),
+        ).rejects.toMatchObject({ code: 'FORBIDDEN' });
+        await expect(
+          policy.assertCanManageMembers('trip', actor),
+        ).rejects.toMatchObject({ code: 'FORBIDDEN' });
+      }
       if (deniedRead) {
         await expect(policy.assertCanRead('trip', actor)).rejects.toMatchObject(
           { code: 'FORBIDDEN' },

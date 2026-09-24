@@ -4,15 +4,14 @@ import {
   HttpException,
   Injectable,
 } from '@nestjs/common';
-import { loadCoreTripConfig, type CoreTripConfig } from '@roadtrip/config';
+import { loadCoreTripConfig } from '@roadtrip/config';
 import { getCorrelationId } from '@roadtrip/observability';
 import { timingSafeEqual } from 'node:crypto';
 import type { Request } from 'express';
 
 @Injectable()
 export class InternalServiceGuard implements CanActivate {
-  private readonly token = (loadCoreTripConfig() as CoreTripConfig)
-    .INTERNAL_SERVICE_TOKEN;
+  private readonly token = loadCoreTripConfig().INTERNAL_SERVICE_TOKEN;
 
   canActivate(context: ExecutionContext): boolean {
     const request = context.switchToHttp().getRequest<Request>();

@@ -4,18 +4,14 @@ import {
   HttpException,
   Injectable,
 } from '@nestjs/common';
-import {
-  loadGeoLocationConfig,
-  type GeoLocationConfig,
-} from '@roadtrip/config';
+import { loadGeoLocationConfig } from '@roadtrip/config';
 import { getCorrelationId } from '@roadtrip/observability';
 import { timingSafeEqual } from 'node:crypto';
 import type { Request } from 'express';
 
 @Injectable()
 export class GeoInternalGuard implements CanActivate {
-  private readonly token = (loadGeoLocationConfig() as GeoLocationConfig)
-    .INTERNAL_SERVICE_TOKEN;
+  private readonly token = loadGeoLocationConfig().INTERNAL_SERVICE_TOKEN;
   canActivate(context: ExecutionContext): boolean {
     const value = context
       .switchToHttp()

@@ -649,10 +649,27 @@ live execution cần `E2E_BASE_URL`.
 
 - [ ] Unit, integration, RLS, contract và E2E suites.
 - [ ] Journey A/B/C và mandatory edge cases.
-- [ ] Không tính generated Hello World tests là coverage nghiệp vụ.
+- [x] Không tính generated Hello World tests là coverage nghiệp vụ.
 
 **Dependency:** T023–T059.
 **Verify:** Toàn bộ required suites pass từ clean environment.
+
+**Implementation note:** Đã thêm fail-closed matrix runner, loại generated
+Hello World suites khỏi active product coverage, và bổ sung Playwright Journey
+A/B cùng duplicate-create, provider-outage và optimistic-conflict cases. T060
+giữ trạng thái chưa hoàn thành cho đến khi PostgreSQL/Supabase sạch và live web
+fixtures chạy xanh toàn bộ matrix.
+
+**Verification update (2026-09-24):** 4/4 accessibility/responsive Playwright
+tests đạt trên Edge với Next.js dev server, không cần Docker. Journey A/B/C,
+repository integration và pgTAP/RLS còn chờ môi trường test riêng cùng auth
+fixtures; không chạy test ghi dữ liệu trên Supabase đã kết nối với web.
+Guest-route Playwright smoke cũng đạt 4/4 trên cùng môi trường web, bao gồm
+giữ return URL khi điều hướng về login.
+Full matrix runner hỗ trợ pgTAP trên Supabase test project riêng qua
+`TEST_DATABASE_URL` và Supabase CLI `--db-url`, không cần Docker; runner từ chối
+URL không hợp lệ hoặc trùng `DATABASE_URL` và yêu cầu
+`TEST_DATABASE_ISOLATED=1` trước khi chạy các suite có ghi dữ liệu.
 
 ### T061 — Resilience/load smoke
 

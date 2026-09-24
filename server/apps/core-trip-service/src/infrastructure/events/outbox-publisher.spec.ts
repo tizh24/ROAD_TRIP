@@ -24,9 +24,8 @@ describe('OutboxPublisher', () => {
       ) => work({ query }),
       query,
     };
-    const publisher: jest.Mocked<EventPublisher> = {
-      publish: jest.fn().mockResolvedValue(undefined),
-    };
+    const publish = jest.fn().mockResolvedValue(undefined);
+    const publisher: jest.Mocked<EventPublisher> = { publish };
     const outbox = new OutboxPublisher(
       database as never,
       publisher,
@@ -34,7 +33,7 @@ describe('OutboxPublisher', () => {
     );
 
     await expect(outbox.publishPending()).resolves.toBe(1);
-    expect(publisher.publish).toHaveBeenCalledWith(
+    expect(publish).toHaveBeenCalledWith(
       expect.objectContaining({
         eventId: event.id,
         eventType: event.eventType,
@@ -64,6 +63,11 @@ describe('OutboxPublisher', () => {
     );
 
     await expect(outbox.publishPending()).resolves.toBe(1);
-    expect(query.mock.calls[1]?.[0]).toContain("publish_status = 'FAILED'");
+    const failedUpdateCall: unknown = query.mock.calls[1];
+    expect(failedUpdateCall).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining("publish_status = 'FAILED'"),
+      ]),
+    );
   });
 });

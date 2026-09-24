@@ -25,10 +25,12 @@ describe('BullMqEventPublisher', () => {
     await publisher.publish(event);
     await publisher.publish(event);
 
-    expect(queue.add).toHaveBeenCalledTimes(2);
-    expect(queue.add).toHaveBeenLastCalledWith('trip.created.v1', event, {
-      jobId: event.eventId,
-    });
+    expect(queue.add.mock.calls).toHaveLength(2);
+    expect(queue.add.mock.calls.at(-1)).toEqual([
+      'trip.created.v1',
+      event,
+      { jobId: event.eventId },
+    ]);
   });
 
   it('closes its queue during Nest shutdown', async () => {
@@ -37,6 +39,6 @@ describe('BullMqEventPublisher', () => {
       close: jest.fn().mockResolvedValue(undefined),
     };
     await new BullMqEventPublisher(queue).onModuleDestroy();
-    expect(queue.close).toHaveBeenCalledTimes(1);
+    expect(queue.close.mock.calls).toHaveLength(1);
   });
 });

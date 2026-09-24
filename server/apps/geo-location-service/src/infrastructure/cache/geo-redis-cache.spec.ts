@@ -2,10 +2,13 @@ import { GeoRedisCache, type GeoRedisClient } from './geo-redis-cache';
 
 class FakeRedis implements GeoRedisClient {
   readonly values = new Map<string, string>();
-  readonly set = jest.fn(async (key: string, value: string) => {
+  readonly set = jest.fn((key: string, value: string) => {
     this.values.set(key, value);
+    return Promise.resolve();
   });
-  readonly get = jest.fn(async (key: string) => this.values.get(key) ?? null);
+  readonly get = jest.fn((key: string) =>
+    Promise.resolve(this.values.get(key) ?? null),
+  );
   disconnect = jest.fn();
   on = jest.fn();
 }

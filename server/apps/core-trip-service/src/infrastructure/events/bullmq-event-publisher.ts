@@ -20,7 +20,7 @@ export class BullMqEventPublisher implements EventPublisher, OnModuleDestroy {
   private readonly queue: QueueClient;
 
   constructor(queue?: QueueClient) {
-    this.queue = queue ?? createQueue(loadCoreTripConfig() as CoreTripConfig);
+    this.queue = queue ?? createQueue(loadCoreTripConfig());
   }
 
   async publish(event: IntegrationEvent): Promise<void> {
