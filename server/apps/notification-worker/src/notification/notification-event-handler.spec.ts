@@ -44,17 +44,17 @@ describe('NotificationEventHandler', () => {
   it('ignores a replayed event after consumer recovery', async () => {
     const processed = new Set<string>();
     const deliveries: string[] = [];
-    const query = jest.fn(async (sql: string, parameters?: unknown[]) => {
+    const query = jest.fn((sql: string, parameters?: unknown[]) => {
       if (sql.includes('processed_events')) {
         const eventId = parameters?.[0] as string;
-        if (processed.has(eventId)) return { rows: [] };
+        if (processed.has(eventId)) return Promise.resolve({ rows: [] });
         processed.add(eventId);
-        return { rows: [{ eventId }] };
+        return Promise.resolve({ rows: [{ eventId }] });
       }
       if (sql.includes('notification_deliveries')) {
         deliveries.push(parameters?.[0] as string);
       }
-      return { rows: [] };
+      return Promise.resolve({ rows: [] });
     });
     const database = {
       query,
