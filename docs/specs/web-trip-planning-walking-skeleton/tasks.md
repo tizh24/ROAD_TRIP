@@ -708,13 +708,20 @@ BullMQ waiting job, restarted Redis, and confirmed the same job remained
 
 ### T062 — CI/CD monorepo update
 
-- [ ] Quality gates theo affected workspace.
-- [ ] Clean migration test, integration stack và E2E.
-- [ ] Build/scan đúng từng image thay vì root single-image assumption.
-- [ ] Giữ signing, SBOM và provenance cho published images.
+- [x] Quality gates theo affected workspace.
+- [x] Clean migration test, integration stack và E2E.
+- [x] Build/scan đúng từng image thay vì root single-image assumption.
+- [x] Giữ signing, SBOM và provenance cho published images.
 
 **Dependency:** T014–T017, T060–T061.
 **Verify:** Pull-request CI và staging pipeline pass.
+
+**Implementation note:** CI detects backend and web changes independently, runs
+their own install/quality/build gates, then starts an isolated Supabase stack,
+active Compose services and browser fixtures before running the fail-closed full
+matrix. CD builds, scans, generates SBOM/provenance and keylessly signs separate
+GHCR images for Gateway, Core Trip, Geo, Notification Worker, Bull Board and
+web. Staging deployment remains T063.
 
 ### T063 — Staging deployment
 

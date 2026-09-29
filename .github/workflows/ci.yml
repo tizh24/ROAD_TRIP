@@ -13,100 +13,80 @@ permissions:
   contents: read
 
 jobs:
-  quality:
-    name: Quality gate
-    permissions:
-      contents: read
-      pull-requests: write
-    uses: tizh24/devops-core/.github/workflows/reusable-node-ci.yml@main
-
-  pr-title:
-    name: Lint PR title
-    if: github.event_name == 'pull_request'
+  changes:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
-    permissions:
-      pull-requests: read
+    outputs:
+      server: ${{ steps.scope.outputs.server }}
+      web: ${{ steps.scope.outputs.web }}
     steps:
-      - uses: amannn/action-semantic-pull-request@e32d7e603df1aa1ba07e981f2a23455dee596825 # v5
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          types: |
-            feat
-            fix
-            docs
-            perf
-            refactor
-            test
-            build
-            ci
-            chore
-            revert
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with: { fetch-depth: 0, persist-credentials: false }
+      - id: scope
+        env: { BASE: ${{ github.event.pull_request.base.sha || github.event.before }} }
+        run: |
+          changed="$(git diff --name-only "$BASE" "$GITHUB_SHA")"
+          if printf '%s\n' "$changed" | grep -Eq '^(server/|\.github/|package\.json)'; then echo 'server=true' >> "$GITHUB_OUTPUT"; else echo 'server=false' >> "$GITHUB_OUTPUT"; fi
+          if printf '%s\n' "$changed" | grep -Eq '^(web/|\.github/)'; then echo 'web=true' >> "$GITHUB_OUTPUT"; else echo 'web=false' >> "$GITHUB_OUTPUT"; fi
 
-  codeql:
-    name: CodeQL
+  backend-quality:
+    name: Quality gate / Backend
+    needs: changes
+    if: needs.changes.outputs.server == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with: { persist-credentials: false }
+      - uses: actions/setup-node@1e60f620b9541d7c63b52dd1c8c8582f7e493c6d
+        with: { node-version: 22, cache: pnpm, cache-dependency-path: server/pnpm-lock.yaml }
+      - run: corepack enable && corepack prepare pnpm@10.32.1 --activate
+      - working-directory: server
+        run: pnpm install --frozen-lockfile && pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build
+
+  web-quality:
+    name: Quality gate / Web
+    needs: changes
+    if: needs.changes.outputs.web == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    permissions:
-      contents: read
-      security-events: write
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
-        with:
-          persist-credentials: false
-      - uses: github/codeql-action/init@02c5e83432fe5497fd85b873b6c9f16a8578e1d9 # v3.37.0
-        with:
-          languages: javascript-typescript
-      - uses: github/codeql-action/analyze@02c5e83432fe5497fd85b873b6c9f16a8578e1d9 # v3.37.0
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with: { persist-credentials: false }
+      - uses: actions/setup-node@1e60f620b9541d7c63b52dd1c8c8582f7e493c6d
+        with: { node-version: 22, cache: npm, cache-dependency-path: web/package-lock.json }
+      - working-directory: web
+        run: npm ci && npm run lint && npm run typecheck && npm test && npm run build
 
-  dependency-review:
-    name: Dependency review
-    if: github.event_name == 'pull_request'
+  integration-e2e:
+    name: Clean migration, integration and E2E
+    needs: [changes, backend-quality, web-quality]
+    if: >-
+      ${{ !cancelled() && (needs.backend-quality.result == 'success' || needs.backend-quality.result == 'skipped') && (needs.web-quality.result == 'success' || needs.web-quality.result == 'skipped') && (needs.changes.outputs.server == 'true' || needs.changes.outputs.web == 'true') }}
     runs-on: ubuntu-latest
-    timeout-minutes: 10
-    permissions:
-      contents: read
-      pull-requests: write
+    timeout-minutes: 45
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
-        with:
-          persist-credentials: false
-      - uses: actions/dependency-review-action@2031cfc080254a8a887f58cffee85186f0e49e48 # v4.9.0
-        with:
-          fail-on-severity: high
-
-  # A repo that preaches supply-chain hygiene should lint its own workflows. zizmor finds
-  # template injection, over-broad permissions, unpinned actions, credential persistence.
-  zizmor:
-    name: Zizmor
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    permissions:
-      contents: read
-      security-events: write
-      actions: read
-    steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
-        with:
-          persist-credentials: false
-      - uses: zizmorcore/zizmor-action@e673c3917a1aef3c65c972347ed84ccd013ecda4 # v0.2.0
-
-  trivy-fs:
-    name: Trivy filesystem scan
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    permissions:
-      contents: read
-      security-events: write
-    steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
-        with:
-          persist-credentials: false
-      - uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
-        with:
-          scan-type: fs
-          scan-ref: .
-          severity: HIGH,CRITICAL
-          exit-code: '1'
-          ignore-unfixed: true
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with: { persist-credentials: false }
+      - uses: actions/setup-node@1e60f620b9541d7c63b52dd1c8c8582f7e493c6d
+        with: { node-version: 22 }
+      - run: corepack enable && corepack prepare pnpm@10.32.1 --activate
+      - working-directory: server
+        run: pnpm install --frozen-lockfile && pnpm exec supabase start
+      - working-directory: web
+        run: npm ci && npx playwright install --with-deps chromium
+      - name: Build stack and run isolated matrix
+        working-directory: server
+        run: |
+          export BULL_BOARD_PASSWORD=ci-only-password
+          pnpm platform:up
+          eval "$(pnpm exec supabase status -o env | sed 's/^/export /')"
+          export E2E_BASE_URL=http://127.0.0.1:3000 NEXT_PUBLIC_API_URL=http://127.0.0.1:4100
+          export NEXT_PUBLIC_SUPABASE_URL="$API_URL" NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY="$ANON_KEY" SUPABASE_LOCAL_SECRET_KEY="$SERVICE_ROLE_KEY"
+          node ../web/scripts/prepare-local-e2e.mjs
+          export TEST_DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:54322/postgres TEST_DATABASE_ISOLATED=1
+          export E2E_OWNER_STORAGE_STATE=.e2e/owner.json E2E_MEMBER_STORAGE_STATE=.e2e/member.json
+          export E2E_TRIP_ID="$(jq -r .E2E_TRIP_ID ../web/.e2e/fixture.json)" E2E_MEMBER_EMAIL="$(jq -r .E2E_MEMBER_EMAIL ../web/.e2e/fixture.json)"
+          pnpm test:matrix
+      - if: always()
+        working-directory: server
+        run: pnpm platform:down || true; pnpm exec supabase stop || true

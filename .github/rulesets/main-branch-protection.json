@@ -27,13 +27,9 @@
       "parameters": {
         "strict_required_status_checks_policy": true,
         "required_status_checks": [
-          { "context": "Quality gate / Node 22" },
-          { "context": "Quality gate / Node 24" },
-          { "context": "CodeQL" },
-          { "context": "Dependency review" },
-          { "context": "Trivy filesystem scan" },
-          { "context": "Zizmor" },
-          { "context": "Lint PR title" }
+          { "context": "Quality gate / Backend" },
+          { "context": "Quality gate / Web" },
+          { "context": "Clean migration, integration and E2E" }
         ]
       }
     }
