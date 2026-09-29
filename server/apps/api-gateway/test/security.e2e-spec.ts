@@ -143,7 +143,10 @@ describe('Gateway security middleware (e2e)', () => {
     const limited = responses.filter((response) => response.status === 429);
     expect(limited).toHaveLength(6);
     limited.forEach((response) => {
-      expect(response.body.error.code).toBe('RATE_LIMITED');
+      const body: unknown = response.body;
+      expect(body).toMatchObject({
+        error: { code: 'RATE_LIMITED' },
+      });
       expect(response.headers['retry-after']).toBe('60');
     });
   });
