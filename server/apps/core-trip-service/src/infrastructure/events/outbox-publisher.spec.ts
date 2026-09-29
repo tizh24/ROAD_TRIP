@@ -70,4 +70,39 @@ describe('OutboxPublisher', () => {
       ]),
     );
   });
+
+  it('continues a claimed backlog after one event fails and leaves it retryable', async () => {
+    const secondEvent = {
+      ...event,
+      id: '00000000-0000-4000-8000-000000000003',
+    };
+    const query = jest
+      .fn()
+      .mockResolvedValueOnce({ rows: [event, secondEvent] })
+      .mockResolvedValue({ rows: [] });
+    const database = {
+      transaction: async (
+        work: (tx: { query: typeof query }) => Promise<unknown>,
+      ) => work({ query }),
+      query,
+    };
+    const publish = jest
+      .fn()
+      .mockRejectedValueOnce(new Error('Redis restart'))
+      .mockResolvedValueOnce(undefined);
+    const metrics = new OutboxMetrics();
+    const outbox = new OutboxPublisher(database as never, { publish }, metrics);
+
+    await expect(outbox.publishPending(2)).resolves.toBe(2);
+
+    expect(publish).toHaveBeenCalledTimes(2);
+    expect(query.mock.calls[1]?.[0]).toContain("publish_status = 'FAILED'");
+    expect(query.mock.calls[2]?.[0]).toContain("publish_status = 'PUBLISHED'");
+    expect(metrics.renderPrometheus()).toContain(
+      'roadtrip_outbox_events_published_total 1',
+    );
+    expect(metrics.renderPrometheus()).toContain(
+      'roadtrip_outbox_events_failed_total 1',
+    );
+  });
 });

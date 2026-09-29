@@ -101,3 +101,19 @@ creates those short-lived fixtures without committing credentials.
 - Playwright: 10 tests passed, including Journeys A/B/C, duplicate create,
   provider outage preservation, optimistic conflict state preservation, guest
   route protection, and accessibility/responsive smoke.
+
+## Resilience/load smoke (2026-09-29)
+
+- Geo: a burst of 20 equivalent searches is coalesced to one provider call;
+  the next request is a cache hit. A rejected in-flight provider request is
+  removed so retry can continue.
+- Gateway: with a public-window threshold of two, an eight-request concurrent
+  burst returns two successful responses and six stable `429` responses. A
+  rate-limit-store outage is fail-open and the request credential is not logged.
+- Event flow: a failed outbox event is retained as `FAILED` while later claimed
+  events continue; duplicate notification delivery is prevented by the
+  processed-event claim.
+- Redis/BullMQ: a Redis-only Compose service passed the waiting-job persistence
+  check across `docker restart`; `verify-redis-durability.mjs` confirmed the
+  original job ID still had state `waiting`. The container was stopped after
+  verification.

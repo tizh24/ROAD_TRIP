@@ -128,6 +128,26 @@ describe('Gateway security middleware (e2e)', () => {
     });
   });
 
+  it('limits a simultaneous request burst while returning stable errors', async () => {
+    const responses = await Promise.all(
+      Array.from({ length: 8 }, (_, index) =>
+        request(app.getHttpServer())
+          .get('/api/v1/security-probe')
+          .set('x-correlation-id', `security-burst-${index}`),
+      ),
+    );
+
+    expect(
+      responses.filter((response) => response.status === 200),
+    ).toHaveLength(2);
+    const limited = responses.filter((response) => response.status === 429);
+    expect(limited).toHaveLength(6);
+    limited.forEach((response) => {
+      expect(response.body.error.code).toBe('RATE_LIMITED');
+      expect(response.headers['retry-after']).toBe('60');
+    });
+  });
+
   it('fails open without exposing request data when Redis is unavailable', async () => {
     rateLimitStore.failure = new Error('redis unavailable');
 

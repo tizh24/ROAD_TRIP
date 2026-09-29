@@ -40,4 +40,34 @@ describe('NotificationEventHandler', () => {
       new NotificationEventHandler(database).handle({}),
     ).rejects.toBeInstanceOf(UnrecoverableError);
   });
+
+  it('ignores a replayed event after consumer recovery', async () => {
+    const processed = new Set<string>();
+    const deliveries: string[] = [];
+    const query = jest.fn(async (sql: string, parameters?: unknown[]) => {
+      if (sql.includes('processed_events')) {
+        const eventId = parameters?.[0] as string;
+        if (processed.has(eventId)) return { rows: [] };
+        processed.add(eventId);
+        return { rows: [{ eventId }] };
+      }
+      if (sql.includes('notification_deliveries')) {
+        deliveries.push(parameters?.[0] as string);
+      }
+      return { rows: [] };
+    });
+    const database = {
+      query,
+      transaction: <Result>(
+        work: (tx: QueryExecutor) => Promise<Result>,
+      ): Promise<Result> => work({ query }),
+    };
+    const handler = new NotificationEventHandler(database);
+
+    await handler.handle(event);
+    await handler.handle(event);
+
+    expect(deliveries).toEqual([event.eventId]);
+    expect(query).toHaveBeenCalledTimes(3);
+  });
 });

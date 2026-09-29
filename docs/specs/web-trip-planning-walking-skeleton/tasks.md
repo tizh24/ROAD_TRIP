@@ -685,13 +685,26 @@ E2E (9 tasks), web contract tests và 10 Playwright tests gồm Journey A/B/C.
 
 ### T061 — Resilience/load smoke
 
-- [ ] Burst search/routing kiểm tra cache và rate limit.
-- [ ] Core/Gateway/Geo dependency outage behavior.
-- [ ] Redis restart và BullMQ job recovery.
-- [ ] Outbox backlog catch-up và duplicate safety.
+- [x] Burst search/routing kiểm tra cache và rate limit.
+- [x] Core/Gateway/Geo dependency outage behavior.
+- [x] Redis restart và BullMQ job recovery.
+- [x] Outbox backlog catch-up và duplicate safety.
 
 **Dependency:** T040–T060.
 **Verify:** Kết quả nằm trong threshold được ghi lại; không mất dữ liệu/event.
+
+**Verification completed (2026-09-29):** Geo service coalesces 20 concurrent
+normalized searches into one provider call; a later equivalent request is served
+from cache. Gateway accepts two requests at the configured public-window limit
+and returns stable `429` responses for the remaining six requests of an
+eight-request burst. Geo provider failure releases the in-flight key for a
+later retry; Gateway rate-limit-store failure remains fail-open without logging
+request credentials. Outbox continues a claimed batch after a publish failure,
+marks that event `FAILED` for retry, and publishes later events. Replayed
+notification events produce one delivery through the processed-event claim.
+With the Redis-only Compose service, `verify-redis-durability.mjs` enqueued a
+BullMQ waiting job, restarted Redis, and confirmed the same job remained
+`waiting`; the Redis container was then stopped.
 
 ### T062 — CI/CD monorepo update
 

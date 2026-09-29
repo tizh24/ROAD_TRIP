@@ -7,6 +7,15 @@ import { GeoMetrics } from '../infrastructure/observability/geo-metrics';
 
 @Injectable()
 export class GeoService {
+  private readonly pendingSearches = new Map<
+    string,
+    Promise<readonly Place[]>
+  >();
+  private readonly pendingRoutes = new Map<
+    string,
+    Promise<Awaited<ReturnType<VietMapAdapter['previewRoute']>>>
+  >();
+
   constructor(
     private readonly adapter: VietMapAdapter,
     private readonly cache: GeoRedisCache,
@@ -26,9 +35,16 @@ export class GeoService {
     }
     this.metrics.recordCacheMiss();
     const started = performance.now();
-    const places = await this.adapter.searchPlaces(query);
-    this.metrics.recordProviderCall(performance.now() - started);
-    await this.cache.set(key, places, this.config.GEO_SEARCH_CACHE_TTL_SECONDS);
+    const places = await this.coalesce(this.pendingSearches, key, async () => {
+      const result = await this.adapter.searchPlaces(query);
+      this.metrics.recordProviderCall(performance.now() - started);
+      await this.cache.set(
+        key,
+        result,
+        this.config.GEO_SEARCH_CACHE_TTL_SECONDS,
+      );
+      return result;
+    });
     return { places, source: 'provider' };
   }
 
@@ -47,12 +63,31 @@ export class GeoService {
     }
     this.metrics.recordCacheMiss();
     const started = performance.now();
-    const preview = await this.adapter.previewRoute(
-      input.coordinates,
-      input.vehicle,
-    );
-    this.metrics.recordProviderCall(performance.now() - started);
-    await this.cache.set(key, preview, this.config.GEO_ROUTE_CACHE_TTL_SECONDS);
+    const preview = await this.coalesce(this.pendingRoutes, key, async () => {
+      const result = await this.adapter.previewRoute(
+        input.coordinates,
+        input.vehicle,
+      );
+      this.metrics.recordProviderCall(performance.now() - started);
+      await this.cache.set(
+        key,
+        result,
+        this.config.GEO_ROUTE_CACHE_TTL_SECONDS,
+      );
+      return result;
+    });
     return { preview, source: 'provider' };
+  }
+
+  private async coalesce<T>(
+    pending: Map<string, Promise<T>>,
+    key: string,
+    work: () => Promise<T>,
+  ): Promise<T> {
+    const existing = pending.get(key);
+    if (existing) return existing;
+    const operation = work().finally(() => pending.delete(key));
+    pending.set(key, operation);
+    return operation;
   }
 }
