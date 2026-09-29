@@ -59,7 +59,19 @@ test.describe("Journeys A and B — persisted trip planning", () => {
     await page.getByLabel("Ngày bắt đầu").fill(startDate);
     await page.getByLabel("Ngày kết thúc").fill(endDate);
     await page.getByLabel("Ngân sách dự kiến (VND)").fill("2500000");
+    const createResponse = page.waitForResponse(
+      (response) =>
+        response.request().method() === "POST" &&
+        /\/api\/v1\/trips\/?$/.test(response.url()),
+      { timeout: 15_000 },
+    );
     await page.getByRole("button", { name: "Tạo và tiếp tục" }).click();
+    const response = await createResponse;
+    if (!response.ok()) {
+      throw new Error(
+        `Trip creation failed: HTTP ${response.status()} ${await response.text()}`,
+      );
+    }
 
     await expect(page).toHaveURL(/\/trips\/[0-9a-f-]{36}$/i);
     await expect(

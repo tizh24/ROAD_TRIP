@@ -13,7 +13,20 @@ test.describe('Journey C — controlled collaboration', () => {
     test.setTimeout(120_000);
     const owner = await browser.newContext({ storageState: ownerState });
     const ownerPage = await owner.newPage();
+    const tripResponse = ownerPage.waitForResponse(
+      (response) =>
+        response.request().method() === 'GET' &&
+        new URL(response.url()).pathname === `/api/v1/trips/${tripId}`,
+      { timeout: 15_000 },
+    );
     await ownerPage.goto(`/trips/${tripId}`);
+    const response = await tripResponse;
+    if (!response.ok()) {
+      throw new Error(
+        `Trip detail failed: HTTP ${response.status()} ${await response.text()}`,
+      );
+    }
+    await expect(ownerPage.getByRole('heading', { name: 'Cộng tác viên' })).toBeVisible();
     await ownerPage.getByLabel('Email người được mời').fill(inviteeEmail!);
     await ownerPage.getByRole('button', { name: 'Mời' }).click();
     const invitation = ownerPage.getByRole('status').getByRole('link', { name: 'mở liên kết mời' });
