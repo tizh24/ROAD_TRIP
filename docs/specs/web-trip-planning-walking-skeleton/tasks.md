@@ -1,0 +1,786 @@
+# Web Trip Planning Walking Skeleton — Implementation Tasks
+
+**Version:** 1.0.0
+**Status:** Ready for implementation
+**Created:** 2026-08-14
+**Specification:** `./spec.md`
+**Technical plan:** `./plan.md`
+
+## 1. Cách sử dụng checklist
+
+- Thực hiện theo thứ tự task ID, trừ khi dependency ghi rõ có thể song song.
+- Chỉ đánh dấu hoàn thành sau khi verification của task đạt.
+- Không gộp nhiều gate thành một thay đổi lớn khó review.
+- Nếu implementation làm thay đổi hành vi đã duyệt, cập nhật Specification trước.
+- Nếu implementation thay đổi kiến trúc, cập nhật Plan và tạo ADR trước.
+- Không sửa mobile, monetization hoặc social-community trong milestone này.
+
+Mỗi task hoàn thành phải để repository ở trạng thái build/test được trong phạm vi
+đã tác động.
+
+## Phase 0 — Baseline và quyết định kiến trúc
+
+### T001 — Ghi nhận baseline
+
+- [x] Chạy và lưu kết quả build, lint và test hiện tại của `server` và `web`.
+- [x] Phân biệt lỗi có sẵn với regression do milestone.
+- [x] Ghi lại phiên bản Node, pnpm, npm, Docker và Supabase CLI đang dùng.
+
+**Dependency:** Không.
+**Verify:** Có baseline report trong tài liệu feature; không sửa code để che lỗi.
+
+### T002 — Audit repository hygiene
+
+- [x] Xác nhận toàn bộ `node_modules`, `.next`, `dist`, coverage và `.env*` chứa
+      secret được ignore.
+- [x] Xác nhận `.env.example` chỉ chứa placeholder.
+- [x] Kiểm tra không có key Supabase service-role hoặc VietMap thật trong Git.
+- [x] Không xóa thay đổi chưa commit của người dùng.
+
+**Dependency:** T001.
+**Verify:** `git status` không liệt kê generated artifacts/secrets mới.
+
+### T003 — ADR service boundaries
+
+- [x] Tạo ADR xác nhận kiến trúc 5 bounded-context services + gateway.
+- [x] Ghi rõ service active và inactive trong walking skeleton.
+- [x] Ghi rõ data ownership và cấm cross-schema mutation.
+
+**Dependency:** T001.
+**Verify:** ADR phù hợp Constitution và Plan.
+
+### T004 — ADR Redis + BullMQ
+
+- [x] Ghi lý do chọn BullMQ thay RabbitMQ ở giai đoạn đầu.
+- [x] Cấm Redis Pub/Sub cho durable integration events.
+- [x] Ghi production durability, `noeviction`, retention và điều kiện tách Redis.
+- [x] Ghi migration path sang broker khác thông qua publisher port.
+
+**Dependency:** T003.
+**Verify:** ADR có alternatives, consequences và exit criteria.
+
+### T005 — ADR database access và transaction
+
+- [x] Chốt PostgreSQL transaction adapter cho Core Trip.
+- [x] Chốt Supabase CLI migrations là migration source duy nhất.
+- [x] Mô tả quan hệ giữa service authorization, DB roles và RLS defense in depth.
+- [x] Cấm expose persistence model làm API contract.
+
+**Dependency:** T003.
+**Verify:** ADR giải thích được atomic trip creation + outbox.
+
+### T006 — Đồng bộ tài liệu backend
+
+- [x] Thay mô tả 15 service/Express trong `server/backend_supabase_plan.md` bằng
+      NestJS 5+1 hiện tại.
+- [x] Đồng bộ Redis + BullMQ, Supabase/PostgreSQL và Docker topology.
+- [x] Đánh dấu rõ feature hiện tại và future scope.
+
+**Dependency:** T003–T005.
+**Verify:** Không còn kiến trúc active mâu thuẫn giữa code, Constitution và docs.
+
+## Phase 1 — Workspace foundation
+
+### T007 — Chuẩn hóa Node và package manager
+
+- [x] Chọn và pin Node LTS được hỗ trợ.
+- [x] Xác nhận pnpm là package manager duy nhất của backend.
+- [x] Thêm `packageManager` và engine policy tại workspace root.
+- [x] Loại bỏ lockfile hoặc hướng dẫn mâu thuẫn trong phạm vi backend.
+
+**Dependency:** T001.
+**Verify:** Clean install bằng frozen pnpm lockfile thành công.
+
+### T008 — Chuẩn hóa Turbo tasks
+
+- [x] Cập nhật Turbo configuration theo schema phiên bản đang cài.
+- [x] Thêm `typecheck`, `test`, `test:integration`, `test:e2e` pipelines.
+- [x] Định nghĩa outputs và cache behavior đúng cho Nest apps/packages.
+
+**Dependency:** T007.
+**Verify:** Root commands tìm thấy đúng workspace tasks.
+
+### T009 — Shared TypeScript/lint/format config
+
+- [x] Tạo package/config dùng chung cho strict TypeScript.
+- [x] Chuẩn hóa ESLint và Prettier không tự `--fix` trong CI.
+- [x] Cho phép lệnh fix riêng trong local.
+- [x] Bật kiểm tra circular dependency phù hợp.
+
+**Dependency:** T007.
+**Verify:** Gateway, Core Trip và Geo build/typecheck cùng chuẩn.
+
+### T010 — Runtime configuration package
+
+- [x] Tạo runtime schema cho environment variables.
+- [x] Phân nhóm common, database, auth, Redis/BullMQ, internal URLs và VietMap.
+- [x] Fail fast với lỗi cấu hình đã redacted.
+- [x] Cập nhật `.env.example` cho local development.
+
+**Dependency:** T009.
+**Verify:** Config hợp lệ boot được; thiếu biến bắt buộc làm startup fail rõ ràng.
+
+### T011 — Observability package
+
+- [x] Tạo structured logger abstraction.
+- [x] Thêm redaction cho token, email, invite token và coordinate.
+- [x] Tạo correlation ID middleware/interceptor và propagation helpers.
+- [x] Chuẩn hóa exception/error logging.
+
+**Dependency:** T009–T010.
+**Verify:** Unit test redaction và correlation propagation đạt.
+
+### T012 — HTTP và event contracts package
+
+- [x] Tạo runtime schemas cho response envelope, errors và pagination.
+- [x] Tạo integration event envelope v1.
+- [x] Tạo `TripCreatedV1` và `TripInvitationCreatedV1` schemas.
+- [x] Không import database/domain entities.
+
+**Dependency:** T009.
+**Verify:** Invalid HTTP/event payload bị runtime validation từ chối.
+
+### T013 — Health/readiness foundation
+
+- [x] Thêm `/health/live` và `/health/ready` cho active services.
+- [x] Liveness không phụ thuộc external provider.
+- [x] Readiness phản ánh dependency bắt buộc của từng service.
+- [x] Thay generated Hello World endpoints/tests.
+
+**Dependency:** T010–T011.
+**Verify:** Health tests pass và trả status phù hợp khi dependency unavailable.
+
+## Phase 2 — Docker và local platform
+
+### T014 — Backend Docker build strategy
+
+- [x] Thay Dockerfile backend đang dùng npm/`dist/server.js` sai cấu trúc.
+- [x] Dùng pnpm lockfile và workspace-aware multi-stage build.
+- [x] Hỗ trợ target cho Gateway, Core Trip, Geo và Notification Worker.
+- [x] Chạy runtime non-root và nhận termination signal đúng.
+
+**Dependency:** T007–T013.
+**Verify:** Mỗi active backend image build và boot đúng `dist/main.js`.
+
+### T015 — Web production Dockerfile
+
+- [x] Cấu hình Next.js production output phù hợp container.
+- [x] Tạo multi-stage Dockerfile với pinned base và non-root runtime.
+- [x] Không đưa server secrets hoặc development cache vào image.
+
+**Dependency:** T007.
+**Verify:** Web image build và trả trang health/public thành công.
+
+### T016 — Redis durability configuration
+
+- [x] Cấu hình Redis local persistence.
+- [x] Đặt key prefix riêng cho cache, rate limit và BullMQ.
+- [x] Bật `noeviction` cho queue-safe local baseline.
+- [x] Ghi chú production split strategy cho cache/queue.
+
+**Dependency:** T004.
+**Verify:** Redis restart không làm mất BullMQ job test đang chờ.
+
+### T017 — Minimal Docker Compose
+
+- [x] Compose Web, Gateway, Core Trip, Geo, Notification Worker và Redis.
+- [x] Tích hợp Supabase local bằng CLI hoặc profile được tài liệu hóa.
+- [x] Thêm healthchecks, internal network và named volumes.
+- [x] Không dùng `container_name`.
+- [x] Đặt Bull Board trong development-only profile.
+- [x] Không chạy Social Community/Monetization mặc định.
+
+**Dependency:** T014–T016.
+**Verify:** Một lệnh/documented sequence đưa toàn bộ active stack về healthy.
+
+### T018 — Graceful shutdown smoke test
+
+- [x] Enable Nest shutdown hooks.
+- [x] Đóng HTTP, PostgreSQL, Redis và BullMQ connections sạch.
+- [x] Kiểm tra container stop không để job ở trạng thái sai vĩnh viễn.
+
+**Dependency:** T017.
+**Verify:** Stop/restart stack không gây unhandled error hoặc mất test job.
+
+**Implementation note:** Foundation runtime hiện chỉ sở hữu HTTP listeners; chưa
+khởi tạo PostgreSQL pool, Redis application client hoặc BullMQ worker. Smoke
+client đóng BullMQ/Redis connection tường minh. Các adapter ở task sau phải tham
+gia Nest shutdown lifecycle và tiếp tục pass smoke test này.
+
+## Phase 3 — Database foundation
+
+### T019 — Audit migrations hiện tại
+
+- [x] Xác định migration 2024/2026 nào trùng hoặc xung đột.
+- [x] Không chỉnh migration đã được coi là applied.
+- [x] Chọn corrective migration strategy và clean-reset expectation.
+
+**Dependency:** T005.
+**Verify:** Có migration audit note và thứ tự apply rõ ràng.
+
+### T020 — Corrective schemas và roles migration
+
+- [x] Bổ sung `notification_schema`.
+- [x] Chuẩn hóa least-privilege roles/grants/default privileges.
+- [x] Hạn chế execute trên security-definer functions.
+- [x] Cố định function `search_path` an toàn.
+
+**Dependency:** T019.
+**Verify:** Clean database reset tạo đủ schema/role không lỗi.
+
+### T021 — Core Trip tables migration
+
+- [x] Chuẩn hóa trips, members, days và stops theo Plan.
+- [x] Thêm enums/check constraints, currency và version.
+- [x] Thêm unique constraints và indexes.
+- [x] Thêm updated-at behavior và soft-delete metadata.
+
+**Dependency:** T020.
+**Verify:** Constraint tests từ chối date, budget, role, order và coordinate sai.
+
+### T022 — Invitation/outbox/notification tables migration
+
+- [x] Tạo trip invitations và token-hash fields.
+- [x] Tạo outbox events cùng polling indexes.
+- [x] Tạo processed events và notification deliveries.
+- [x] Thiết lập ownership/grants đúng schema.
+
+**Dependency:** T021.
+**Verify:** Clean migration apply và database integration smoke pass.
+
+### T023 — RLS policies
+
+- [x] Viết owner/editor/viewer/outsider policies.
+- [x] Sửa policy hiện tại đang cho mọi member quản lý itinerary.
+- [x] Viết invitation access/acceptance policies.
+- [x] Không tạo recursion hoặc privilege escalation.
+
+**Dependency:** T021–T022.
+**Verify:** RLS permission matrix test đạt toàn bộ read/write cases.
+
+### T024 — Database types và repository primitives
+
+- [x] Generate database types từ schema mới.
+- [x] Tạo PostgreSQL connection/transaction abstraction.
+- [x] Không expose generated type qua public contracts.
+- [x] Thêm database readiness check.
+
+**Dependency:** T021–T023.
+**Verify:** Type generation reproducible và connection test đạt.
+
+## Phase 4 — Authentication và API Gateway
+
+### T025 — Supabase web authentication
+
+- [x] Cấu hình SSR-compatible Supabase client.
+- [x] Thực hiện ít nhất một login method và callback.
+- [x] Thiết lập session refresh/logout.
+- [x] Không lưu service-role key hoặc VietMap key trong browser.
+
+**Dependency:** T010, T015, T020.
+**Verify:** User đăng nhập/logout và session còn hợp lệ sau refresh.
+
+### T026 — Protected web routes
+
+- [x] Bảo vệ `/trips`, `/trips/new`, `/trips/[tripId]`.
+- [x] Redirect về login và giữ return URL.
+- [x] Xử lý expired session rõ ràng.
+
+**Dependency:** T025.
+**Verify:** Guest không vào protected route; login xong quay lại đúng URL.
+
+**Implementation note:** Next.js 16.3/Turbopack trên Windows hiện tạo
+`middleware-manifest.json` rỗng cho `proxy.ts`, khiến production runtime bỏ qua
+guard. Web tạm dùng convention `middleware.ts` còn được hỗ trợ; đổi lại
+`proxy.ts` khi upstream Windows issue được sửa.
+
+### T027 — Gateway JWT verification
+
+- [x] Xác minh Supabase JWT bằng JWKS và cache key rotation an toàn.
+- [x] Chuẩn hóa authenticated user context.
+- [x] Không gọi remote `getUser` cho mọi request.
+- [x] Trả stable auth errors.
+
+**Dependency:** T010–T013.
+**Verify:** Valid/expired/invalid/missing token tests đạt.
+
+### T028 — Gateway security middleware
+
+- [x] Cấu hình CORS allowlist, Helmet và body-size limits.
+- [x] Redis-backed rate limits theo route class.
+- [x] Correlation ID validation và propagation.
+- [x] Không log authorization headers.
+
+**Dependency:** T011, T016, T027.
+**Verify:** Security/rate-limit/correlation integration tests đạt.
+
+**Implementation note:** Chỉ `/api/v1` bị rate limit; public routes dùng IP,
+authenticated routes dùng verified user ID và mọi tracker được SHA-256 trước khi
+đưa vào Redis key. Bộ đếm fixed-window dùng Lua `INCR` + `PEXPIRE` nguyên tử;
+Gateway fail-open với log đã redaction khi Redis tạm unavailable.
+
+### T029 — Gateway upstream adapters
+
+- [x] Tạo proxy/client cho Core Trip và Geo.
+- [x] Đặt timeout và stable upstream error mapping.
+- [x] Propagate identity và correlation context.
+- [x] Không đưa domain logic vào gateway.
+
+**Dependency:** T027–T028.
+**Verify:** Contract tests với upstream stub đạt.
+
+### T030 — Public OpenAPI
+
+- [x] Xuất `/api/v1` contracts và auth requirements.
+- [x] Document stable errors, idempotency và version headers.
+- [x] Không expose internal-only endpoints.
+
+**Dependency:** T012, T029.
+**Verify:** OpenAPI generation pass và contract không chứa persistence model.
+
+## Phase 5 — Core Trip domain và persistence
+
+### T031 — Core value objects
+
+- [x] Implement TripId/UserId, TripTitle, DateRange, Money, Currency và Version.
+- [x] Enforce 30-day limit, title trim và non-negative budget.
+- [x] Unit test valid/invalid boundaries.
+
+**Dependency:** T012.
+**Verify:** Domain unit suite đạt.
+
+### T032 — Trip aggregate
+
+- [x] Implement trip lifecycle, owner/member permissions và state rules.
+- [x] Generate sequential days khi tạo trip.
+- [x] Phát domain fact khi tạo thành công.
+- [x] Không phụ thuộc NestJS/PostgreSQL trong domain.
+
+**Dependency:** T031.
+**Verify:** Aggregate tests đạt, gồm owner invariant và invalid transitions.
+
+### T033 — Stop ordering domain behavior
+
+- [x] Add, update, remove, reorder và move-day operations.
+- [x] Giữ order liên tục và không trùng.
+- [x] Enforce editor permission và trip/day ownership.
+
+**Dependency:** T032.
+**Verify:** Unit tests bao phủ reorder/move edge cases.
+
+### T034 — Trip repositories
+
+- [x] Map domain ↔ persistence models rõ ràng.
+- [x] Implement create/list/detail/update/soft-delete.
+- [x] Implement atomic trip + owner + days + outbox transaction.
+- [x] Implement optimistic version check.
+
+**Dependency:** T024, T032.
+**Verify:** Repository integration suite trên PostgreSQL thật đạt.
+
+### T035 — Stop repositories
+
+- [x] Implement add/update/delete/reorder/move transactionally.
+- [x] Tránh temporary unique-order collision.
+- [x] Không cho cross-trip day/stop mutation.
+
+**Dependency:** T024, T033–T034.
+**Verify:** Integration tests đạt, gồm concurrent/cross-trip cases.
+
+### T036 — Core authorization policy
+
+- [x] Tạo policy/service chung cho owner/editor/viewer/outsider.
+- [x] Re-check permission trên mỗi command/query.
+- [x] Không dựa duy nhất vào gateway hoặc RLS.
+
+**Dependency:** T032, T034.
+**Verify:** Service authorization matrix đạt cùng expectation với RLS.
+
+### T037 — Trip application use cases
+
+- [x] Create, list, get, update và soft-delete trip.
+- [x] Add/update/remove/reorder/move stops.
+- [x] Idempotency cho create/mutation phù hợp.
+- [x] Stable domain-to-application error mapping.
+
+**Dependency:** T034–T036.
+**Verify:** Application tests bao phủ happy/error/conflict paths.
+
+### T038 — Core Trip HTTP controllers
+
+- [x] Implement endpoints theo Plan với runtime validation.
+- [x] Xác minh identity trong Core Trip.
+- [x] Propagate correlation ID và expected version.
+- [x] Serialize response bằng DTO allowlist.
+
+**Dependency:** T012, T027, T037.
+**Verify:** HTTP integration/contract tests đạt.
+
+## Phase 6 — Redis/BullMQ event flow
+
+### T039 — BullMQ infrastructure adapter
+
+- [x] Tạo event publisher port và BullMQ adapter.
+- [x] Dùng event ID làm job ID.
+- [x] Cấu hình queue prefix, attempts, backoff và retention.
+- [x] Không dùng Redis Pub/Sub.
+
+**Dependency:** T004, T012, T016.
+**Verify:** Duplicate enqueue không tạo duplicate job.
+
+### T040 — Outbox publisher
+
+- [x] Poll/claim pending outbox rows an toàn với nhiều publisher.
+- [x] Enqueue BullMQ job và đánh dấu published.
+- [x] Retry có backoff; không bỏ event khi Redis unavailable.
+- [x] Ghi outbox lag/failure metrics.
+
+**Dependency:** T022, T034, T039.
+**Verify:** PostgreSQL/Redis failure integration tests chứng minh eventual publish.
+
+### T041 — Notification idempotent consumer
+
+- [x] Consume `TripCreatedV1` và `TripInvitationCreatedV1`.
+- [x] Runtime validate event.
+- [x] Ghi processed event và delivery state idempotently.
+- [x] Phân biệt retryable và terminal failures.
+
+**Dependency:** T022, T039–T040.
+**Verify:** Retry/restart/duplicate tests không nhân side effect.
+
+### T042 — Bull Board development profile
+
+- [x] Thêm read-protected Bull Board chỉ trong development profile.
+- [x] Không expose production mặc định.
+- [x] Redact sensitive job data khỏi UI/logs.
+
+**Dependency:** T039, T017.
+**Verify:** Dev profile xem được queue; default/production không expose dashboard.
+
+## Phase 7 — Geo Location Service
+
+### T043 — Geo contracts
+
+- [x] Runtime schemas cho place search và route preview.
+- [x] Chuẩn hóa coordinate, vehicle mode, pagination và geometry response.
+- [x] Stable provider-independent errors.
+
+**Dependency:** T012.
+**Verify:** Contract validation tests đạt.
+
+### T044 — VietMap adapter
+
+- [x] Implement place search và route calls phía server.
+- [x] Validate provider response.
+- [x] Timeout, bounded retry và circuit breaker.
+- [x] Không leak API key/provider error ra client.
+
+**Dependency:** T010, T043.
+**Verify:** Adapter tests với fixtures cho success/malformed/timeout/rate-limit.
+
+### T045 — Geo Redis cache
+
+- [x] Normalize search và route cache keys.
+- [x] Round coordinate ở độ chính xác được document.
+- [x] Config TTL riêng.
+- [x] Cache failure không phá correctness.
+
+**Dependency:** T016, T044.
+**Verify:** Hit/miss/expiry/provider-call-count tests đạt.
+
+### T046 — Geo HTTP controllers
+
+- [x] Implement place search và route preview endpoints.
+- [x] Runtime validation, rate-limit compatibility và stable envelopes.
+- [x] Metrics provider latency/cache hit/cost proxy.
+
+**Dependency:** T043–T045.
+**Verify:** Geo integration và Gateway contract tests đạt.
+
+## Phase 8 — Web trip planning
+
+### T047 — Web API client
+
+- [x] Tạo authenticated Gateway client.
+- [x] Runtime validate responses và map stable errors.
+- [x] Propagate correlation/idempotency/version headers.
+- [x] Không dùng hard-coded API data trong production path.
+
+**Dependency:** T012, T025–T030, T038, T046.
+**Verify:** Client contract tests đạt.
+
+### T048 — Trip list
+
+- [x] Tạo `/trips` với loading/error/empty/content states.
+- [x] Hiển thị owner/member role, dates và status.
+- [x] Loại bỏ planner placeholder redirect.
+
+**Dependency:** T026, T047.
+**Verify:** User chỉ thấy trips được phép và refresh giữ dữ liệu.
+
+### T049 — Create trip form
+
+- [x] Tạo `/trips/new` với title, dates, description và budget.
+- [x] Client validation đồng nhất nhưng không thay server validation.
+- [x] Dùng idempotency key và disable unsafe duplicate submit.
+- [x] Redirect đến trip editor sau success.
+
+**Dependency:** T031, T047–T048.
+**Verify:** Invalid states rõ ràng; double submit không tạo duplicate.
+
+### T050 — Trip editor shell
+
+- [x] Tạo `/trips/[tripId]` và protected data loading.
+- [x] Day navigation và role-aware controls.
+- [x] Not-found/forbidden/deleted states.
+- [x] Tái sử dụng UI hiện có khi phù hợp.
+
+**Dependency:** T048–T049.
+**Verify:** Owner/editor/viewer thấy đúng controls.
+
+### T051 — Place search và add stop
+
+- [x] Search combobox có debounce, cancellation và retry.
+- [x] Thêm selected place snapshot vào day.
+- [x] Search provider lỗi không làm mất itinerary.
+
+**Dependency:** T046–T050.
+**Verify:** Search/add/error E2E paths đạt.
+
+### T052 — Stop editing và ordering
+
+- [x] Edit notes, remove, reorder và move day.
+- [x] Accessible keyboard controls hoặc tương đương.
+- [x] Rollback/refresh an toàn khi mutation lỗi.
+
+**Dependency:** T035, T050–T051.
+**Verify:** Persisted order đúng sau reload và failure.
+
+### T053 — Save state và conflict handling
+
+- [x] Hiển thị saving/saved/failed.
+- [x] Debounce autosave có sequence/version protection.
+- [x] Version conflict không ghi đè âm thầm.
+- [x] Cho reload/retry và giữ local form state khi có thể.
+
+**Dependency:** T037–T038, T050–T052.
+**Verify:** Concurrent-window E2E trả conflict và UI xử lý rõ ràng.
+
+### T054 — Real map và route preview
+
+- [x] Thay fake SVG/map marker bằng map thật.
+- [x] Lazy-load map library.
+- [x] Render persisted markers và route geometry.
+- [x] Hiển thị distance/duration/source và fallback state.
+
+**Dependency:** T046, T050–T053.
+**Verify:** Journey A route path đạt; provider outage giữ được itinerary.
+
+## Phase 9 — Collaboration
+
+### T055 — Invitation domain và repository
+
+- [x] Implement invitation lifecycle và permission value.
+- [x] Generate secure raw token, chỉ persist hash.
+- [x] Enforce expiry, uniqueness và authorized inviter.
+- [x] Ghi invitation event vào outbox transactionally.
+
+**Dependency:** T022, T032, T034.
+**Verify:** Domain/repository tests cho accept/decline/revoke/expire đạt.
+
+### T056 — Invitation/member use cases và APIs
+
+- [x] Implement create/view/accept/decline/revoke invitation.
+- [x] Implement change permission/remove member.
+- [x] Không log raw token/email đầy đủ.
+- [x] Revoke có hiệu lực ở request tiếp theo.
+
+**Dependency:** T036, T038, T055.
+**Verify:** HTTP/authorization matrix tests đạt.
+
+### T057 — Collaboration web UI
+
+- [x] Member list và permission controls cho owner.
+- [x] Invitation creation/status UI.
+- [x] Invitation token landing/accept/decline page.
+- [x] Viewer/editor control states cập nhật đúng sau permission change.
+
+**Dependency:** T047, T050, T056.
+**Verify:** Journey C E2E đạt.
+
+**Implementation note:** Journey C Playwright test bao phủ invite → accept với
+quyền VIEW → nâng EDIT → remove member. Test cần live stack cùng owner/member
+storage-state và được skip rõ ràng khi các E2E environment variables chưa được
+cấu hình.
+
+## Phase 10 — Product quality và production gate
+
+### T058 — Analytics events
+
+- [x] Instrument các event đã duyệt trong Specification.
+- [x] Không gửi precise location, token hoặc unnecessary PII.
+- [x] Tránh duplicate analytics khi retry mutation.
+
+**Dependency:** T048–T057.
+**Verify:** Analytics contract/test events đúng journey.
+
+**Implementation note:** Web dùng provider-neutral analytics adapter với strict
+event/property allowlist. Collector có thể cấu hình qua
+`NEXT_PUBLIC_ANALYTICS_URL`; raw token, email, user/trip ID và coordinate không
+được phép xuất hiện trong payload. Mutation events dùng idempotency/domain key
+trong session storage để chống phát trùng khi retry.
+
+### T059 — Accessibility và responsive pass
+
+- [x] Keyboard flow cho auth, form, day và stop controls.
+- [x] Labels, focus, error association và contrast cơ bản.
+- [x] Kiểm tra desktop, tablet và mobile-width web.
+
+**Dependency:** T048–T057.
+**Verify:** Automated accessibility smoke và manual critical-flow pass.
+
+**Implementation note:** Focus-visible và reduced-motion rules áp dụng toàn web;
+form errors liên kết bằng `aria-describedby`, planner day controls công bố trạng
+thái hiện tại, place search dùng combobox/listbox semantics và touch targets được
+mở rộng. Playwright smoke chạy login ở 375/768/1440 px và kiểm tra keyboard focus;
+live execution cần `E2E_BASE_URL`.
+
+### T060 — Full automated test matrix
+
+- [x] Unit, integration, RLS, contract và E2E suites.
+- [x] Journey A/B/C và mandatory edge cases.
+- [x] Không tính generated Hello World tests là coverage nghiệp vụ.
+
+**Dependency:** T023–T059.
+**Verify:** Toàn bộ required suites pass từ clean environment.
+
+**Implementation note:** Đã thêm fail-closed matrix runner, loại generated
+Hello World suites khỏi active product coverage, và bổ sung Playwright Journey
+A/B cùng duplicate-create, provider-outage và optimistic-conflict cases. T060
+giữ trạng thái chưa hoàn thành cho đến khi PostgreSQL/Supabase sạch và live web
+fixtures chạy xanh toàn bộ matrix.
+
+**Verification update (2026-09-24):** 4/4 accessibility/responsive Playwright
+tests đạt trên Edge với Next.js dev server, không cần Docker. Journey A/B/C,
+repository integration và pgTAP/RLS còn chờ môi trường test riêng cùng auth
+fixtures; không chạy test ghi dữ liệu trên Supabase đã kết nối với web.
+Guest-route Playwright smoke cũng đạt 4/4 trên cùng môi trường web, bao gồm
+giữ return URL khi điều hướng về login.
+Full matrix runner hỗ trợ pgTAP trên Supabase test project riêng qua
+`TEST_DATABASE_URL` và Supabase CLI `--db-url`, không cần Docker; runner từ chối
+URL không hợp lệ hoặc trùng `DATABASE_URL` và yêu cầu
+`TEST_DATABASE_ISOLATED=1` trước khi chạy các suite có ghi dữ liệu.
+
+**Verification update (2026-09-25):** Backend unit và service E2E suites đạt
+ngoài sandbox sau khi sandbox gây lỗi đọc `node_modules` (`EPERM`); web
+auth/API/analytics contract tests đạt. Full matrix preflight dừng đúng vì môi
+trường hiện thiếu isolated database URL, live web URL và authenticated fixtures;
+Docker daemon cũng chưa chạy. Chi tiết nằm trong `test-matrix.md`.
+
+**Verification completed (2026-09-25):** `pnpm test:matrix` đạt toàn bộ trên
+Supabase local isolated (`TEST_DATABASE_ISOLATED=1`) với owner/member fixtures
+được tạo cục bộ. Matrix bao gồm backend unit (14 Turbo tasks), repository
+integration (7 tasks), 79 pgTAP constraints/RLS checks, backend HTTP/service
+E2E (9 tasks), web contract tests và 10 Playwright tests gồm Journey A/B/C.
+
+### T061 — Resilience/load smoke
+
+- [x] Burst search/routing kiểm tra cache và rate limit.
+- [x] Core/Gateway/Geo dependency outage behavior.
+- [x] Redis restart và BullMQ job recovery.
+- [x] Outbox backlog catch-up và duplicate safety.
+
+**Dependency:** T040–T060.
+**Verify:** Kết quả nằm trong threshold được ghi lại; không mất dữ liệu/event.
+
+**Verification completed (2026-09-29):** Geo service coalesces 20 concurrent
+normalized searches into one provider call; a later equivalent request is served
+from cache. Gateway accepts two requests at the configured public-window limit
+and returns stable `429` responses for the remaining six requests of an
+eight-request burst. Geo provider failure releases the in-flight key for a
+later retry; Gateway rate-limit-store failure remains fail-open without logging
+request credentials. Outbox continues a claimed batch after a publish failure,
+marks that event `FAILED` for retry, and publishes later events. Replayed
+notification events produce one delivery through the processed-event claim.
+With the Redis-only Compose service, `verify-redis-durability.mjs` enqueued a
+BullMQ waiting job, restarted Redis, and confirmed the same job remained
+`waiting`; the Redis container was then stopped.
+
+### T062 — CI/CD monorepo update
+
+- [x] Quality gates theo affected workspace.
+- [x] Clean migration test, integration stack và E2E.
+- [x] Build/scan đúng từng image thay vì root single-image assumption.
+- [x] Giữ signing, SBOM và provenance cho published images.
+
+**Dependency:** T014–T017, T060–T061.
+**Verify:** Pull-request CI và staging pipeline pass.
+
+**Implementation note:** CI detects backend and web changes independently, runs
+their own install/quality/build gates, then starts an isolated Supabase stack,
+active Compose services and browser fixtures before running the fail-closed full
+matrix. CD builds, scans, generates SBOM/provenance and keylessly signs separate
+GHCR images for Gateway, Core Trip, Geo, Notification Worker, Bull Board and
+web. Staging deployment remains T063.
+
+### T063 — Staging deployment
+
+- [ ] Deploy active services và web với secret manager.
+- [ ] Chạy migrations theo release procedure.
+- [ ] Run health/readiness và Journey A/B/C smoke.
+- [ ] Xác minh metrics/logs/correlation ID.
+
+**Dependency:** T062.
+**Verify:** Staging acceptance criteria trong Specification đạt.
+
+### T064 — Recovery và rollback rehearsal
+
+- [ ] Test database backup/restore.
+- [ ] Test application rollback không phá migration compatibility.
+- [ ] Test BullMQ failed-job inspection/replay.
+- [ ] Document provider outage và secret rotation runbooks.
+
+**Dependency:** T063.
+**Verify:** Recovery evidence và runbooks được review.
+
+### T065 — Final acceptance
+
+- [ ] Chạy lại toàn bộ Specification acceptance criteria.
+- [ ] Xác nhận không có critical/high unresolved security issue.
+- [ ] Xác nhận mobile không bị thay đổi.
+- [ ] Cập nhật docs phản ánh implementation thật.
+- [ ] Ghi known limitations và backlog cho specification tiếp theo.
+
+**Dependency:** T064.
+**Verify:** Product owner chấp nhận Gate G7; milestone có thể release production.
+
+## 2. Thứ tự release increments
+
+Để tránh đợi đến T065 mới có kết quả sử dụng được, implementation được chia thành
+các increment có thể demo:
+
+| Increment        | Tasks                   | Demo outcome                                 |
+| ---------------- | ----------------------- | -------------------------------------------- |
+| I0 Foundation    | T001–T018               | Active stack chạy bằng Docker và observable  |
+| I1 Persistence   | T019–T038               | Đăng nhập, tạo/list/get/update trip thật     |
+| I2 Planner       | T043–T054               | Thêm stop, reorder, map và route thật        |
+| I3 Collaboration | T055–T057               | Invite và permission hoạt động               |
+| I4 Durability    | T039–T042 + integration | Outbox → BullMQ → worker an toàn             |
+| I5 Production    | T058–T065               | Staging accepted và recovery được kiểm chứng |
+
+BullMQ infrastructure có thể được xây trước Geo, nhưng acceptance durability chỉ
+được chốt sau khi Core Trip tạo event thật.
+
+## 3. Quy tắc dừng và cập nhật plan
+
+Dừng implementation và quay lại Plan/Spec khi gặp một trong các tình huống:
+
+- Cần thay đổi service boundary hoặc data ownership.
+- Cần thay đổi hành vi owner/editor/viewer đã duyệt.
+- Supabase/PostgreSQL không hỗ trợ transaction/access pattern đã chọn.
+- VietMap contract thực tế không đáp ứng route/search behavior trong spec.
+- Redis + BullMQ không đáp ứng durability đã cam kết.
+- Một dependency mới tạo ra rủi ro security/licensing/operation đáng kể.
+
+Lỗi implementation thông thường không yêu cầu quay lại SDD; sửa trong phạm vi
+task và bổ sung verification tương ứng.

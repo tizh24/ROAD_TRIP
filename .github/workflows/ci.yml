@@ -1,0 +1,160 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches-ignore: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  changes:
+    runs-on: ubuntu-24.04
+    outputs:
+      server: ${{ steps.scope.outputs.server }}
+      web: ${{ steps.scope.outputs.web }}
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - id: scope
+        env:
+          BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          if [ -z "$BASE" ] || [ "$BASE" = "0000000000000000000000000000000000000000" ] || ! git rev-parse --verify "$BASE" >/dev/null 2>&1; then
+            BASE="HEAD~1"
+          fi
+          changed="$(git diff --name-only "$BASE" "$GITHUB_SHA" 2>/dev/null || true)"
+          if [ -z "$changed" ] || printf '%s\n' "$changed" | grep -Eq '^(server/|\.github/|package\.json)'; then echo 'server=true' >> "$GITHUB_OUTPUT"; else echo 'server=false' >> "$GITHUB_OUTPUT"; fi
+          if [ -z "$changed" ] || printf '%s\n' "$changed" | grep -Eq '^(web/|\.github/)'; then echo 'web=true' >> "$GITHUB_OUTPUT"; else echo 'web=false' >> "$GITHUB_OUTPUT"; fi
+
+  backend-quality:
+    name: Quality gate / Backend
+    needs: changes
+    if: needs.changes.outputs.server == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with: { persist-credentials: false }
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
+        with: { node-version: 22 }
+      - run: corepack enable && corepack prepare pnpm@10.32.1 --activate
+      - working-directory: server
+        run: pnpm install --frozen-lockfile && pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build
+
+  web-quality:
+    name: Quality gate / Web
+    needs: changes
+    if: needs.changes.outputs.web == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with: { persist-credentials: false }
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
+        with:
+          {
+            node-version: 22,
+            cache: npm,
+            cache-dependency-path: web/package-lock.json,
+          }
+      - working-directory: web
+        run: npm ci && npm run lint && npm run typecheck && npm test && npm run build
+
+  integration-e2e:
+    name: Clean migration, integration and E2E
+    needs: [changes, backend-quality, web-quality]
+    if: >-
+      ${{ !cancelled() && (needs.backend-quality.result == 'success' || needs.backend-quality.result == 'skipped') && (needs.web-quality.result == 'success' || needs.web-quality.result == 'skipped') && (needs.changes.outputs.server == 'true' || needs.changes.outputs.web == 'true') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      BULL_BOARD_PASSWORD: ci-only-password
+      E2E_BASE_URL: http://127.0.0.1:3000
+      NEXT_PUBLIC_API_URL: http://127.0.0.1:4100
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with: { persist-credentials: false }
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
+        with: { node-version: 22 }
+      - run: corepack enable && corepack prepare pnpm@10.32.1 --activate
+      - name: Install backend dependencies
+        working-directory: server
+        run: pnpm install --frozen-lockfile
+      - name: Start Supabase with retry
+        working-directory: server
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          for attempt in 1 2 3 4 5; do
+            if pnpm exec supabase start; then
+              exit 0
+            fi
+
+            echo "Supabase startup failed; retrying in $((attempt * 15)) seconds"
+            pnpm exec supabase stop || true
+            if [ "$attempt" -lt 5 ]; then
+              sleep $((attempt * 15))
+            fi
+          done
+
+          echo "Supabase failed to start after five attempts"
+          exit 1
+      - working-directory: web
+        run: npm ci && npx playwright install --with-deps chromium
+      - name: Build stack and run isolated matrix
+        working-directory: server
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          eval "$(pnpm exec supabase status -o env | sed 's/^/export /')"
+          export NEXT_PUBLIC_SUPABASE_URL="$API_URL" NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY="$ANON_KEY" SUPABASE_LOCAL_SECRET_KEY="$SERVICE_ROLE_KEY"
+          pnpm platform:up
+
+          for url in \
+            "http://127.0.0.1:4100/health/ready" \
+            "http://127.0.0.1:3000/health"
+          do
+            ready=false
+            for attempt in $(seq 1 60); do
+              if curl --fail --silent "$url" >/dev/null; then
+                ready=true
+                break
+              fi
+              sleep 2
+            done
+
+            if [ "$ready" != true ]; then
+              echo "Service did not become ready: $url"
+              docker compose -f infrastructure/docker-compose.yml ps
+              docker compose -f infrastructure/docker-compose.yml logs --no-color --tail=200
+              exit 1
+            fi
+          done
+
+          node ../web/scripts/prepare-local-e2e.mjs
+          export TEST_DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:54322/postgres TEST_DATABASE_ISOLATED=1
+          export E2E_OWNER_STORAGE_STATE=.e2e/owner.json E2E_MEMBER_STORAGE_STATE=.e2e/member.json
+          export E2E_TRIP_ID="$(jq -r .E2E_TRIP_ID ../web/.e2e/fixture.json)" E2E_MEMBER_EMAIL="$(jq -r .E2E_MEMBER_EMAIL ../web/.e2e/fixture.json)"
+          pnpm test:matrix
+      - name: Collect service diagnostics
+        if: failure()
+        working-directory: server
+        run: |
+          docker compose -f infrastructure/docker-compose.yml ps
+          docker compose -f infrastructure/docker-compose.yml logs --no-color --tail=300
+      - name: Stop services
+        if: always()
+        working-directory: server
+        run: |
+          pnpm platform:down || true
+          pnpm exec supabase stop || true

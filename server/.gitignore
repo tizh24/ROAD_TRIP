@@ -1,0 +1,9 @@
+backend_supabase_plan.md
+node_modules/
+.env
+.env.*
+!.env.example
+dist/
+coverage/
+*.pem
+*.key

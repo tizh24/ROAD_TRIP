@@ -1,0 +1,21 @@
+# Dependencies and generated output
+**/node_modules/
+**/dist/
+**/build/
+**/coverage/
+**/.next/
+**/.expo/
+**/.turbo/
+
+# Local environment and secrets
+**/.env
+**/.env.*
+!**/.env.example
+**/*.pem
+**/*.key
+
+# Local tooling
+**/*.tsbuildinfo
+*.log
+.DS_Store
+Thumbs.db

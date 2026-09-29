@@ -1,0 +1,18 @@
+{
+  "name": "bull-board",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node --check src/main.mjs && node --check src/redact-job-data.mjs",
+    "start": "node src/main.mjs",
+    "test": "node --test src/redact-job-data.test.mjs"
+  },
+  "dependencies": {
+    "@bull-board/api": "^6.15.0",
+    "@bull-board/express": "^6.15.0",
+    "bullmq": "^6.1.1",
+    "express": "^5.1.0",
+    "express-basic-auth": "^1.2.1"
+  }
+}

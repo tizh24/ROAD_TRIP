@@ -1,0 +1,8 @@
+node_modules/
+.turbo/
+dist/
+coverage/
+
+# These services are intentionally outside the current web walking-skeleton.
+apps/monetization-service/
+apps/social-community-service/

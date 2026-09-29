@@ -1,0 +1,223 @@
+import type { QueryExecutor, TransactionWork } from '@roadtrip/db-client';
+import type { Trip } from '../../domain/trip';
+import { Version } from '../../domain/value-objects';
+
+export interface TransactionalDatabase extends QueryExecutor {
+  transaction<Result>(work: TransactionWork<Result>): Promise<Result>;
+}
+
+export interface TripListRow {
+  readonly id: string;
+  readonly title: string;
+  readonly startDate: string;
+  readonly endDate: string;
+  readonly status: string;
+  readonly role: string;
+  readonly permission: string;
+  readonly version: number;
+}
+
+export interface TripDetailRow extends TripListRow {
+  readonly ownerId: string;
+  readonly description: string | null;
+  readonly budgetAmount: number;
+  readonly currency: string;
+  readonly deletedAt: Date | null;
+  readonly days: readonly TripDayRow[];
+}
+
+export interface TripDayRow {
+  readonly id: string;
+  readonly date: string;
+  readonly dayIndex: number;
+  readonly stops: readonly TripStopRow[];
+}
+
+export interface TripStopRow {
+  readonly id: string;
+  readonly placeId: string;
+  readonly name: string;
+  readonly address: string;
+  readonly latitude: number;
+  readonly longitude: number;
+  readonly notes: string | null;
+  readonly stopIndex: number;
+  readonly version: number;
+}
+
+export interface TripUpdate {
+  readonly title: string;
+  readonly description: string | null;
+  readonly startDate: string;
+  readonly endDate: string;
+  readonly budgetAmount: number;
+  readonly currency: string;
+  readonly expectedVersion: Version;
+}
+
+export class TripVersionConflictError extends Error {
+  constructor() {
+    super('Trip version does not match the expected version.');
+    this.name = 'TripVersionConflictError';
+  }
+}
+
+export class TripRepository {
+  constructor(private readonly database: TransactionalDatabase) {}
+
+  async create(trip: Trip): Promise<void> {
+    await this.database.transaction(async (transaction) => {
+      await transaction.query(
+        `INSERT INTO trip_schema.trips
+          (id, owner_id, title, description, start_date, end_date, status, budget_amount, currency, version)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+         ON CONFLICT (id) DO NOTHING`,
+        [
+          trip.getId().value,
+          trip.getOwnerId().value,
+          trip.getTitle().value,
+          trip.getDescription(),
+          trip.getDateRange().startDate,
+          trip.getDateRange().endDate,
+          trip.getStatus(),
+          trip.getBudget().amount,
+          trip.getBudget().currency.value,
+          trip.getVersion().value,
+        ],
+      );
+      await transaction.query(
+        `INSERT INTO trip_schema.trip_members (trip_id, user_id, role, permission, status)
+         VALUES ($1, $2, 'OWNER', 'EDIT', 'ACTIVE')`,
+        [trip.getId().value, trip.getOwnerId().value],
+      );
+      for (const day of trip.getDays()) {
+        await transaction.query(
+          `INSERT INTO trip_schema.trip_days (trip_id, date, day_index, status)
+           VALUES ($1, $2, $3, 'ACTIVE')`,
+          [trip.getId().value, day.date, day.dayIndex],
+        );
+      }
+      for (const event of trip.pullDomainEvents()) {
+        await transaction.query(
+          `INSERT INTO trip_schema.outbox_events
+            (id, aggregate_type, aggregate_id, event_type, event_version, payload, correlation_id, occurred_at)
+           VALUES ($1, 'trip', $2, 'trip.created.v1', 1, $3::jsonb, $4, $5)`,
+          [
+            event.eventId,
+            event.aggregateId.value,
+            JSON.stringify({
+              tripId: event.payload.tripId.value,
+              ownerId: event.payload.ownerId.value,
+              title: event.payload.title.value,
+              startDate: event.payload.dateRange.startDate,
+              endDate: event.payload.dateRange.endDate,
+              dayCount: event.payload.dayCount,
+            }),
+            event.correlationId,
+            event.occurredAt.toISOString(),
+          ],
+        );
+      }
+    });
+  }
+
+  async listForUser(userId: string): Promise<readonly TripListRow[]> {
+    const result = await this.database.query<TripListRow>(
+      `SELECT t.id, t.title, t.start_date::text AS "startDate", t.end_date::text AS "endDate", t.status,
+              m.role, m.permission, t.version
+         FROM trip_schema.trips t JOIN trip_schema.trip_members m ON m.trip_id = t.id
+        WHERE m.user_id = $1 AND m.status = 'ACTIVE' AND t.deleted_at IS NULL
+        ORDER BY t.updated_at DESC`,
+      [userId],
+    );
+    return result.rows;
+  }
+
+  async getByIdForUser(
+    id: string,
+    userId: string,
+  ): Promise<TripDetailRow | undefined> {
+    const result = await this.database.query<TripDetailRow>(
+      `SELECT t.id, t.owner_id AS "ownerId", t.title, t.description,
+              t.start_date::text AS "startDate", t.end_date::text AS "endDate", t.status,
+              t.budget_amount::float8 AS "budgetAmount", t.currency, t.version,
+              t.deleted_at AS "deletedAt", m.role, m.permission
+         FROM trip_schema.trips t JOIN trip_schema.trip_members m ON m.trip_id = t.id
+        WHERE t.id = $1 AND m.user_id = $2 AND m.status = 'ACTIVE'`,
+      [id, userId],
+    );
+    const trip = result.rows[0];
+    if (!trip) return undefined;
+    const days = await this.database.query<{
+      id: string;
+      date: string;
+      dayIndex: number;
+    }>(
+      `SELECT id, date::text AS date, day_index AS "dayIndex"
+         FROM trip_schema.trip_days WHERE trip_id = $1 ORDER BY day_index`,
+      [id],
+    );
+    const stops = await this.database.query<TripStopRow & { dayId: string }>(
+      `SELECT id, day_id AS "dayId", place_id AS "placeId", name, address,
+              latitude::float8 AS latitude, longitude::float8 AS longitude,
+              notes, stop_index AS "stopIndex", version
+         FROM trip_schema.trip_stops WHERE trip_id = $1 ORDER BY stop_index`,
+      [id],
+    );
+    return {
+      ...trip,
+      days: days.rows.map((day) => ({
+        ...day,
+        stops: stops.rows
+          .filter((stop) => stop.dayId === day.id)
+          .map((stop) => ({
+            id: stop.id,
+            placeId: stop.placeId,
+            name: stop.name,
+            address: stop.address,
+            latitude: stop.latitude,
+            longitude: stop.longitude,
+            notes: stop.notes,
+            stopIndex: stop.stopIndex,
+            version: stop.version,
+          })),
+      })),
+    };
+  }
+
+  async update(id: string, update: TripUpdate): Promise<Version> {
+    const result = await this.database.query<{ version: number }>(
+      `UPDATE trip_schema.trips
+          SET title = $2, description = $3, start_date = $4, end_date = $5,
+              budget_amount = $6, currency = $7, version = version + 1
+        WHERE id = $1 AND deleted_at IS NULL AND version = $8
+        RETURNING version`,
+      [
+        id,
+        update.title,
+        update.description,
+        update.startDate,
+        update.endDate,
+        update.budgetAmount,
+        update.currency,
+        update.expectedVersion.value,
+      ],
+    );
+    const row = result.rows[0];
+    if (!row) throw new TripVersionConflictError();
+    return Version.from(row.version);
+  }
+
+  async softDelete(id: string, expectedVersion: Version): Promise<Version> {
+    const result = await this.database.query<{ version: number }>(
+      `UPDATE trip_schema.trips
+          SET status = 'DELETED', deleted_at = now(), version = version + 1
+        WHERE id = $1 AND deleted_at IS NULL AND version = $2
+        RETURNING version`,
+      [id, expectedVersion.value],
+    );
+    const row = result.rows[0];
+    if (!row) throw new TripVersionConflictError();
+    return Version.from(row.version);
+  }
+}

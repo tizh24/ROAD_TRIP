@@ -1,0 +1,83 @@
+name: CD
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  release-please:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: googleapis/release-please-action@5c625bfb5d1ff62eadeeb3772007f7f66fdcf071
+        with:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+  build-push:
+    name: Build, scan, attest and sign / ${{ matrix.name }}
+    needs: release-please
+    if: >-
+      ${{ !cancelled() && (needs.release-please.result == 'success' || needs.release-please.result == 'skipped') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+      attestations: write
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { name: api-gateway, context: server, file: server/Dockerfile, target: api-gateway }
+          - { name: core-trip-service, context: server, file: server/Dockerfile, target: core-trip-service }
+          - { name: geo-location-service, context: server, file: server/Dockerfile, target: geo-location-service }
+          - { name: notification-worker, context: server, file: server/Dockerfile, target: notification-worker }
+          - { name: bull-board, context: server, file: server/Dockerfile, target: bull-board }
+          - { name: web, context: web, file: web/Dockerfile, target: runtime }
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with: { persist-credentials: false }
+      - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f
+      - uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - id: build
+        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8
+        with:
+          context: ${{ matrix.context }}
+          file: ${{ matrix.file }}
+          target: ${{ matrix.target }}
+          push: true
+          tags: ghcr.io/${{ github.repository }}/${{ matrix.name }}:sha-${{ github.sha }}
+          provenance: mode=max
+          sbom: true
+      - uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
+        with:
+          image-ref: ghcr.io/${{ github.repository }}/${{ matrix.name }}@${{ steps.build.outputs.digest }}
+          format: sarif
+          output: trivy-${{ matrix.name }}.sarif
+          severity: HIGH,CRITICAL
+          exit-code: '1'
+          ignore-unfixed: true
+      - uses: github/codeql-action/upload-sarif@02c5e83432fe5497fd85b873b6c9f16a8578e1d9
+        with:
+          sarif_file: trivy-${{ matrix.name }}.sarif
+      - uses: sigstore/cosign-installer@398d4b0eeef1380460a10c8013a76f728fb906ac
+      - run: cosign sign --yes ghcr.io/${{ github.repository }}/${{ matrix.name }}@${{ steps.build.outputs.digest }}
