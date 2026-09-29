@@ -86,13 +86,22 @@ describe('TripRepository PostgreSQL integration', () => {
     );
 
     await expect(repository.listForUser(ownerId)).resolves.toEqual([
-      expect.objectContaining({ id: tripId, role: 'OWNER', version: 1 }),
+      expect.objectContaining({
+        id: tripId,
+        role: 'OWNER',
+        version: 1,
+        startDate: '2026-09-01',
+        endDate: '2026-09-03',
+      }),
     ]);
     await expect(repository.getByIdForUser(tripId, ownerId)).resolves.toEqual(
       expect.objectContaining({
         id: tripId,
         ownerId,
         title: 'Repository integration trip',
+        startDate: '2026-09-01',
+        endDate: '2026-09-03',
+        budgetAmount: 1_000_000,
       }),
     );
     await expect(

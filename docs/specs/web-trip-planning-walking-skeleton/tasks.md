@@ -647,8 +647,8 @@ live execution cần `E2E_BASE_URL`.
 
 ### T060 — Full automated test matrix
 
-- [ ] Unit, integration, RLS, contract và E2E suites.
-- [ ] Journey A/B/C và mandatory edge cases.
+- [x] Unit, integration, RLS, contract và E2E suites.
+- [x] Journey A/B/C và mandatory edge cases.
 - [x] Không tính generated Hello World tests là coverage nghiệp vụ.
 
 **Dependency:** T023–T059.
@@ -670,6 +670,18 @@ Full matrix runner hỗ trợ pgTAP trên Supabase test project riêng qua
 `TEST_DATABASE_URL` và Supabase CLI `--db-url`, không cần Docker; runner từ chối
 URL không hợp lệ hoặc trùng `DATABASE_URL` và yêu cầu
 `TEST_DATABASE_ISOLATED=1` trước khi chạy các suite có ghi dữ liệu.
+
+**Verification update (2026-09-25):** Backend unit và service E2E suites đạt
+ngoài sandbox sau khi sandbox gây lỗi đọc `node_modules` (`EPERM`); web
+auth/API/analytics contract tests đạt. Full matrix preflight dừng đúng vì môi
+trường hiện thiếu isolated database URL, live web URL và authenticated fixtures;
+Docker daemon cũng chưa chạy. Chi tiết nằm trong `test-matrix.md`.
+
+**Verification completed (2026-09-25):** `pnpm test:matrix` đạt toàn bộ trên
+Supabase local isolated (`TEST_DATABASE_ISOLATED=1`) với owner/member fixtures
+được tạo cục bộ. Matrix bao gồm backend unit (14 Turbo tasks), repository
+integration (7 tasks), 79 pgTAP constraints/RLS checks, backend HTTP/service
+E2E (9 tasks), web contract tests và 10 Playwright tests gồm Journey A/B/C.
 
 ### T061 — Resilience/load smoke
 

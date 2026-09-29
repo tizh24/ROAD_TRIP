@@ -109,7 +109,7 @@ export class InvitationRepository {
   ): Promise<InvitationRow | undefined> {
     return this.database.transaction(async (transaction) => {
       const result = await transaction.query<InvitationRow>(
-        `UPDATE trip_schema.trip_invitations SET status=$4, accepted_user_id=CASE WHEN $4='ACCEPTED' THEN $3 ELSE NULL END, accepted_at=CASE WHEN $4='ACCEPTED' THEN now() ELSE NULL END WHERE token_hash=$1 AND invitee_email=$2 AND status='PENDING' AND expires_at>now() RETURNING id, trip_id AS "tripId", invitee_email AS "inviteeEmail", permission, status, expires_at::text AS "expiresAt", accepted_user_id AS "acceptedUserId", created_at::text AS "createdAt"`,
+        `UPDATE trip_schema.trip_invitations SET status=$4, accepted_user_id=CASE WHEN $4='ACCEPTED' THEN $3::uuid ELSE NULL END, accepted_at=CASE WHEN $4='ACCEPTED' THEN now() ELSE NULL END WHERE token_hash=$1 AND invitee_email=$2 AND status='PENDING' AND expires_at>now() RETURNING id, trip_id AS "tripId", invitee_email AS "inviteeEmail", permission, status, expires_at::text AS "expiresAt", accepted_user_id AS "acceptedUserId", created_at::text AS "createdAt"`,
         [hash(token), email, userId, status],
       );
       const invitation = result.rows[0];

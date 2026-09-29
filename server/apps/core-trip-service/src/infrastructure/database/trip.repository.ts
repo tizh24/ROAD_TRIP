@@ -123,7 +123,7 @@ export class TripRepository {
 
   async listForUser(userId: string): Promise<readonly TripListRow[]> {
     const result = await this.database.query<TripListRow>(
-      `SELECT t.id, t.title, t.start_date AS "startDate", t.end_date AS "endDate", t.status,
+      `SELECT t.id, t.title, t.start_date::text AS "startDate", t.end_date::text AS "endDate", t.status,
               m.role, m.permission, t.version
          FROM trip_schema.trips t JOIN trip_schema.trip_members m ON m.trip_id = t.id
         WHERE m.user_id = $1 AND m.status = 'ACTIVE' AND t.deleted_at IS NULL
@@ -139,8 +139,8 @@ export class TripRepository {
   ): Promise<TripDetailRow | undefined> {
     const result = await this.database.query<TripDetailRow>(
       `SELECT t.id, t.owner_id AS "ownerId", t.title, t.description,
-              t.start_date AS "startDate", t.end_date AS "endDate", t.status,
-              t.budget_amount AS "budgetAmount", t.currency, t.version,
+              t.start_date::text AS "startDate", t.end_date::text AS "endDate", t.status,
+              t.budget_amount::float8 AS "budgetAmount", t.currency, t.version,
               t.deleted_at AS "deletedAt", m.role, m.permission
          FROM trip_schema.trips t JOIN trip_schema.trip_members m ON m.trip_id = t.id
         WHERE t.id = $1 AND m.user_id = $2 AND m.status = 'ACTIVE'`,
@@ -159,7 +159,8 @@ export class TripRepository {
     );
     const stops = await this.database.query<TripStopRow & { dayId: string }>(
       `SELECT id, day_id AS "dayId", place_id AS "placeId", name, address,
-              latitude, longitude, notes, stop_index AS "stopIndex", version
+              latitude::float8 AS latitude, longitude::float8 AS longitude,
+              notes, stop_index AS "stopIndex", version
          FROM trip_schema.trip_stops WHERE trip_id = $1 ORDER BY stop_index`,
       [id],
     );

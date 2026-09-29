@@ -77,6 +77,7 @@ describe('InvitationRepository', () => {
     expect(database.queries.map((entry) => entry.sql)).toEqual(
       expect.arrayContaining([
         expect.stringContaining('status=$4'),
+        expect.stringContaining('$3::uuid'),
         expect.stringContaining('trip_schema.trip_members'),
       ]),
     );

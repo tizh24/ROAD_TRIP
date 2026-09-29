@@ -69,3 +69,35 @@ remains Playwright Chromium.
 - Database integration, pgTAP/RLS, and live browser journeys still require a
   dedicated migrated test database, running backend/web services, and the
   authenticated fixtures above. T060 remains open until those suites pass.
+
+## Verification update (2026-09-25)
+
+- Backend unit/domain/contract tests: passed (14 Turbo tasks). The sandboxed
+  run hit a Windows `EPERM` while Jest read `zod` from `node_modules`; the same
+  suite passed outside the sandbox without code changes.
+- Backend HTTP/service E2E: passed (9 Turbo tasks) outside the sandbox after
+  the same sandboxed `EPERM` read failure.
+- Web auth/API/analytics contract tests: passed (`npm test`).
+- `pnpm test:matrix` correctly exited during preflight because all seven
+  required test environment variables are absent in this shell. No database
+  integration, pgTAP/RLS, or authenticated Journey A/B/C result is claimed.
+- The Docker daemon is unavailable, so an isolated local stack could not be
+  started in this environment. T060 remains open until the complete matrix
+  passes against a dedicated, migrated test database and live fixtures.
+
+## Verification completed (2026-09-25)
+
+The full matrix passed against the migrated local Supabase database with
+`TEST_DATABASE_ISOLATED=1`, live Gateway/Core Trip/Geo/Notification services,
+and fresh local owner/member browser states. `web/scripts/prepare-local-e2e.mjs`
+creates those short-lived fixtures without committing credentials.
+
+- Backend unit, domain, authorization, and contract: 14 Turbo tasks passed.
+- PostgreSQL repository integration: 7 Turbo tasks passed.
+- pgTAP database constraints, roles/grants, invitations, outbox, and RLS:
+  79 checks passed.
+- Backend HTTP and service contract E2E: 9 Turbo tasks passed.
+- Web auth, API contract, and analytics tests passed.
+- Playwright: 10 tests passed, including Journeys A/B/C, duplicate create,
+  provider outage preservation, optimistic conflict state preservation, guest
+  route protection, and accessibility/responsive smoke.

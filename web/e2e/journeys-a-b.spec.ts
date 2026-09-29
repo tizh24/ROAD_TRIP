@@ -28,6 +28,7 @@ test.describe("Journeys A and B — persisted trip planning", () => {
   test("create, retry safely, plan, reload, resume, and preserve data through failures", async ({
     browser,
   }) => {
+    test.setTimeout(120_000);
     const title = `E2E road trip ${Date.now()}`;
     const { startDate, endDate } = futureDateRange();
     const owner = await browser.newContext({ storageState: ownerState });
@@ -175,8 +176,17 @@ test.describe("Journeys A and B — persisted trip planning", () => {
 
 async function addPlace(page: Page, query: string, expectedName: string) {
   const search = page.getByRole("combobox", { name: "Thêm điểm dừng" });
+  const previousStopCount = await page.locator("ol > li").count();
   await search.fill(query);
+  const addResponse = page.waitForResponse(
+    (response) =>
+      response.request().method() === "POST" &&
+      /\/api\/v1\/trips\/[^/]+\/days\/[^/]+\/stops$/.test(response.url()),
+  );
   await page.getByRole("option", { name: new RegExp(expectedName) }).click();
+  expect((await addResponse).ok()).toBe(true);
+  await expect(search).toHaveValue("");
+  await expect(page.locator("ol > li")).toHaveCount(previousStopCount + 1);
   await expect(page.getByText(expectedName, { exact: true })).toBeVisible();
 }
 

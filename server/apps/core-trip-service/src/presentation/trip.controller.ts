@@ -5,6 +5,7 @@ import {
   Get,
   Headers,
   HttpException,
+  Logger,
   Param,
   Patch,
   Post,
@@ -504,6 +505,13 @@ function permission(value: unknown): 'VIEW' | 'EDIT' {
   );
 }
 function responseError(error: unknown): HttpException {
+  if (!(error instanceof TripApplicationError)) {
+    Logger.error(
+      error instanceof Error ? error.message : 'Unexpected Core Trip error.',
+      error instanceof Error ? error.stack : undefined,
+      'CoreTripController',
+    );
+  }
   const applicationError =
     error instanceof TripApplicationError
       ? error

@@ -101,6 +101,17 @@ describe('StopRepository PostgreSQL integration', () => {
     const first = await addStop('first', firstDayId);
     const second = await addStop('second', firstDayId);
     expect([first.stopIndex, second.stopIndex]).toEqual([1, 2]);
+    const loadedTrip = await trips.getByIdForUser(firstTripId, ownerId);
+    const loadedFirstDay = loadedTrip?.days.find(
+      (day) => day.id === firstDayId,
+    );
+    const loadedFirstStop = loadedFirstDay?.stops.find(
+      (stop) => stop.id === first.id,
+    );
+    expect(loadedFirstStop).toMatchObject({
+      latitude: 21.0285,
+      longitude: 105.8542,
+    });
     await stops.reorder(firstTripId, firstDayId, [second.id, first.id]);
     await expect(
       stops.update(firstTripId, first.id, {
