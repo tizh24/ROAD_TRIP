@@ -20,13 +20,19 @@ jobs:
       web: ${{ steps.scope.outputs.web }}
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
-        with: { fetch-depth: 0, persist-credentials: false }
+        with:
+          fetch-depth: 0
+          persist-credentials: false
       - id: scope
-        env: { BASE: ${{ github.event.pull_request.base.sha || github.event.before }} }
+        env:
+          BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
         run: |
-          changed="$(git diff --name-only "$BASE" "$GITHUB_SHA")"
-          if printf '%s\n' "$changed" | grep -Eq '^(server/|\.github/|package\.json)'; then echo 'server=true' >> "$GITHUB_OUTPUT"; else echo 'server=false' >> "$GITHUB_OUTPUT"; fi
-          if printf '%s\n' "$changed" | grep -Eq '^(web/|\.github/)'; then echo 'web=true' >> "$GITHUB_OUTPUT"; else echo 'web=false' >> "$GITHUB_OUTPUT"; fi
+          if [ -z "$BASE" ] || [ "$BASE" = "0000000000000000000000000000000000000000" ] || ! git rev-parse --verify "$BASE" >/dev/null 2>&1; then
+            BASE="HEAD~1"
+          fi
+          changed="$(git diff --name-only "$BASE" "$GITHUB_SHA" 2>/dev/null || true)"
+          if [ -z "$changed" ] || printf '%s\n' "$changed" | grep -Eq '^(server/|\.github/|package\.json)'; then echo 'server=true' >> "$GITHUB_OUTPUT"; else echo 'server=false' >> "$GITHUB_OUTPUT"; fi
+          if [ -z "$changed" ] || printf '%s\n' "$changed" | grep -Eq '^(web/|\.github/)'; then echo 'web=true' >> "$GITHUB_OUTPUT"; else echo 'web=false' >> "$GITHUB_OUTPUT"; fi
 
   backend-quality:
     name: Quality gate / Backend
