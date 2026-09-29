@@ -96,8 +96,18 @@ describe('OutboxPublisher', () => {
     await expect(outbox.publishPending(2)).resolves.toBe(2);
 
     expect(publish).toHaveBeenCalledTimes(2);
-    expect(query.mock.calls[1]?.[0]).toContain("publish_status = 'FAILED'");
-    expect(query.mock.calls[2]?.[0]).toContain("publish_status = 'PUBLISHED'");
+    const failedUpdateCall: unknown = query.mock.calls[1];
+    const publishedUpdateCall: unknown = query.mock.calls[2];
+    expect(failedUpdateCall).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining("publish_status = 'FAILED'"),
+      ]),
+    );
+    expect(publishedUpdateCall).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining("publish_status = 'PUBLISHED'"),
+      ]),
+    );
     expect(metrics.renderPrometheus()).toContain(
       'roadtrip_outbox_events_published_total 1',
     );

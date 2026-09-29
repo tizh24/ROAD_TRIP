@@ -60,9 +60,9 @@ describe('NotificationEventHandler', () => {
       query,
       transaction: <Result>(
         work: (tx: QueryExecutor) => Promise<Result>,
-      ): Promise<Result> => work({ query }),
+      ): Promise<Result> => work({ query } as never),
     };
-    const handler = new NotificationEventHandler(database);
+    const handler = new NotificationEventHandler(database as never);
 
     await handler.handle(event);
     await handler.handle(event);
