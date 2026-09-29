@@ -108,7 +108,7 @@ export default function SearchBar({ placeholder = "Tìm địa danh, cung đư�
             </div>
           ) : (
             <div className="text-center py-6 text-xs text-[#6B7280] font-bold">
-              Không tìm thấy kết quả nào cho "{value}"
+              Không tìm thấy kết quả nào cho &quot;{value}&quot;
             </div>
           )}
         </div>

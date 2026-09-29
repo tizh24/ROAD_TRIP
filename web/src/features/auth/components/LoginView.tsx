@@ -2,6 +2,7 @@
 import React, { useActionState } from "react";
 import { useFormStatus } from "react-dom";
 import Link from "next/link";
+import Image from "next/image";
 import { LoaderCircle, LogIn, Map } from "lucide-react";
 import { login, type LoginState } from "@/features/auth/actions";
 
@@ -140,9 +141,9 @@ export default function LoginView({ authError, nextPath }: LoginViewProps) {
             </p>
             <div className="flex items-center gap-4">
               <div className="flex -space-x-3">
-                <img src="https://i.pravatar.cc/100?img=1" alt="User" className="w-10 h-10 rounded-full border-2 border-gray-900" />
-                <img src="https://i.pravatar.cc/100?img=2" alt="User" className="w-10 h-10 rounded-full border-2 border-gray-900" />
-                <img src="https://i.pravatar.cc/100?img=3" alt="User" className="w-10 h-10 rounded-full border-2 border-gray-900" />
+                <Image src="https://i.pravatar.cc/100?img=1" alt="User" width={40} height={40} unoptimized className="w-10 h-10 rounded-full border-2 border-gray-900" />
+                <Image src="https://i.pravatar.cc/100?img=2" alt="User" width={40} height={40} unoptimized className="w-10 h-10 rounded-full border-2 border-gray-900" />
+                <Image src="https://i.pravatar.cc/100?img=3" alt="User" width={40} height={40} unoptimized className="w-10 h-10 rounded-full border-2 border-gray-900" />
                 <div className="w-10 h-10 rounded-full border-2 border-gray-900 bg-white flex items-center justify-center text-xs font-bold text-gray-900">+1k</div>
               </div>
               <span className="text-sm font-bold text-white/80">Bạn bè đã tham gia</span>

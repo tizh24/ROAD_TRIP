@@ -66,7 +66,7 @@ export default function PartnerHeader() {
                 <div className="p-4 border-b border-gray-50 hover:bg-gray-50 transition-colors cursor-pointer flex gap-3">
                   <div className="w-8 h-8 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center shrink-0">🎉</div>
                   <div>
-                    <p className="text-sm font-semibold text-gray-900 mb-0.5">Chiến dịch "Mùa lúa chín" đã được duyệt!</p>
+                    <p className="text-sm font-semibold text-gray-900 mb-0.5">Chiến dịch &quot;Mùa lúa chín&quot; đã được duyệt!</p>
                     <p className="text-xs text-gray-500">Quảng cáo của bạn sẽ bắt đầu phân phối trên lộ trình Hoàng Su Phì.</p>
                     <p className="text-[10px] text-gray-400 mt-2 font-medium">10 phút trước</p>
                   </div>

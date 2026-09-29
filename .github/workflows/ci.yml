@@ -14,12 +14,12 @@ permissions:
 
 jobs:
   changes:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       server: ${{ steps.scope.outputs.server }}
       web: ${{ steps.scope.outputs.web }}
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a # v5.0.0
         with:
           fetch-depth: 0
           persist-credentials: false
@@ -38,13 +38,13 @@ jobs:
     name: Quality gate / Backend
     needs: changes
     if: needs.changes.outputs.server == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a # v5.0.0
         with: { persist-credentials: false }
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
-        with: { node-version: 22, cache: pnpm, cache-dependency-path: server/pnpm-lock.yaml }
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
+        with: { node-version: 22 }
       - run: corepack enable && corepack prepare pnpm@10.32.1 --activate
       - working-directory: server
         run: pnpm install --frozen-lockfile && pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build
@@ -53,13 +53,18 @@ jobs:
     name: Quality gate / Web
     needs: changes
     if: needs.changes.outputs.web == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a # v5.0.0
         with: { persist-credentials: false }
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
-        with: { node-version: 22, cache: npm, cache-dependency-path: web/package-lock.json }
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
+        with:
+          {
+            node-version: 22,
+            cache: npm,
+            cache-dependency-path: web/package-lock.json,
+          }
       - working-directory: web
         run: npm ci && npm run lint && npm run typecheck && npm test && npm run build
 
@@ -68,12 +73,12 @@ jobs:
     needs: [changes, backend-quality, web-quality]
     if: >-
       ${{ !cancelled() && (needs.backend-quality.result == 'success' || needs.backend-quality.result == 'skipped') && (needs.web-quality.result == 'success' || needs.web-quality.result == 'skipped') && (needs.changes.outputs.server == 'true' || needs.changes.outputs.web == 'true') }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a # v5.0.0
         with: { persist-credentials: false }
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
         with: { node-version: 22 }
       - run: corepack enable && corepack prepare pnpm@10.32.1 --activate
       - working-directory: server

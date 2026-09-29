@@ -1,6 +1,5 @@
 "use client";
 import React from "react";
-import ExpenseChip from "./ExpenseChip";
 
 export interface TripData {
   id: string;

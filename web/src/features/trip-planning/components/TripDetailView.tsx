@@ -4,7 +4,7 @@ import CTAButton from "@/components/ui/CTAButton";
 import AvatarCluster from "@/components/ui/AvatarCluster";
 import StatBadge from "@/components/ui/StatBadge";
 import Link from "next/link";
-import { Lock, Navigation, Star, ShieldCheck, MapPin, Map as MapIcon, ChevronRight } from "lucide-react";
+import { Lock, Navigation, ShieldCheck, Map as MapIcon, ChevronRight } from "lucide-react";
 
 export default function TripDetailView() {
   const [showLoginModal, setShowLoginModal] = useState(false);

@@ -4,7 +4,7 @@ import CTAButton from "./CTAButton";
 import SearchBar from "./SearchBar";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Map, Tent, Users, User, Plus } from "lucide-react";
+import { Map, Tent, Users, Plus } from "lucide-react";
 
 export default function Navbar() {
   const pathname = usePathname() || "";

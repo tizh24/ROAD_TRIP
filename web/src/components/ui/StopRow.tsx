@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import Image from "next/image";
 import { IconTrash, IconArrowUp, IconArrowDown } from "@/components/icons";
 
 export interface StopRowProps {
@@ -33,7 +34,7 @@ export default function StopRow({ stop, index, onRemove, onUpdate, onMoveUp, onM
       {/* Thumbnail */}
       <div className="w-16 h-16 rounded-xl bg-background overflow-hidden shrink-0 border border-border-main">
         {stop.imageUrl ? (
-          <img src={stop.imageUrl} alt={stop.name} className="w-full h-full object-cover" />
+          <Image src={stop.imageUrl} alt={stop.name} width={64} height={64} unoptimized className="w-full h-full object-cover" />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-text-sub text-caption bg-slate-100">No img</div>
         )}

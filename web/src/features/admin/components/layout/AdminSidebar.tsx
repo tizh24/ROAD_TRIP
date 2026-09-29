@@ -1,18 +1,13 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, ShieldAlert, Users, Link2, CreditCard, Settings, ChevronLeft, ChevronRight, Menu, X } from "lucide-react";
+import { LayoutDashboard, ShieldAlert, Users, Link2, CreditCard, Settings, ChevronLeft, Menu, X } from "lucide-react";
 
 export default function AdminSidebar() {
   const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
-
-  // Close mobile sidebar on route change
-  useEffect(() => {
-    setIsMobileOpen(false);
-  }, [pathname]);
 
   const navItems = [
     { id: "overview", path: "/admin", icon: LayoutDashboard, label: "Overview" },
@@ -75,6 +70,7 @@ export default function AdminSidebar() {
               <Link
                 key={item.id}
                 href={item.path}
+                onClick={() => setIsMobileOpen(false)}
                 title={isCollapsed && !isMobileOpen ? item.label : undefined}
                 className={`w-full flex items-center ${isCollapsed && !isMobileOpen ? 'justify-center px-0' : 'justify-start px-3.5 gap-3.5'} py-2.5 rounded-xl text-sm font-medium transition-all duration-300 group ${
                   isActive 

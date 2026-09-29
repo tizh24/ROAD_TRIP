@@ -2,8 +2,9 @@
 import React, { useState } from "react";
 import MapPanel from "@/features/trip-planning/components/MapPanel";
 import PlannerSidebar from "@/features/trip-planning/components/PlannerSidebar";
+import type { StopRowProps } from "@/components/ui/StopRow";
 
-const INITIAL_STOPS = [
+const INITIAL_STOPS: StopRowProps["stop"][] = [
   { id: "s1", name: "Thành phố Hà Giang", category: "Khởi hành", cost: 0, duration: 0, imageUrl: "https://images.unsplash.com/photo-1626021200230-01d0c1598f1f?w=100&q=80" },
   { id: "s2", name: "Cổng trời Quản Bạ", category: "Tham quan", cost: 50000, duration: 2, imageUrl: "https://images.unsplash.com/photo-1596700543598-68e37cb0cc2c?w=100&q=80" },
   { id: "s3", name: "Rừng thông Yên Minh", category: "Lưu trú", cost: 350000, duration: 12, imageUrl: "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=100&q=80" },
@@ -13,7 +14,7 @@ export default function TripPlannerView() {
   const [stops, setStops] = useState(INITIAL_STOPS);
 
   const handlers = {
-    handleUpdate: (id: string, updates: any) => {
+    handleUpdate: (id: string, updates: Partial<StopRowProps["stop"]>) => {
       setStops(stops.map(s => s.id === id ? { ...s, ...updates } : s));
     },
     handleRemove: (id: string) => {

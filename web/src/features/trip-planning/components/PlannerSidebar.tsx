@@ -2,8 +2,17 @@ import React from "react";
 import StopRow from "@/components/ui/StopRow";
 import CTAButton from "@/components/ui/CTAButton";
 import { Wallet, Clock, Plus, Wand2 } from "lucide-react";
+import type { StopRowProps } from "@/components/ui/StopRow";
 
-export default function PlannerSidebar({ stops, handlers }: { stops: any[], handlers: any }) {
+type Stop = StopRowProps["stop"];
+type PlannerHandlers = {
+  handleUpdate: (id: string, updates: Partial<Stop>) => void;
+  handleRemove: (id: string) => void;
+  handleMoveUp: (index: number) => void;
+  handleMoveDown: (index: number) => void;
+};
+
+export default function PlannerSidebar({ stops, handlers }: { stops: Stop[]; handlers: PlannerHandlers }) {
   const { handleUpdate, handleRemove, handleMoveUp, handleMoveDown } = handlers;
   
   const totalCost = stops.reduce((sum, s) => sum + s.cost, 0);
@@ -72,7 +81,7 @@ export default function PlannerSidebar({ stops, handlers }: { stops: any[], hand
               stop={stop} 
               index={idx} 
               onRemove={() => handleRemove(stop.id)}
-              onUpdate={(u: any) => handleUpdate(stop.id, u)}
+              onUpdate={(updates) => handleUpdate(stop.id, updates)}
               onMoveUp={() => handleMoveUp(idx)}
               onMoveDown={() => handleMoveDown(idx)}
             />

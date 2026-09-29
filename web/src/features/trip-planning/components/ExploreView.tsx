@@ -1,7 +1,6 @@
 "use client";
 import React, { useState } from "react";
 import TripCard, { TripData } from "@/components/ui/TripCard";
-import MapMarker from "@/components/ui/MapMarker";
 import { Search, Map as MapIcon, List, SlidersHorizontal, MapPin } from "lucide-react";
 
 const EXPLORE_TRIPS: TripData[] = [
@@ -12,7 +11,6 @@ const EXPLORE_TRIPS: TripData[] = [
 ];
 
 export default function ExploreView() {
-  const [budget, setBudget] = useState(2000000);
   const [hoveredTripId, setHoveredTripId] = useState<string | null>(null);
   const [showMobileMap, setShowMobileMap] = useState(false);
   

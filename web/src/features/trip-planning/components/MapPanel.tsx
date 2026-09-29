@@ -1,8 +1,9 @@
 import React from "react";
 import MapMarker from "@/components/ui/MapMarker";
 import { Navigation } from "lucide-react";
+import type { StopRowProps } from "@/components/ui/StopRow";
 
-export default function MapPanel({ stops }: { stops: any[] }) {
+export default function MapPanel({ stops }: { stops: StopRowProps["stop"][] }) {
   return (
     <div className="flex-1 relative bg-gray-100 overflow-hidden flex items-center justify-center">
       {/* Background Graphic */}

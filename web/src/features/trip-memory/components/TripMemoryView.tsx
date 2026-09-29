@@ -1,7 +1,6 @@
 "use client";
 import React from "react";
 import CTAButton from "@/components/ui/CTAButton";
-import ExpenseChip from "@/components/ui/ExpenseChip";
 import { Receipt, Share2, Printer, CheckCircle2, CircleDashed, AlertCircle, Camera, MapPin, Coffee, Fuel, Bed } from "lucide-react";
 
 export default function TripMemoryView() {

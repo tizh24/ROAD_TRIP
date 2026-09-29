@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { Star, MessageSquare } from "lucide-react";
+import { Star } from "lucide-react";
 
 export default function PartnerReviewsPanel() {
   return (
