@@ -5,13 +5,14 @@ import {
   hasSupabaseAuthCookie,
   isProtectedRoute,
 } from "@/lib/auth/route-protection";
-import { getSupabaseConfig } from "./config";
+import { getSupabaseConfig, supabaseCookieOptions } from "./config";
 
 export async function refreshSupabaseSession(request: NextRequest) {
   let response = NextResponse.next({ request });
   const hadAuthCookie = hasSupabaseAuthCookie(request.cookies.getAll());
   const { supabaseUrl, supabasePublishableKey } = getSupabaseConfig();
   const supabase = createServerClient(supabaseUrl, supabasePublishableKey, {
+    cookieOptions: supabaseCookieOptions,
     cookies: {
       getAll: () => request.cookies.getAll(),
       setAll(cookiesToSet) {
