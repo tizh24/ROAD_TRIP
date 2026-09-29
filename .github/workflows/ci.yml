@@ -88,11 +88,12 @@ jobs:
       - name: Build stack and run isolated matrix
         working-directory: server
         run: |
+          eval "$(pnpm exec supabase status -o env | sed 's/^/export /')"
+          export NEXT_PUBLIC_API_URL=http://127.0.0.1:4100
+          export NEXT_PUBLIC_SUPABASE_URL="$API_URL" NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY="$ANON_KEY" SUPABASE_LOCAL_SECRET_KEY="$SERVICE_ROLE_KEY"
           export BULL_BOARD_PASSWORD=ci-only-password
           pnpm platform:up
-          eval "$(pnpm exec supabase status -o env | sed 's/^/export /')"
-          export E2E_BASE_URL=http://127.0.0.1:3000 NEXT_PUBLIC_API_URL=http://127.0.0.1:4100
-          export NEXT_PUBLIC_SUPABASE_URL="$API_URL" NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY="$ANON_KEY" SUPABASE_LOCAL_SECRET_KEY="$SERVICE_ROLE_KEY"
+          export E2E_BASE_URL=http://127.0.0.1:3000
           node ../web/scripts/prepare-local-e2e.mjs
           export TEST_DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:54322/postgres TEST_DATABASE_ISOLATED=1
           export E2E_OWNER_STORAGE_STATE=.e2e/owner.json E2E_MEMBER_STORAGE_STATE=.e2e/member.json

@@ -22,6 +22,10 @@ file. Install the Supabase CLI, then run these commands from `server/`:
 
 ```powershell
 supabase start
+$supabaseStatus = supabase status -o env
+$env:NEXT_PUBLIC_SUPABASE_URL = ($supabaseStatus | Where-Object { $_ -match '^API_URL=' } | ForEach-Object { ($_ -split '=', 2)[1].Trim('"') })
+$env:NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY = ($supabaseStatus | Where-Object { $_ -match '^ANON_KEY=' } | ForEach-Object { ($_ -split '=', 2)[1].Trim('"') })
+$env:NEXT_PUBLIC_API_URL = 'http://127.0.0.1:4100'
 pnpm platform:up
 ```
 
