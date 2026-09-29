@@ -79,6 +79,7 @@ jobs:
       BULL_BOARD_PASSWORD: ci-only-password
       E2E_BASE_URL: http://127.0.0.1:3000
       NEXT_PUBLIC_API_URL: http://127.0.0.1:4100
+      CORS_ALLOWED_ORIGINS: http://localhost:3000,http://127.0.0.1:3000
     steps:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with: { persist-credentials: false }

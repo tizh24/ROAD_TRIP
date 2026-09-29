@@ -30,6 +30,7 @@ describe('Gateway security middleware (e2e)', () => {
 
   beforeAll(async () => {
     setGatewayTestEnv({
+      CORS_ALLOWED_ORIGINS: 'http://localhost:3000,http://127.0.0.1:3000',
       RATE_LIMIT_MAX: '2',
       REQUEST_BODY_LIMIT_BYTES: '64',
     });
@@ -57,12 +58,12 @@ describe('Gateway security middleware (e2e)', () => {
   it('sets Helmet headers and only allows configured CORS origins', async () => {
     const allowed = await request(app.getHttpServer())
       .get('/api/v1/security-probe')
-      .set('origin', 'http://localhost:3000')
+      .set('origin', 'http://127.0.0.1:3000')
       .set('x-correlation-id', 'security-allowed')
       .expect(200);
 
     expect(allowed.headers['access-control-allow-origin']).toBe(
-      'http://localhost:3000',
+      'http://127.0.0.1:3000',
     );
     expect(allowed.headers['x-content-type-options']).toBe('nosniff');
     expect(allowed.headers['x-correlation-id']).toBe('security-allowed');
