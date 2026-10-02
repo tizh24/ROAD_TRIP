@@ -725,6 +725,12 @@ web. Staging deployment remains T063.
 
 ### T063 — Staging deployment
 
+**Progress (2026-10-03):** Demo deployed to Vercel + local Compose/Quick Tunnel
+with Supabase Cloud Auth/database. Public/browser smoke, migration history and
+partial observability evidence are recorded in [staging.md](staging.md).
+Authenticated journeys, live provider verification and backend secret-manager
+integration remain open; T063 is not yet accepted.
+
 - [ ] Deploy active services và web với secret manager.
 - [ ] Chạy migrations theo release procedure.
 - [ ] Run health/readiness và Journey A/B/C smoke.
