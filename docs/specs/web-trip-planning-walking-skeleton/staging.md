@@ -57,12 +57,15 @@ npx playwright test e2e/guest-routes.spec.ts e2e/accessibility-responsive.spec.t
 
 This is read-only public smoke. It checks web routes, login redirect, readiness,
 unauthenticated API rejection, response correlation ID, and CORS allowlist.
-Eight guest/responsive browser tests passed against this deployment.
+Eight guest/responsive browser tests passed against this deployment. On 2026-10-03,
+the authenticated Cloud owner/member fixture also passed Journey A/B/C on the same
+Vercel deployment: all 10 Playwright tests passed with one worker. The fixture and
+storage-state files are ignored local test data and are never committed.
 
-Authenticated Journey A/B/C additionally require dedicated Cloud owner/member
-fixtures with storage state for this Vercel origin. Do not reuse local Supabase
-sessions or run `prepare-local-e2e.mjs` against Cloud: that script deliberately
-only accepts loopback URLs. Supply `E2E_OWNER_STORAGE_STATE`,
+Authenticated Journey A/B/C use dedicated Cloud owner/member fixtures with
+storage state for this Vercel origin. Do not reuse local Supabase sessions or run
+`prepare-local-e2e.mjs` against Cloud: that script deliberately only accepts
+loopback URLs. Supply `E2E_OWNER_STORAGE_STATE`,
 `E2E_MEMBER_STORAGE_STATE`, `E2E_TRIP_ID`, and `E2E_MEMBER_EMAIL`, then run the two
 journey specs. Existing A/B tests mock Geo success; they do not demonstrate real
 VietMap search/routing and need a separate live provider smoke.
@@ -76,8 +79,6 @@ availability, **not** request-to-outbox-to-worker correlation or delivery.
 ## Remaining acceptance gates
 
 - Backend secret manager selection and integration.
-- Cloud test owner/member credentials or authenticated staging fixtures.
-- Journey A/B/C pass on the deployed stack, including permission changes.
 - Real VietMap key and live provider smoke (the current placeholder cannot pass).
 - Trace an authenticated mutation through Gateway, Core, outbox and worker logs;
   validate delivery metrics and confirm logs omit sensitive payloads.
