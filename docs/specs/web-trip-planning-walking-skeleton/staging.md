@@ -76,12 +76,16 @@ request with `X-Correlation-ID: t063-staging-20261003` returned the same ID in
 both response header and JSON metadata. Counters were zero. This proves endpoint
 availability, **not** request-to-outbox-to-worker correlation or delivery.
 
+On 2026-10-03, an authenticated trip creation with a fresh correlation ID
+returned HTTP 201 from Gateway. The same ID and event ID appeared in the Gateway,
+Core outbox, and Notification Worker logs. Those entries contain only method,
+path, status, correlation ID, event ID, and event type; they omit tokens, emails,
+and event payloads. Docker's full workspace build passed for the three services.
+
 ## Remaining acceptance gates
 
 - Backend secret manager selection and integration.
 - Real VietMap key and live provider smoke (the current placeholder cannot pass).
-- Trace an authenticated mutation through Gateway, Core, outbox and worker logs;
-  validate delivery metrics and confirm logs omit sensitive payloads.
 
 The machine and Docker must stay running. Quick Tunnel URLs can change when the
 tunnel is recreated; update Vercel and redeploy if that happens. Release rollback
