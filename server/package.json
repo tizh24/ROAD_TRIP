@@ -30,6 +30,7 @@
     "platform:up:staging": "pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/infisical-compose.ps1 -Action up",
     "platform:down:staging": "pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/infisical-compose.ps1 -Action down",
     "verify:redis-durability": "node scripts/verify-redis-durability.mjs",
+    "verify:bullmq-replay": "node scripts/verify-bullmq-replay.mjs",
     "verify:platform-shutdown": "node scripts/verify-platform-shutdown.mjs",
     "db:types": "supabase gen types typescript --local --schema public,trip_schema,notification_schema > packages/db-client/src/database.types.ts && prettier --write packages/db-client/src/database.types.ts",
     "check:cycles": "madge --circular --extensions ts apps packages",
