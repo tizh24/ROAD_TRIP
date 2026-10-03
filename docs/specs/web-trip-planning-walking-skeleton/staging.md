@@ -12,15 +12,16 @@ Status: **in progress; not accepted**. Evidence recorded on 2026-10-03
   with the local Supabase database: user/profile foreign keys require matching users.
 - Redis, Gateway, Core Trip, Geo and Notification Worker are running. Supabase
   local was stopped after switching the backend to Cloud PostgreSQL.
-- Vercel stores frontend configuration. Backend credentials currently live in
-  ignored local env files; this does **not** satisfy T063's secret-manager gate.
+- Vercel stores frontend configuration. Backend staging credentials are injected
+  from Infisical using a Windows machine identity. They are not written to an
+  env file by the staging launcher.
 
 ## Repeatable release procedure
 
 1. Select the release commit and confirm CI quality, clean-migration and E2E gates.
-2. Obtain backend credentials from the chosen secret manager. For the current
-   demo, `server/infrastructure/.env` is the explicitly selected local config.
-   Never commit it or print resolved Compose configuration with credentials.
+2. Obtain backend credentials from Infisical. The project ID is a non-secret
+   launcher setting; Universal Auth credentials are stored only in the Windows
+   user environment. Never commit them or print resolved Compose configuration.
 3. Check the target Supabase project and migration history against
    `server/supabase/migrations`. From `server`, use `pnpm exec supabase migration
    list --linked` and `pnpm exec supabase db push --linked --dry-run`. Review any
@@ -28,10 +29,10 @@ Status: **in progress; not accepted**. Evidence recorded on 2026-10-03
    `pnpm exec supabase db push --linked`. Never reset staging or replay an applied
    migration. The initial hosted history contains all nine repository versions,
    ending in `20260818010000`; no new SQL was needed during this demo deployment.
-4. From `server`, deploy the active backend with an explicit env file:
+4. From `server`, deploy the active backend with Infisical injection:
 
    ```powershell
-   docker compose --env-file infrastructure/.env -f infrastructure/docker-compose.yml up --build --wait redis core-trip-service geo-location-service notification-worker api-gateway
+   pnpm platform:up:staging
    ```
 
 5. Confirm Gateway readiness locally and through the running Quick Tunnel.
@@ -82,9 +83,13 @@ Core outbox, and Notification Worker logs. Those entries contain only method,
 path, status, correlation ID, event ID, and event type; they omit tokens, emails,
 and event payloads. Docker's full workspace build passed for the three services.
 
+Infisical Universal Auth was verified with the staging machine identity. Compose
+received 14 secrets from the `staging` environment, then rebuilt and started all
+containers successfully; Gateway, Core, Geo, Worker, and Web readiness endpoints
+returned HTTP 200.
+
 ## Remaining acceptance gates
 
-- Backend secret manager selection and integration.
 - Real VietMap key and live provider smoke (the current placeholder cannot pass).
 
 The machine and Docker must stay running. Quick Tunnel URLs can change when the
