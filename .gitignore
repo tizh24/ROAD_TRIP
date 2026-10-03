@@ -20,4 +20,6 @@
 .DS_Store
 Thumbs.db
 .tunnel-url
+server/.tools/
+server/.cloudflared*.log
 **/test-results/

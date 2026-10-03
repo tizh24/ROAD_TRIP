@@ -1,6 +1,6 @@
 # T063 staging deployment and acceptance
 
-Status: **in progress; not accepted**. Evidence recorded on 2026-10-03
+Status: **accepted for the budget demo staging target**. Evidence recorded on 2026-10-03
 (Asia/Saigon). The current environment is a budget demo, not a production release.
 
 ## Deployment
@@ -68,8 +68,8 @@ storage state for this Vercel origin. Do not reuse local Supabase sessions or ru
 `prepare-local-e2e.mjs` against Cloud: that script deliberately only accepts
 loopback URLs. Supply `E2E_OWNER_STORAGE_STATE`,
 `E2E_MEMBER_STORAGE_STATE`, `E2E_TRIP_ID`, and `E2E_MEMBER_EMAIL`, then run the two
-journey specs. Existing A/B tests mock Geo success; they do not demonstrate real
-LocationIQ search/routing and need a separate live provider smoke.
+journey specs. Existing A/B tests mock Geo success; live provider verification
+is recorded below.
 
 Observed internal `/metrics` endpoints returned HTTP 200 for Core Trip and Geo,
 with outbox and provider/cache metric families present. A public unauthenticated
@@ -84,13 +84,24 @@ path, status, correlation ID, event ID, and event type; they omit tokens, emails
 and event payloads. Docker's full workspace build passed for the three services.
 
 Infisical Universal Auth was verified with the staging machine identity. Compose
-received 14 secrets from the `staging` environment, then rebuilt and started all
+received 15 secrets from the `staging` environment, then rebuilt and started all
 containers successfully; Gateway, Core, Geo, Worker, and Web readiness endpoints
 returned HTTP 200.
 
-## Remaining acceptance gates
+On 2026-10-03, `LOCATIONIQ_API_KEY` was injected only into the Geo service from
+Infisical. A read-only authenticated request through Gateway returned 200 with
+three Dragon Bridge, Da Nang search results. Route preview returned 201 with
+4,685 meters, 452 seconds and 125 GeoJSON coordinates. The same requests through
+the active Quick Tunnel returned the same statuses and correlation ID, while CORS
+returned exactly `https://tripz-vn.vercel.app`. The Vercel production alias was
+then redeployed with the current tunnel URL; `/health`, `/`, and the repository
+public smoke all returned successfully.
 
-- `LOCATIONIQ_API_KEY` in Infisical staging and live search/route smoke.
+## Acceptance result
+
+T063 is complete for the budget demo staging target. Quick Tunnel is ephemeral:
+keep the local `cloudflared` process and Docker running; if it recreates the URL,
+update Vercel `NEXT_PUBLIC_API_URL` and redeploy before the next public smoke.
 
 The machine and Docker must stay running. Quick Tunnel URLs can change when the
 tunnel is recreated; update Vercel and redeploy if that happens. Release rollback

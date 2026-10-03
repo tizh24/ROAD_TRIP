@@ -55,7 +55,7 @@ for (const [origin, allowed] of [[web.origin, true], ['https://t063-untrusted.in
   }
 }
 console.log('PASS CORS allowlist');
-console.log('Public smoke passed. Authenticated journeys, live VietMap and end-to-end event tracing remain separate acceptance gates.');
+console.log('Public smoke passed. Authenticated journeys, live provider verification and end-to-end event tracing remain separate acceptance gates.');
 
 function publicUrl(name) {
   assert.ok(process.env[name], `Missing ${name}`);

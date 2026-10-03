@@ -172,7 +172,7 @@ Mỗi model phải nằm đúng layer:
 - HTTP: create/update/list/detail/search/route DTO.
 - Event: `TripCreatedV1`, `TripInvitationCreatedV1`.
 - Read: trip list summary và trip planner detail.
-- Provider: VietMap request/response models chỉ nằm trong geo adapter.
+- Provider: LocationIQ request/response models chỉ nằm trong geo adapter.
 
 ## 5. Database plan
 
@@ -420,7 +420,7 @@ thật.
 - Form state tách khỏi server state.
 - Mutation dùng optimistic UI chỉ khi rollback an toàn.
 - Autosave được debounce, có sequence/version protection và trạng thái visible.
-- Không đặt service-role credential hoặc VietMap secret trong browser bundle.
+- Không đặt service-role credential hoặc LocationIQ secret trong browser bundle.
 
 ### 9.5 Map
 
@@ -487,7 +487,7 @@ Mỗi deployable phải validate environment khi startup. Nhóm config:
 - Redis URL và cache TTL.
 - Redis/BullMQ connection, queue names, prefixes, concurrency, retry, backoff và
   failed-job retention.
-- VietMap base URL, server key, timeouts.
+- LocationIQ base URL, server key, timeouts.
 - CORS allowlist và rate limits.
 
 Commit `.env.example` không chứa secret. Local secrets nằm trong ignored env file;
@@ -500,7 +500,7 @@ production lấy từ platform secret manager.
 - Không log JWT, invitation raw token, email đầy đủ, coordinate chính xác hoặc
   provider secret.
 - Metrics: request count/latency/error, DB latency, outbox lag, publish failure,
-  queue depth, consumer failure, Redis hit rate và VietMap latency.
+  queue depth, consumer failure, Redis hit rate và LocationIQ latency.
 - Sentry cho unhandled exceptions; OpenTelemetry hook được chuẩn bị cho trace.
 - Health endpoints tách liveness/readiness.
 
@@ -527,7 +527,7 @@ production lấy từ platform secret manager.
 - Stop reorder/move.
 - Optimistic version conflict.
 - Invitation lifecycle.
-- VietMap response/error mapping và cache key normalization.
+- LocationIQ response/error mapping và cache key normalization.
 
 ### 14.2 Integration
 
@@ -616,7 +616,7 @@ Workflow hiện tại tham chiếu reusable CI và root Docker context; cần x�
 ### Phase 4 — Geo integration
 
 - Place search và route preview.
-- VietMap adapter, Redis cache và resilience.
+- LocationIQ adapter, Redis cache và resilience.
 - Persisted stops hiển thị trên real map.
 
 ### Phase 5 — Collaboration
@@ -660,7 +660,7 @@ Workflow hiện tại tham chiếu reusable CI và root Docker context; cần x�
 | Supabase RLS và privileged backend lệch quyền | Một permission matrix dùng chung cho service tests và RLS tests            |
 | Migration cũ trùng/xung đột                   | Audit lịch sử; chỉ thêm corrective migration; clean-reset test trong CI    |
 | Distributed transaction                       | Local DB transaction + outbox; không dùng cross-service transaction        |
-| VietMap outage/cost                           | Timeout, cache, circuit breaker, quota metrics và fallback UI              |
+| LocationIQ outage/cost                        | Timeout, cache, circuit breaker, quota metrics và fallback UI              |
 | Duplicate events                              | Event ID, processed-event store và idempotent consumer                     |
 | Docker monorepo sai artifact                  | Workspace-aware multi-stage builds và image smoke tests                    |
 | Web mock lẫn dữ liệu thật                     | Xóa hard-coded operational data; explicit demo fixtures chỉ trong dev/test |

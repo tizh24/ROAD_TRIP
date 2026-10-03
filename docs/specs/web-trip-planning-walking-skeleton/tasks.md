@@ -729,17 +729,16 @@ web. Staging deployment remains T063.
 
 ### T063 — Staging deployment
 
-**Progress (2026-10-03):** Demo deployed to Vercel + local Compose/Quick Tunnel
-with Supabase Cloud Auth/database. Public/browser smoke, migration history and
-partial observability evidence are recorded in [staging.md](staging.md).
-Authenticated journeys and backend secret-manager integration đã được xác minh.
-LocationIQ live provider smoke remains open; T063 is not yet accepted.
+**Completed (2026-10-03):** Demo deployed to Vercel + local Compose/Quick Tunnel
+with Supabase Cloud Auth/database. Public/browser smoke, migration history,
+authenticated journeys, secret-manager integration, observability evidence and
+live LocationIQ search/routing are recorded in [staging.md](staging.md).
 
 - [x] Deploy active services và web với secret manager.
 - [x] Chạy migrations theo release procedure.
 - [x] Run health/readiness và Journey A/B/C smoke.
 - [x] Xác minh metrics/logs/correlation ID.
-- [ ] Add `LOCATIONIQ_API_KEY` in Infisical staging and run live search/route smoke.
+- [x] Add `LOCATIONIQ_API_KEY` in Infisical staging and run live search/route smoke.
 
 **Dependency:** T062.
 **Verify:** Staging acceptance criteria trong Specification đạt.
