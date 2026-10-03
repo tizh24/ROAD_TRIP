@@ -32,6 +32,12 @@ $composeArgs = switch ($Action) {
 }
 
 try {
+  if ($Action -ne 'down') {
+    & $infisical run --token=$token --projectId=$projectId --env=$environment -- powershell.exe -NoProfile -Command "if ([string]::IsNullOrWhiteSpace(`$env:LOCATIONIQ_API_KEY) -or `$env:LOCATIONIQ_API_KEY -eq 'local-compose-placeholder') { exit 1 }"
+    if ($LASTEXITCODE -ne 0) {
+      throw 'Infisical staging must contain a non-placeholder LOCATIONIQ_API_KEY before configuration or deployment.'
+    }
+  }
   & $infisical run --token=$token --projectId=$projectId --env=$environment -- docker compose -f infrastructure/docker-compose.yml @composeArgs
   exit $LASTEXITCODE
 } finally {

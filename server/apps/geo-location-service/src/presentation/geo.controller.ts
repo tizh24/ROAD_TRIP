@@ -14,7 +14,7 @@ import {
 } from '@roadtrip/contracts';
 import { getCorrelationId } from '@roadtrip/observability';
 import { GeoService } from '../application/geo.service';
-import { VietMapError } from '../infrastructure/vietmap/vietmap.adapter';
+import { GeoProviderError } from '../application/geo-provider.port';
 import { GeoMetrics } from '../infrastructure/observability/geo-metrics';
 import { GeoInternalGuard } from './geo-internal.guard';
 
@@ -75,8 +75,9 @@ function correlationId(): string {
   return getCorrelationId() ?? 'unknown';
 }
 function geoError(error: unknown): HttpException {
-  const code = error instanceof VietMapError ? error.code : 'VALIDATION_FAILED';
-  const status = error instanceof VietMapError ? 503 : 400;
+  const code =
+    error instanceof GeoProviderError ? error.code : 'VALIDATION_FAILED';
+  const status = error instanceof GeoProviderError ? 503 : 400;
   return new HttpException(
     {
       error: {

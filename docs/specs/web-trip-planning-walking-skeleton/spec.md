@@ -1,9 +1,11 @@
 # Web Trip Planning Walking Skeleton — Specification
 
-**Version:** 1.0.0
+**Version:** 1.1.0
 **Status:** Approved
 **Approved:** 2026-08-14
 **Created:** 2026-08-14
+**Revised:** 2026-10-03 — staging geo provider must support server-side place
+search and route geometry without exposing provider credentials to browsers.
 **Target:** Web-first
 
 ## 1. Mục tiêu
@@ -126,6 +128,9 @@ Owner hoặc member có quyền chỉnh sửa có thể:
 Nếu tìm kiếm địa điểm tạm thời không khả dụng, lịch trình đã lưu vẫn phải xem và
 chỉnh sửa được ở những phần không phụ thuộc tìm kiếm. Người dùng được thông báo
 rõ và có thể thử lại.
+
+Provider tìm kiếm chỉ được gọi từ backend. Provider key không được xuất hiện
+trong trình duyệt, API response hoặc telemetry.
 
 ### 4.7 Sắp xếp và xóa điểm dừng
 

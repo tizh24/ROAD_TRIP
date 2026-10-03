@@ -36,9 +36,9 @@ Status: **in progress; not accepted**. Evidence recorded on 2026-10-03
    ```
 
 5. Confirm Gateway readiness locally and through the running Quick Tunnel.
-   Set `CORS_ALLOWED_ORIGINS` to the exact Vercel origin. Supply a real VietMap
-   server key through the chosen secret system before live provider acceptance;
-   the current Compose Geo service still contains a placeholder key.
+   Set `CORS_ALLOWED_ORIGINS` to the exact Vercel origin. Supply
+   `LOCATIONIQ_API_KEY` through Infisical before live provider acceptance. The
+   Geo service reads it only server-side; never place it in Vercel.
 6. Set Vercel Production `NEXT_PUBLIC_API_URL` to the current Tunnel URL plus
    `/api/v1`. Both Supabase public variables must point to the same Cloud project
    as backend Auth. Rebuild/redeploy after changing public variables.
@@ -69,7 +69,7 @@ storage state for this Vercel origin. Do not reuse local Supabase sessions or ru
 loopback URLs. Supply `E2E_OWNER_STORAGE_STATE`,
 `E2E_MEMBER_STORAGE_STATE`, `E2E_TRIP_ID`, and `E2E_MEMBER_EMAIL`, then run the two
 journey specs. Existing A/B tests mock Geo success; they do not demonstrate real
-VietMap search/routing and need a separate live provider smoke.
+LocationIQ search/routing and need a separate live provider smoke.
 
 Observed internal `/metrics` endpoints returned HTTP 200 for Core Trip and Geo,
 with outbox and provider/cache metric families present. A public unauthenticated
@@ -90,7 +90,7 @@ returned HTTP 200.
 
 ## Remaining acceptance gates
 
-- Real VietMap key and live provider smoke (the current placeholder cannot pass).
+- `LOCATIONIQ_API_KEY` in Infisical staging and live search/route smoke.
 
 The machine and Docker must stay running. Quick Tunnel URLs can change when the
 tunnel is recreated; update Vercel and redeploy if that happens. Release rollback

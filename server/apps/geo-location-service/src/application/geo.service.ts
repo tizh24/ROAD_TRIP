@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import type { Place, RoutePreviewRequest } from '@roadtrip/contracts';
 import type { GeoLocationConfig } from '@roadtrip/config';
 import { GeoRedisCache } from '../infrastructure/cache/geo-redis-cache';
-import { VietMapAdapter } from '../infrastructure/vietmap/vietmap.adapter';
+import type { GeoProvider, RoutePreview } from './geo-provider.port';
 import { GeoMetrics } from '../infrastructure/observability/geo-metrics';
 
 @Injectable()
@@ -11,13 +11,10 @@ export class GeoService {
     string,
     Promise<readonly Place[]>
   >();
-  private readonly pendingRoutes = new Map<
-    string,
-    Promise<Awaited<ReturnType<VietMapAdapter['previewRoute']>>>
-  >();
+  private readonly pendingRoutes = new Map<string, Promise<RoutePreview>>();
 
   constructor(
-    private readonly adapter: VietMapAdapter,
+    private readonly adapter: GeoProvider,
     private readonly cache: GeoRedisCache,
     private readonly config: GeoLocationConfig,
     private readonly metrics: GeoMetrics,
@@ -49,14 +46,11 @@ export class GeoService {
   }
 
   async route(input: RoutePreviewRequest): Promise<{
-    preview: Awaited<ReturnType<VietMapAdapter['previewRoute']>>;
+    preview: RoutePreview;
     source: 'cache' | 'provider';
   }> {
     const key = this.cache.routeKey(input.coordinates, input.vehicle);
-    const cached =
-      await this.cache.get<Awaited<ReturnType<VietMapAdapter['previewRoute']>>>(
-        key,
-      );
+    const cached = await this.cache.get<RoutePreview>(key);
     if (cached) {
       this.metrics.recordCacheHit();
       return { preview: cached, source: 'cache' };

@@ -98,9 +98,9 @@ export const geoLocationConfigSchema = z.object({
   INTERNAL_SERVICE_TOKEN: z.string().min(32),
   GEO_SEARCH_CACHE_TTL_SECONDS: positiveInteger.default(300),
   GEO_ROUTE_CACHE_TTL_SECONDS: positiveInteger.default(120),
-  VIETMAP_BASE_URL: url,
-  VIETMAP_API_KEY: z.string().min(1),
-  VIETMAP_TIMEOUT_MS: positiveInteger.default(5000),
+  LOCATIONIQ_BASE_URL: url.default('https://us1.locationiq.com'),
+  LOCATIONIQ_API_KEY: z.string().min(1),
+  LOCATIONIQ_TIMEOUT_MS: positiveInteger.default(5000),
 });
 
 export const notificationWorkerConfigSchema = z.object({

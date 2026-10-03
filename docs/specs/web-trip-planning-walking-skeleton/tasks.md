@@ -468,7 +468,7 @@ Gateway fail-open với log đã redaction khi Redis tạm unavailable.
 **Dependency:** T012.
 **Verify:** Contract validation tests đạt.
 
-### T044 — VietMap adapter
+### T044 — Geo provider adapter
 
 - [x] Implement place search và route calls phía server.
 - [x] Validate provider response.
@@ -477,6 +477,10 @@ Gateway fail-open với log đã redaction khi Redis tạm unavailable.
 
 **Dependency:** T010, T043.
 **Verify:** Adapter tests với fixtures cho success/malformed/timeout/rate-limit.
+
+**Provider amendment (2026-10-03):** LocationIQ thay VietMap cho staging theo
+ADR-0004. Adapter giữ public Geo contract, error code, cache và resilience
+behavior. `car`/`motorcycle` dùng provider `driving` profile.
 
 ### T045 — Geo Redis cache
 
@@ -728,13 +732,14 @@ web. Staging deployment remains T063.
 **Progress (2026-10-03):** Demo deployed to Vercel + local Compose/Quick Tunnel
 with Supabase Cloud Auth/database. Public/browser smoke, migration history and
 partial observability evidence are recorded in [staging.md](staging.md).
-Authenticated journeys, live provider verification and backend secret-manager
-integration remain open; T063 is not yet accepted.
+Authenticated journeys and backend secret-manager integration đã được xác minh.
+LocationIQ live provider smoke remains open; T063 is not yet accepted.
 
-- [ ] Deploy active services và web với secret manager.
-- [ ] Chạy migrations theo release procedure.
-- [ ] Run health/readiness và Journey A/B/C smoke.
-- [ ] Xác minh metrics/logs/correlation ID.
+- [x] Deploy active services và web với secret manager.
+- [x] Chạy migrations theo release procedure.
+- [x] Run health/readiness và Journey A/B/C smoke.
+- [x] Xác minh metrics/logs/correlation ID.
+- [ ] Add `LOCATIONIQ_API_KEY` in Infisical staging and run live search/route smoke.
 
 **Dependency:** T062.
 **Verify:** Staging acceptance criteria trong Specification đạt.

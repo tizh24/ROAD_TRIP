@@ -4,7 +4,7 @@ import { loadGeoLocationConfig } from '@roadtrip/config';
 import { GeoService } from './application/geo.service';
 import { GeoRedisCache } from './infrastructure/cache/geo-redis-cache';
 import { GeoMetrics } from './infrastructure/observability/geo-metrics';
-import { VietMapAdapter } from './infrastructure/vietmap/vietmap.adapter';
+import { LocationIqAdapter } from './infrastructure/locationiq/locationiq.adapter';
 import {
   GeoController,
   GeoMetricsController,
@@ -18,13 +18,13 @@ import { GeoInternalGuard } from './presentation/geo-internal.guard';
     GeoInternalGuard,
     GeoMetrics,
     {
-      provide: VietMapAdapter,
+      provide: LocationIqAdapter,
       useFactory: () => {
         const config = loadGeoLocationConfig();
-        return new VietMapAdapter({
-          baseUrl: config.VIETMAP_BASE_URL,
-          apiKey: config.VIETMAP_API_KEY,
-          timeoutMs: config.VIETMAP_TIMEOUT_MS,
+        return new LocationIqAdapter({
+          baseUrl: config.LOCATIONIQ_BASE_URL,
+          apiKey: config.LOCATIONIQ_API_KEY,
+          timeoutMs: config.LOCATIONIQ_TIMEOUT_MS,
         });
       },
     },
@@ -37,9 +37,9 @@ import { GeoInternalGuard } from './presentation/geo-internal.guard';
     },
     {
       provide: GeoService,
-      inject: [VietMapAdapter, GeoRedisCache, GeoMetrics],
+      inject: [LocationIqAdapter, GeoRedisCache, GeoMetrics],
       useFactory: (
-        adapter: VietMapAdapter,
+        adapter: LocationIqAdapter,
         cache: GeoRedisCache,
         metrics: GeoMetrics,
       ) => new GeoService(adapter, cache, loadGeoLocationConfig(), metrics),

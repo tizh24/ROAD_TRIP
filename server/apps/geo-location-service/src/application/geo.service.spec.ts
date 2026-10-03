@@ -34,7 +34,7 @@ describe('GeoService resilience smoke', () => {
       GEO_ROUTE_CACHE_TTL_SECONDS: 300,
     };
     const service = new GeoService(
-      adapter as never,
+      adapter,
       cache as never,
       config as GeoLocationConfig,
       new GeoMetrics(),
@@ -67,7 +67,7 @@ describe('GeoService resilience smoke', () => {
       previewRoute: jest.fn(),
     };
     const service = new GeoService(
-      adapter as never,
+      adapter,
       cache as never,
       {
         GEO_SEARCH_CACHE_TTL_SECONDS: 300,

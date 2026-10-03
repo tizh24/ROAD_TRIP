@@ -1,10 +1,12 @@
 # Web Trip Planning Walking Skeleton — Technical Plan
 
-**Version:** 1.1.0
+**Version:** 1.2.0
 **Status:** Approved
 **Approved:** 2026-08-14
 **Created:** 2026-08-14
 **Revised:** 2026-08-14 — Redis + BullMQ selected as the initial durable queue
+**Revised:** 2026-10-03 — LocationIQ selected for zero-cost staging geo
+provider; see `../../architecture/adr/0004-locationiq-demo-geo-provider.md`.
 **Specification:** `./spec.md`
 **Constitution:** `../../architecture/constitution.md`
 
@@ -18,7 +20,7 @@ Next.js Web
   → Core Trip Service
   → PostgreSQL/Supabase
   → Geo Location Service
-  → VietMap + Redis
+  → LocationIQ + Redis
   → Transactional Outbox
   → Redis + BullMQ
   → Notification Worker
@@ -39,7 +41,7 @@ Mobile, monetization và các module community ngoài user identity không đư�
 | Web                      | Active                     | Authentication UI, trip list, editor, map và collaboration UI         |
 | API Gateway              | Active                     | Edge auth, rate limit, correlation ID, proxy và API docs entry        |
 | Core Trip Service        | Active                     | Trip aggregate, days, stops, members, invitations và outbox           |
-| Geo Location Service     | Active                     | Place search, route calculation, VietMap adapter và Redis cache       |
+| Geo Location Service     | Active                     | Place search, route calculation, LocationIQ adapter và Redis cache   |
 | Notification Worker      | Active, tối thiểu          | Consume `TripCreated` và `TripInvitationCreated`, ghi delivery result |
 | Social Community Service | Không active               | Không cần cho walking skeleton; Supabase Auth cung cấp identity       |
 | Monetization Service     | Không active               | Ngoài phạm vi                                                         |
@@ -331,7 +333,7 @@ Sử dụng envelope nhất quán theo Constitution. Error codes tối thiểu:
 
 ## 7. Geo Location Service plan
 
-### 7.1 VietMap adapter
+### 7.1 LocationIQ adapter
 
 - Adapter riêng cho place search và routing.
 - Runtime validation cho provider responses.
@@ -339,6 +341,8 @@ Sử dụng envelope nhất quán theo Constitution. Error codes tối thiểu:
 - Circuit breaker để tránh provider outage làm cạn tài nguyên.
 - Provider error được map sang stable internal error.
 - API key chỉ tồn tại server-side.
+- `car` và `motorcycle` cùng dùng provider `driving` profile; public contract
+  không thay đổi.
 
 ### 7.2 Redis cache
 

@@ -14,8 +14,8 @@ describe('Health endpoints (e2e)', () => {
       SUPABASE_JWT_ISSUER: 'http://localhost:54321/auth/v1',
       REDIS_URL: 'redis://localhost:6379',
       INTERNAL_SERVICE_TOKEN: 'test-internal-token-that-is-long-enough',
-      VIETMAP_BASE_URL: 'https://maps.vietmap.vn',
-      VIETMAP_API_KEY: 'test-key',
+      LOCATIONIQ_BASE_URL: 'https://us1.locationiq.com',
+      LOCATIONIQ_API_KEY: 'test-key',
     });
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],

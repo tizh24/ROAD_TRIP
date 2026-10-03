@@ -81,9 +81,9 @@ services:
       INTERNAL_SERVICE_TOKEN: ${INTERNAL_SERVICE_TOKEN:-local-compose-token-change-before-production}
       GEO_SEARCH_CACHE_TTL_SECONDS: 300
       GEO_ROUTE_CACHE_TTL_SECONDS: 120
-      VIETMAP_BASE_URL: https://maps.vietmap.vn
-      VIETMAP_API_KEY: local-compose-placeholder
-      VIETMAP_TIMEOUT_MS: 5000
+      LOCATIONIQ_BASE_URL: ${LOCATIONIQ_BASE_URL:-https://us1.locationiq.com}
+      LOCATIONIQ_API_KEY: ${LOCATIONIQ_API_KEY:-local-compose-placeholder}
+      LOCATIONIQ_TIMEOUT_MS: ${LOCATIONIQ_TIMEOUT_MS:-5000}
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     depends_on:
