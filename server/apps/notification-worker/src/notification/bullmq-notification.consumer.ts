@@ -1,4 +1,9 @@
-import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  OnModuleDestroy,
+  OnModuleInit,
+} from '@nestjs/common';
 import { loadNotificationWorkerConfig } from '@roadtrip/config';
 import { Worker } from 'bullmq';
 import { NotificationEventHandler } from './notification-event-handler';
@@ -21,11 +26,14 @@ export class BullMqNotificationConsumer
           eventType?: unknown;
           correlationId?: unknown;
         };
-        this.logger.log({
-          eventId: event.eventId,
-          eventType: event.eventType,
-          correlationId: event.correlationId,
-        }, 'Notification event delivered');
+        this.logger.log(
+          {
+            eventId: event.eventId,
+            eventType: event.eventType,
+            correlationId: event.correlationId,
+          },
+          'Notification event delivered',
+        );
       },
       {
         connection: { url: config.REDIS_URL },

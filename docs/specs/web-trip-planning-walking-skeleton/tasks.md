@@ -755,11 +755,11 @@ live LocationIQ search/routing are recorded in [staging.md](staging.md).
 
 ### T065 — Final acceptance
 
-- [ ] Chạy lại toàn bộ Specification acceptance criteria.
-- [ ] Xác nhận không có critical/high unresolved security issue.
-- [ ] Xác nhận mobile không bị thay đổi.
-- [ ] Cập nhật docs phản ánh implementation thật.
-- [ ] Ghi known limitations và backlog cho specification tiếp theo.
+- [x] Chạy lại toàn bộ Specification acceptance criteria.
+- [x] Xác nhận không có critical/high unresolved security issue.
+- [x] Xác nhận mobile không bị thay đổi.
+- [x] Cập nhật docs phản ánh implementation thật.
+- [x] Ghi known limitations và backlog cho specification tiếp theo.
 
 **Dependency:** T064.
 **Verify:** Product owner chấp nhận Gate G7; milestone có thể release production.
