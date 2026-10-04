@@ -746,7 +746,7 @@ live LocationIQ search/routing are recorded in [staging.md](staging.md).
 ### T064 — Recovery và rollback rehearsal
 
 - [x] Test database backup/restore.
-- [ ] Test application rollback không phá migration compatibility.
+- [x] Test application rollback không phá migration compatibility.
 - [x] Test BullMQ failed-job inspection/replay.
 - [x] Document provider outage và secret rotation runbooks.
 

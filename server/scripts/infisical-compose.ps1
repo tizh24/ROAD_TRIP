@@ -38,7 +38,7 @@ try {
       throw 'Infisical staging must contain a non-placeholder LOCATIONIQ_API_KEY before configuration or deployment.'
     }
   }
-  & $infisical run --token=$token --projectId=$projectId --env=$environment -- docker compose -f infrastructure/docker-compose.yml @composeArgs
+  & $infisical run --token=$token --projectId=$projectId --env=$environment -- docker compose -f infrastructure/docker-compose.yml $composeArgs
   exit $LASTEXITCODE
 } finally {
   Remove-Variable token, clientId, clientSecret -ErrorAction SilentlyContinue

@@ -24,6 +24,13 @@ compatible for at least one release. Verify Gateway and Core readiness, then
 run authenticated read-only trip and geo requests. If compatibility fails,
 roll forward with a corrective migration instead.
 
+**Evidence, 2026-10-04:** release `9c956c4` has no migration changes through
+the current recovery release. Its API Gateway image was built from an isolated
+checkout and started on port 4110 against the current internal Core/Geo
+services and migration head. `/health/ready` returned 200. The temporary
+container and generated environment file were removed; the current release was
+then restored on port 4100.
+
 ## BullMQ failed jobs
 
 Inspect failed jobs with the protected development Bull Board profile or a
