@@ -13,7 +13,7 @@ const FEATURED_TRIPS = [
 
 export default function LandingPage() {
   return (
-    <div className="w-full bg-[#FAFAFA] overflow-hidden font-sans">
+    <div className="w-full bg-background overflow-hidden font-sans">
       
       {/* 1. HERO SECTION */}
       <section className="relative w-full min-h-[600px] flex items-center justify-center pt-24 pb-24 px-6 overflow-hidden">
@@ -31,8 +31,8 @@ export default function LandingPage() {
             <span className="text-primary bg-clip-text text-transparent bg-gradient-to-r from-primary to-orange-500">Lưu Kỷ Niệm.</span>
           </h1>
           
-          <p className="text-base md:text-lg text-gray-500 font-medium max-w-2xl mx-auto leading-relaxed mt-6">
-            Nền tảng tiên phong giúp bạn kéo thả lộ trình dễ dàng, nhận cảnh báo thông minh trên đường và tự động chia tiền (Split Bill) sau chuyến đi.
+          <p className="text-base md:text-lg text-text-sub font-medium max-w-2xl mx-auto leading-relaxed mt-6">
+            Lên lịch trình nhiều ngày, sắp xếp điểm dừng, xem tuyến đường và cùng cả nhóm giữ mọi kế hoạch trong một nơi.
           </p>
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-8">
@@ -69,7 +69,7 @@ export default function LandingPage() {
                 <Compass size={28} />
               </div>
               <h3 className="text-lg font-bold text-gray-900">2. Bám Sát Lộ Trình</h3>
-              <p className="text-sm text-gray-500 max-w-xs leading-relaxed">GPS Live Tracking. Nhận cảnh báo đường xấu và khám phá các Hidden Gem khi đi ngang qua.</p>
+              <p className="text-sm text-text-sub max-w-xs leading-relaxed">Theo dõi lịch trình trong ngày, xem các điểm dừng theo thứ tự và chuẩn bị tốt hơn cho chặng tiếp theo.</p>
             </div>
             
             <div className="flex flex-col items-center text-center space-y-4 group">
@@ -77,7 +77,7 @@ export default function LandingPage() {
                 <Camera size={28} />
               </div>
               <h3 className="text-lg font-bold text-gray-900">3. Lưu Kỷ Niệm</h3>
-              <p className="text-sm text-gray-500 max-w-xs leading-relaxed">Check-in một chạm. Tự động chia tiền (Split Bill) minh bạch và xuất album kỷ niệm chuẩn 4K.</p>
+              <p className="text-sm text-text-sub max-w-xs leading-relaxed">Ghi lại những điểm dừng đáng nhớ và chia sẻ cảm hứng cho cộng đồng sau hành trình.</p>
             </div>
           </div>
         </div>

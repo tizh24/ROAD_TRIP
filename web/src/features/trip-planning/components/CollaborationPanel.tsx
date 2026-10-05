@@ -11,6 +11,7 @@ import {
 } from "../api/trips";
 import type { Invitation, Member } from "../api/trip-model";
 import { trackAnalytics } from "@/lib/analytics/analytics";
+import FeedbackState from "@/components/ui/FeedbackState";
 
 type PendingAction = "invite" | `member:${string}` | `invitation:${string}`;
 
@@ -119,24 +120,14 @@ export default function CollaborationPanel({ tripId }: { tripId: string }) {
 
   return (
     <section
-      className="mt-8 rounded-2xl border border-gray-200 bg-white p-6"
+      className="surface-card mt-8 p-6"
       aria-labelledby="collaboration-title"
     >
-      <h2 id="collaboration-title" className="text-xl font-bold text-gray-900">
+      <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-secondary">Cùng lập kế hoạch</p>
+      <h2 id="collaboration-title" className="mt-2 text-h3 text-text-main">
         Cộng tác viên
       </h2>
-      {error && (
-        <p role="alert" className="mt-2 text-sm text-red-700">
-          {error}{" "}
-          <button
-            type="button"
-            onClick={() => void load().catch(() => undefined)}
-            className="font-bold underline"
-          >
-            Thử lại
-          </button>
-        </p>
-      )}
+      {error && <div className="mt-5"><FeedbackState kind="error" title="Không thể cập nhật cộng tác viên" description={error} actionLabel="Thử lại" onAction={() => void load().catch(() => undefined)} /></div>}
 
       <form onSubmit={(event) => void invite(event)} className="mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
         <label className="sr-only" htmlFor="invite-email">
@@ -155,21 +146,21 @@ export default function CollaborationPanel({ tripId }: { tripId: string }) {
           aria-label="Quyền lời mời"
           value={permission}
           onChange={(event) => setPermission(event.target.value as "VIEW" | "EDIT")}
-          className="w-full rounded-lg border px-3 py-3 sm:w-auto"
+          className="rounded-xl border border-border-main bg-surface px-3 py-3 sm:w-auto"
         >
           <option value="VIEW">Chỉ xem</option>
           <option value="EDIT">Có thể sửa</option>
         </select>
         <button
           disabled={pendingAction !== undefined}
-          className="w-full rounded-xl bg-primary px-4 py-3 text-sm font-bold text-white disabled:opacity-50 sm:w-auto"
+          className="focus-ring w-full rounded-xl bg-primary px-4 py-3 text-sm font-bold text-white shadow-card hover:bg-primary-hover disabled:opacity-50 sm:w-auto"
         >
           {pendingAction === "invite" ? "Đang mời…" : "Mời"}
         </button>
       </form>
 
       {shareLink && (
-        <div className="mt-3 rounded-lg bg-green-50 p-3 text-sm text-green-900" role="status">
+        <div className="mt-3 rounded-xl bg-success/10 p-3 text-sm text-success" role="status">
           Đã tạo lời mời. Liên kết có thể đã được sao chép; bạn cũng có thể{" "}
           <a className="font-bold underline" href={shareLink}>
             mở liên kết mời
@@ -187,7 +178,7 @@ export default function CollaborationPanel({ tripId }: { tripId: string }) {
             return (
               <li
                 key={member.userId}
-                className="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-gray-50 p-3 text-sm"
+                className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-background-warm p-3 text-sm"
               >
                 <span>
                   <strong>{member.role === "OWNER" ? "Chủ chuyến đi" : "Thành viên"}</strong>

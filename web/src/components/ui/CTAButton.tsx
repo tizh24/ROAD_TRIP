@@ -14,13 +14,13 @@ export default function CTAButton({
   children,
   ...props
 }: CTAButtonProps) {
-  const baseStyles = "inline-flex items-center justify-center font-bold rounded-full smooth-transition active:scale-[0.98] focus:outline-none focus:ring-4 focus:ring-primary/20";
+  const baseStyles = "focus-ring inline-flex items-center justify-center gap-2 rounded-full font-bold smooth-transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60";
   
   const variants = {
-    primary: "bg-primary hover:bg-primary-hover text-white shadow-[0_8px_20px_rgba(255,90,38,0.25)] hover:shadow-[0_12px_24px_rgba(255,90,38,0.35)]",
-    secondary: "bg-white text-text-main border border-border-main hover:border-text-sub shadow-sm hover:shadow-md",
-    danger: "bg-red-500 hover:bg-red-600 text-white shadow-[0_8px_20px_rgba(239,68,68,0.3)] hover:shadow-[0_12px_24px_rgba(239,68,68,0.4)]",
-    ghost: "bg-transparent text-text-main hover:bg-border-main/50",
+    primary: "bg-primary text-white shadow-card hover:bg-primary-hover hover:shadow-card-hover",
+    secondary: "border border-border-main bg-white text-text-main shadow-sm hover:border-secondary/40 hover:shadow-card",
+    danger: "bg-danger text-white shadow-card hover:bg-[#962B21] hover:shadow-card-hover",
+    ghost: "bg-transparent text-text-main hover:bg-background-warm",
   };
 
   const sizes = {

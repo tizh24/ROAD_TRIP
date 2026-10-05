@@ -27,17 +27,19 @@ export default function PartnerSidebar() {
       )}
 
       <button 
-        className="lg:hidden fixed bottom-6 right-6 z-50 bg-primary text-white p-3 rounded-full shadow-lg hover:bg-primary/90 transition-transform active:scale-95"
+        className="focus-ring lg:hidden fixed bottom-6 right-6 z-50 rounded-full bg-primary p-3 text-white shadow-card hover:bg-primary-hover transition-transform active:scale-95"
         onClick={() => setIsMobileOpen(!isMobileOpen)}
+        aria-label={isMobileOpen ? "Đóng điều hướng đối tác" : "Mở điều hướng đối tác"}
+        aria-expanded={isMobileOpen}
       >
         {isMobileOpen ? <X size={24} /> : <Menu size={24} />}
       </button>
 
-      <aside className={`
+      <aside aria-label="Điều hướng đối tác" className={`
         fixed lg:static inset-y-0 left-0 z-50
         ${isCollapsed ? 'lg:w-20' : 'lg:w-64'} 
         ${isMobileOpen ? 'translate-x-0 w-64' : '-translate-x-full lg:translate-x-0'}
-        bg-white border-r border-gray-100 flex flex-col transition-all duration-300 ease-in-out shrink-0 shadow-[4px_0_24px_rgba(0,0,0,0.02)]
+        bg-surface border-r border-border-light flex flex-col transition-all duration-300 ease-in-out shrink-0 shadow-card
       `}>
         <div className="h-16 px-4 border-b border-gray-50 flex items-center justify-between">
           {(!isCollapsed || isMobileOpen) && (
@@ -53,7 +55,8 @@ export default function PartnerSidebar() {
           )}
           <button 
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className="hidden lg:flex text-gray-400 hover:text-gray-700 p-1.5 rounded-lg hover:bg-gray-50 transition-colors"
+            className="focus-ring hidden lg:flex text-text-sub hover:text-text-main p-1.5 rounded-lg hover:bg-background-warm transition-colors"
+            aria-label={isCollapsed ? "Mở rộng điều hướng đối tác" : "Thu gọn điều hướng đối tác"}
           >
             {isCollapsed ? <Menu size={18} /> : <ChevronLeft size={18} />}
           </button>

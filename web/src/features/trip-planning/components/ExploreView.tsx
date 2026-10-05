@@ -15,21 +15,22 @@ export default function ExploreView() {
   const [showMobileMap, setShowMobileMap] = useState(false);
   
   return (
-    <div className="flex flex-col lg:flex-row w-full h-[calc(100vh-72px)] bg-white overflow-hidden relative font-sans">
+    <div className="flex flex-col lg:flex-row w-full h-[calc(100vh-72px)] bg-background overflow-hidden relative font-sans">
       
       {/* LEFT SIDEBAR: Filters & List */}
-      <div className={`w-full lg:w-[500px] xl:w-[550px] flex flex-col border-r border-gray-100 bg-white shrink-0 h-full relative z-20 shadow-[4px_0_24px_rgba(0,0,0,0.02)] transition-transform duration-300 ${showMobileMap ? '-translate-x-full lg:translate-x-0 absolute lg:relative' : 'translate-x-0'}`}>
+      <div className={`w-full lg:w-[500px] xl:w-[550px] flex flex-col border-r border-border-light bg-surface shrink-0 h-full relative z-20 shadow-card transition-transform duration-300 ${showMobileMap ? '-translate-x-full lg:translate-x-0 absolute lg:relative' : 'translate-x-0'}`}>
         
         {/* Sticky Filters Header */}
-        <div className="p-4 md:p-6 border-b border-gray-100 bg-white/95 backdrop-blur-md z-10 space-y-4 shrink-0">
-          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Khám phá lộ trình</h1>
+        <div className="p-4 md:p-6 border-b border-border-light bg-surface/95 backdrop-blur-md z-10 space-y-4 shrink-0">
+          <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-secondary">Cảm hứng lên đường</p>
+          <h1 className="text-h2 text-text-main">Khám phá lộ trình</h1>
           
           <div className="relative w-full">
             <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input 
               type="text" 
               placeholder="Tìm kiếm điểm đến, tỉnh thành..." 
-              className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl outline-none focus:bg-white focus:border-primary/40 focus:ring-4 focus:ring-primary/10 transition-all text-sm"
+              className="w-full pl-10 pr-4 py-2.5 bg-background-warm border border-border-main rounded-xl outline-none focus:bg-white focus:border-secondary/40 focus:ring-4 focus:ring-secondary/10 transition-all text-sm"
             />
           </div>
           
@@ -46,7 +47,7 @@ export default function ExploreView() {
         </div>
         
         {/* Scrollable Trips List */}
-        <div className="flex-1 overflow-y-auto p-4 md:p-6 bg-[#FAFAFA] custom-scrollbar">
+        <div className="flex-1 overflow-y-auto p-4 md:p-6 bg-background custom-scrollbar">
           <p className="text-[11px] text-gray-500 font-bold mb-4 uppercase tracking-wider flex items-center gap-2">
             Tìm thấy {EXPLORE_TRIPS.length} lộ trình phù hợp
           </p>
@@ -69,7 +70,7 @@ export default function ExploreView() {
       <div className={`flex-1 relative bg-gray-100 overflow-hidden items-center justify-center transition-transform duration-300 ${!showMobileMap ? 'translate-x-full lg:translate-x-0 absolute lg:relative w-full h-full' : 'translate-x-0 w-full h-full'}`}>
         
         {/* Abstract Map Background (Google Maps / Mapbox simulation) */}
-        <div className="absolute inset-0 bg-[#E8F0F2]">
+        <div className="absolute inset-0 bg-[#E5EEE7]">
           <div className="absolute inset-0 opacity-30 bg-[url('https://www.transparenttextures.com/patterns/cartographer.png')]" />
         </div>
         
@@ -116,7 +117,7 @@ export default function ExploreView() {
       <div className="lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50">
         <button 
           onClick={() => setShowMobileMap(!showMobileMap)}
-          className="bg-gray-900 text-white px-6 py-3.5 rounded-full font-bold shadow-xl shadow-gray-900/30 flex items-center gap-2 active:scale-95 transition-all hover:bg-gray-800"
+          className="focus-ring bg-secondary text-white px-6 py-3.5 rounded-full font-bold shadow-card flex items-center gap-2 active:scale-95 smooth-transition hover:bg-[#184631]"
         >
           {showMobileMap ? <List size={18} /> : <MapIcon size={18} />}
           <span>{showMobileMap ? 'Xem Danh Sách' : 'Xem Bản Đồ'}</span>

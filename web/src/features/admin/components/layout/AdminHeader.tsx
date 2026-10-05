@@ -16,13 +16,13 @@ export default function AdminHeader() {
   };
 
   return (
-    <header className="h-14 border-b border-border-main flex items-center justify-between px-6 bg-surface z-10 shrink-0">
+    <header className="z-10 flex h-16 shrink-0 items-center justify-between border-b border-border-light bg-surface px-4 md:px-8">
       <div className="flex items-center gap-2">
         <span className="text-xs text-text-sub font-medium">Admin /</span>
         <h1 className="text-lg font-semibold text-text-main capitalize">{getTitle()}</h1>
       </div>
       <div className="flex items-center gap-4">
-        <span className="px-2.5 py-1 bg-gray-100 text-text-sub text-[11px] font-bold rounded-md border border-gray-200 uppercase tracking-wider">
+        <span className="rounded-full border border-border-main bg-background-warm px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-text-sub">
           Super Admin
         </span>
       </div>

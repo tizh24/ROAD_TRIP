@@ -35,7 +35,7 @@ export default function PartnerHeader() {
   };
 
   return (
-    <header className="h-16 border-b border-gray-100 flex items-center justify-between px-4 md:px-8 bg-white z-[60] shrink-0 relative">
+    <header className="relative z-[60] flex h-16 shrink-0 items-center justify-between border-b border-border-light bg-surface px-4 md:px-8">
       <div className="flex items-center gap-2">
         <h1 className="text-base md:text-lg font-bold text-gray-800 tracking-tight">{getTitle()}</h1>
       </div>
@@ -49,7 +49,9 @@ export default function PartnerHeader() {
               setShowNotifications(!showNotifications);
               setShowProfileMenu(false);
             }}
-            className={`relative w-9 h-9 rounded-full flex items-center justify-center transition-all ${showNotifications ? 'bg-secondary/10 text-secondary ring-2 ring-secondary/20' : 'bg-gray-50 text-gray-500 hover:bg-gray-100'}`}
+            className={`focus-ring relative flex h-9 w-9 items-center justify-center rounded-full transition-all ${showNotifications ? 'bg-secondary/10 text-secondary ring-2 ring-secondary/20' : 'bg-background-warm text-text-sub hover:bg-secondary/10'}`}
+            aria-label="Mở thông báo"
+            aria-expanded={showNotifications}
           >
             <Bell size={18} />
             <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
@@ -88,7 +90,9 @@ export default function PartnerHeader() {
               setShowProfileMenu(!showProfileMenu);
               setShowNotifications(false);
             }}
-            className={`flex items-center gap-3 transition-all p-1 rounded-full ${showProfileMenu ? 'ring-2 ring-gray-200 bg-gray-50' : 'hover:bg-gray-50'}`}
+            className={`focus-ring flex items-center gap-3 transition-all p-1 rounded-full ${showProfileMenu ? 'ring-2 ring-border-main bg-background-warm' : 'hover:bg-background-warm'}`}
+            aria-label="Mở menu tài khoản đối tác"
+            aria-expanded={showProfileMenu}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=100&q=80" alt="Avatar" className="w-9 h-9 rounded-full object-cover border border-gray-200 shadow-sm" />

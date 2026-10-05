@@ -1,13 +1,14 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import CTAButton from "./CTAButton";
 import SearchBar from "./SearchBar";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Map, Tent, Users, Plus } from "lucide-react";
+import { Map, Tent, Users, Plus, Menu, X } from "lucide-react";
 
 export default function Navbar() {
   const pathname = usePathname() || "";
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const navLinks = [
     { href: "/", label: "Trang chủ", icon: <Tent size={16} /> },
@@ -16,8 +17,8 @@ export default function Navbar() {
   ];
 
   return (
-    <header className="sticky top-0 z-[1000] w-full h-[72px] bg-white/90 backdrop-blur-xl border-b border-gray-100 shadow-sm font-sans">
-      <div className="max-w-[1440px] px-6 h-full mx-auto flex items-center justify-between gap-6">
+    <header className="sticky top-0 z-[1000] w-full bg-background/90 backdrop-blur-xl border-b border-border-light shadow-sm font-sans">
+      <div className="page-shell min-h-[72px] mx-auto flex items-center justify-between gap-3">
         
         {/* Left Side: Brand Logo */}
         <Link href="/" className="flex items-center gap-3 cursor-pointer shrink-0 group">
@@ -36,7 +37,7 @@ export default function Navbar() {
         </div>
 
         {/* Center-Right: Navigation Links */}
-        <nav className="hidden lg:flex items-center gap-2">
+        <nav className="hidden lg:flex items-center gap-2" aria-label="Điều hướng chính">
           {navLinks.map((link) => {
             const isActive = pathname === link.href;
             return (
@@ -80,9 +81,34 @@ export default function Navbar() {
               className="w-full h-full object-cover" 
             />
           </Link>
+          <button
+            type="button"
+            className="focus-ring inline-flex h-10 w-10 items-center justify-center rounded-xl text-text-main hover:bg-background-warm lg:hidden"
+            aria-label={mobileOpen ? "Đóng điều hướng" : "Mở điều hướng"}
+            aria-expanded={mobileOpen}
+            onClick={() => setMobileOpen((open) => !open)}
+          >
+            {mobileOpen ? <X size={21} /> : <Menu size={21} />}
+          </button>
         </div>
 
       </div>
+      {mobileOpen ? (
+        <div className="border-t border-border-light bg-background px-4 pb-5 pt-3 lg:hidden">
+          <nav className="page-shell grid gap-1" aria-label="Điều hướng di động">
+            {navLinks.map((link) => {
+              const isActive = pathname === link.href;
+              return (
+                <Link key={link.href} href={link.href} onClick={() => setMobileOpen(false)} className={`focus-ring flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-bold ${isActive ? "bg-secondary/10 text-secondary" : "text-text-main hover:bg-background-warm"}`}>
+                  {link.icon}
+                  {link.label}
+                </Link>
+              );
+            })}
+            <Link href="/trips/new" onClick={() => setMobileOpen(false)} className="focus-ring mt-2 flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-bold text-white"><Plus size={17} aria-hidden="true" />Tạo chuyến đi</Link>
+          </nav>
+        </div>
+      ) : null}
     </header>
   );
 }

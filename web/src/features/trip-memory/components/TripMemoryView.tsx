@@ -5,7 +5,7 @@ import { Receipt, Share2, Printer, CheckCircle2, CircleDashed, AlertCircle, Came
 
 export default function TripMemoryView() {
   return (
-    <div className="w-full min-h-screen bg-[#F8FAFC] pb-24 font-sans text-gray-900">
+    <div className="w-full min-h-screen bg-background pb-24 font-sans text-text-main">
       {/* HEADER & COVER */}
       <div className="relative w-full h-[50vh] bg-gray-900">
         <div 
@@ -30,15 +30,16 @@ export default function TripMemoryView() {
         {/* LEFT MAIN: Timeline & Album */}
         <div className="lg:col-span-8 space-y-16">
           
-          {/* Split Bill Card */}
-          <section className="bg-white p-8 md:p-10 rounded-[32px] shadow-sm border border-gray-100 text-center relative overflow-hidden">
+          {/* Expense integration is not yet available; do not represent payment controls as live. */}
+          <section className="surface-card p-8 text-center relative overflow-hidden md:p-10">
             <div className="absolute top-0 right-0 w-48 h-48 bg-primary/5 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none" />
             
             <div className="flex items-center justify-center gap-2 mb-2 text-gray-900">
               <Receipt size={24} className="text-primary" />
-              <h2 className="text-2xl font-black tracking-tight">Tổng kết Chi Phí</h2>
+              <h2 className="text-2xl font-black tracking-tight">Nhật ký chuyến đi</h2>
             </div>
-            <p className="text-sm text-gray-500 mb-10 max-w-md mx-auto leading-relaxed">Hệ thống tự động tính toán dựa trên các điểm bạn đã check-in trên đường.</p>
+            <p className="text-sm text-text-sub mb-2 max-w-md mx-auto leading-relaxed">Lưu lại điểm dừng, khoảnh khắc và câu chuyện của cả nhóm theo từng ngày.</p>
+            <p className="text-xs font-bold text-warning">Tính năng chi tiêu và thanh toán đang được chuẩn bị.</p>
             
             <div className="flex flex-wrap justify-center gap-10 md:gap-16 mb-10">
               <div className="text-center">
@@ -67,14 +68,7 @@ export default function TripMemoryView() {
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row justify-center gap-4 pt-8 border-t border-gray-100">
-              <CTAButton variant="primary" className="bg-[#D82D8B] hover:bg-[#b01e6e] shadow-lg shadow-[#D82D8B]/20 font-bold px-8 py-3.5 rounded-xl">
-                Thanh toán qua MoMo
-              </CTAButton>
-              <CTAButton variant="ghost" className="border-2 border-blue-500 text-blue-600 hover:bg-blue-50 font-bold px-8 py-3.5 rounded-xl transition-colors">
-                Thanh toán qua ZaloPay
-              </CTAButton>
-            </div>
+            <div className="mt-8 border-t border-border-light pt-8"><CTAButton variant="secondary" disabled>Chi tiêu nhóm sắp ra mắt</CTAButton></div>
             
             <div className="mt-10 text-left bg-gray-50/50 p-6 rounded-[24px] border border-gray-100">
               <h4 className="font-bold text-gray-900 text-sm mb-5 tracking-tight">Trạng thái thu tiền (Đoàn 5 người)</h4>

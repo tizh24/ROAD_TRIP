@@ -1,57 +1,55 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #E07A5F; /* Màu cam đất (terracotta) nhẹ nhàng, không chói */
-  --color-primary-hover: #D0694E;
-  --color-secondary: #427A5B; /* Xanh lá trầm */
-  --color-accent: #F4CE75; /* Vàng nhạt nhẹ nhàng */
-  
-  --color-background: #FAF9F8; /* Trắng ngà cực nhẹ */
-  --color-background-warm: #F4F1EE;
+  --color-primary: #D96532;
+  --color-primary-hover: #B94E23;
+  --color-secondary: #235B41;
+  --color-accent: #D5A43B;
+  --color-success: #287A51;
+  --color-warning: #B86A12;
+  --color-danger: #B9382B;
+  --color-info: #286A9A;
+  --color-background: #FFF9F0;
+  --color-background-warm: #F7EFE2;
   --color-surface: #FFFFFF;
   
-  --color-text-main: #2D3748; /* Xám than, đỡ gắt hơn đen */
-  --color-text-sub: #718096;
-  
-  --color-border-main: #E2E8F0;
-  --color-border-light: #EDF2F7;
-  
-  --font-sans: var(--font-plus-jakarta);
+  --color-text-main: #26322C;
+  --color-text-sub: #66736A;
+  --color-border-main: #E9DECE;
+  --color-border-light: #F4EDE2;
+  --font-sans: var(--font-plus-jakarta-sans), ui-sans-serif, system-ui, sans-serif;
   
   /* Cấu trúc font hiện đại */
-  --text-display: 4rem;
-  --text-display--line-height: 1.1;
-  --text-display--font-weight: 900;
+  --text-display: clamp(2.5rem, 6vw, 4.5rem);
+  --text-display--line-height: 1.05;
+  --text-display--font-weight: 800;
   --text-display--letter-spacing: -0.02em;
   
-  --text-h1: 3rem;
+  --text-h1: clamp(2rem, 4vw, 3.25rem);
   --text-h1--line-height: 1.2;
   --text-h1--font-weight: 800;
   --text-h1--letter-spacing: -0.02em;
   
-  --text-h2: 2.25rem;
+  --text-h2: clamp(1.5rem, 3vw, 2.25rem);
   --text-h2--line-height: 1.3;
   --text-h2--font-weight: 800;
   
-  --text-h3: 1.5rem;
+  --text-h3: clamp(1.25rem, 2vw, 1.5rem);
   --text-h3--line-height: 1.4;
   --text-h3--font-weight: 700;
   
-  /* Shadow nhẹ nhàng hơn */
-  --shadow-card: 0 4px 20px -2px rgba(0,0,0,0.03);
-  --shadow-card-hover: 0 8px 30px -4px rgba(0,0,0,0.06);
-  --shadow-float: 0 8px 24px -4px rgba(224, 122, 95, 0.15); /* Bóng cam nhạt */
+  --shadow-card: 0 12px 30px -18px rgba(67, 48, 26, 0.32);
+  --shadow-card-hover: 0 22px 42px -22px rgba(67, 48, 26, 0.42);
+  --shadow-float: 0 18px 36px -20px rgba(38, 50, 44, 0.38);
   
   --radius-chip: 9999px;
-  --radius-card: 1.25rem; /* Giảm bo tròn một chút cho tinh tế hơn (20px) */
+  --radius-card: 1.25rem;
+  --radius-panel: 1.75rem;
 }
 
 @layer utilities {
   .smooth-transition {
     @apply transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)];
-  }
-  .glass-panel {
-    @apply bg-white/80 backdrop-blur-xl border border-white/40 shadow-card;
   }
   .glass-dark {
     @apply bg-gray-900/80 backdrop-blur-xl border border-gray-700/50;
@@ -59,7 +57,10 @@
 }
 
 body {
-  font-family: var(--font-plus-jakarta);
+  min-height: 100vh;
+  background: var(--color-background);
+  color: var(--color-text-main);
+  font-family: var(--font-plus-jakarta-sans), ui-sans-serif, system-ui, sans-serif;
   overflow-x: hidden;
 }
 
@@ -97,14 +98,16 @@ body {
 .field {
   width: 100%;
   border: 1px solid var(--color-border-main);
-  border-radius: 0.75rem;
-  padding: 0.75rem;
+  border-radius: 0.875rem;
+  background: var(--color-surface);
+  padding: 0.8125rem 0.875rem;
   font-weight: 400;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
 }
 
 .field:focus {
-  border-color: var(--color-primary);
-  outline: 2px solid color-mix(in srgb, var(--color-primary) 25%, transparent);
+  border-color: var(--color-secondary);
+  outline: 2px solid color-mix(in srgb, var(--color-secondary) 24%, transparent);
   outline-offset: 1px;
 }
 
@@ -149,15 +152,13 @@ body {
 }
 
 /* Custom panels and animations */
-.glass-panel {
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(16px);
-  border: 1px solid var(--color-border-main);
-}
-
-.smooth-transition {
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
+.glass-panel { background: rgba(255, 255, 255, 0.86); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.7); box-shadow: var(--shadow-float); }
+.smooth-transition { transition: color 180ms ease, background-color 180ms ease, border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease; }
+.page-shell { width: min(100% - 2rem, 76rem); margin-inline: auto; }
+.page-section { padding-block: clamp(2.5rem, 6vw, 5.5rem); }
+.surface-card { border: 1px solid var(--color-border-main); border-radius: var(--radius-card); background: var(--color-surface); box-shadow: var(--shadow-card); }
+.map-overlay { border: 1px solid rgba(255, 255, 255, 0.72); border-radius: 1rem; background: rgba(255, 255, 255, 0.9); box-shadow: var(--shadow-float); backdrop-filter: blur(16px); }
+.focus-ring:focus-visible { outline: 3px solid var(--color-secondary); outline-offset: 3px; }
 
 /* Custom Web Scrollbar */
 ::-webkit-scrollbar {

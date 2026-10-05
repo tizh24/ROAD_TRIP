@@ -10,24 +10,24 @@ export default function TripDetailView() {
   const [showLoginModal, setShowLoginModal] = useState(false);
 
   return (
-    <div className="w-full min-h-screen bg-[#FAFAFA] pb-24 overflow-x-hidden relative font-sans">
+    <div className="w-full min-h-screen bg-background pb-24 overflow-x-hidden relative font-sans">
       
       {/* LOGIN GATE MODAL */}
       {showLoginModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" onClick={() => setShowLoginModal(false)} />
-          <div className="relative bg-white w-full max-w-md rounded-[32px] p-8 shadow-2xl text-center animate-in zoom-in-95 duration-200">
+          <div className="relative surface-card w-full max-w-md rounded-[28px] p-8 text-center animate-in zoom-in-95 duration-200">
             <div className="w-16 h-16 bg-primary/10 text-primary rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm">
               <Lock size={28} />
             </div>
-            <h2 className="text-2xl font-black text-gray-900 mb-3 tracking-tight">Đăng nhập để Clone</h2>
-            <p className="text-sm text-gray-500 mb-8 leading-relaxed">
-              Lưu lộ trình này vào Workspace của bạn để chỉnh sửa các điểm dừng, tính tiền và mời bạn bè tham gia.
+            <h2 className="text-h3 text-text-main mb-3 tracking-tight">Đăng nhập để lưu hành trình</h2>
+            <p className="text-sm text-text-sub mb-8 leading-relaxed">
+              Lưu lộ trình này vào danh sách chuyến đi của bạn để tiếp tục tùy chỉnh khi sẵn sàng.
             </p>
             <div className="space-y-3">
-              <Link href="/planner/1" className="block">
+              <Link href="/login" className="block">
                 <CTAButton variant="primary" className="w-full py-3.5 rounded-xl text-sm shadow-md" onClick={() => setShowLoginModal(false)}>
-                  Đăng nhập bằng Google
+                  Đăng nhập để tiếp tục
                 </CTAButton>
               </Link>
               <button onClick={() => setShowLoginModal(false)} className="text-xs font-bold text-gray-400 hover:text-gray-900 transition-colors pt-2">
@@ -84,18 +84,18 @@ export default function TripDetailView() {
       </div>
 
       {/* 2. MAIN CONTENT & SIDEBAR */}
-      <div className="max-w-[1200px] mx-auto px-6 mt-12 flex flex-col lg:flex-row gap-12 lg:gap-16 relative">
+      <div className="page-shell mt-12 flex flex-col gap-12 px-0 lg:flex-row lg:gap-16">
         
         {/* Left: Editorial & Itinerary */}
         <div className="flex-1 space-y-16">
           
           {/* Overview */}
-          <section className="bg-white p-8 md:p-10 rounded-[32px] shadow-sm border border-gray-100">
+          <section className="surface-card p-8 md:p-10">
             <div className="flex items-center gap-3 mb-6">
               <MapIcon size={24} className="text-primary" />
               <h2 className="text-2xl font-black text-gray-900 tracking-tight">Tổng quan lộ trình</h2>
             </div>
-            <p className="text-base text-gray-600 leading-relaxed mb-8">
+            <p className="text-base text-text-sub leading-relaxed mb-8">
               Hà Giang Loop là một trong những cung đường hùng vĩ nhất Đông Nam Á. 
               Trải qua những con đèo uốn lượn ngoạn mục, bạn sẽ được chiêm ngưỡng cột cờ Lũng Cú, 
               sông Nho Quế xanh ngắt dưới hẻm Tu Sản, và những bản làng mộc mạc của đồng bào dân tộc.
@@ -109,7 +109,7 @@ export default function TripDetailView() {
 
           {/* Itinerary Timeline */}
           <section>
-            <h2 className="text-2xl font-black text-gray-900 mb-10 tracking-tight">Lịch trình chi tiết</h2>
+            <h2 className="text-h2 text-text-main mb-10">Lịch trình chi tiết</h2>
             
             <div className="space-y-0 relative">
               {/* Vertical Timeline Line */}
@@ -118,14 +118,14 @@ export default function TripDetailView() {
               {/* Day 1 */}
               <div className="relative pl-14 pb-16 group">
                 <div className="absolute top-0 left-[16px] w-4 h-4 rounded-full bg-primary ring-4 ring-white shadow-sm z-10" />
-                <h3 className="text-xl font-bold text-gray-900 mb-3 tracking-tight group-hover:text-primary transition-colors">Ngày 1: Hà Giang - Quản Bạ - Yên Minh</h3>
-                <p className="text-sm text-gray-500 mb-8 max-w-2xl leading-relaxed">
+                <h3 className="text-xl font-bold text-text-main mb-3 tracking-tight group-hover:text-primary transition-colors">Ngày 1: Hà Giang - Quản Bạ - Yên Minh</h3>
+                <p className="text-sm text-text-sub mb-8 max-w-2xl leading-relaxed">
                   Khởi hành từ thành phố Hà Giang, check-in KM0, sau đó vượt dốc Bắc Sum để lên tới cổng trời Quản Bạ.
                 </p>
                 
                 <div className="space-y-5 max-w-3xl">
                   {/* Stop 1 */}
-                  <div className="flex flex-col sm:flex-row gap-5 bg-white p-5 rounded-[24px] border border-gray-100 shadow-sm hover:shadow-md transition-shadow group/card cursor-pointer relative overflow-hidden">
+                  <div className="surface-card flex flex-col gap-5 overflow-hidden p-5 transition-shadow hover:shadow-card-hover sm:flex-row group/card cursor-pointer relative">
                     <div className="absolute left-0 top-0 bottom-0 w-1 bg-transparent group-hover/card:bg-primary transition-colors" />
                     <div className="w-full sm:w-32 h-40 sm:h-32 shrink-0 rounded-[16px] bg-gray-100 overflow-hidden relative">
                       <div className="absolute top-3 left-3 w-7 h-7 bg-white/90 backdrop-blur-md text-gray-900 rounded-full flex items-center justify-center font-bold text-xs shadow-sm z-10">1</div>
@@ -144,7 +144,7 @@ export default function TripDetailView() {
                   </div>
                   
                   {/* Stop 2 */}
-                  <div className="flex flex-col sm:flex-row gap-5 bg-white p-5 rounded-[24px] border border-gray-100 shadow-sm hover:shadow-md transition-shadow group/card cursor-pointer relative overflow-hidden">
+                  <div className="surface-card flex flex-col gap-5 overflow-hidden p-5 transition-shadow hover:shadow-card-hover sm:flex-row group/card cursor-pointer relative">
                     <div className="absolute left-0 top-0 bottom-0 w-1 bg-transparent group-hover/card:bg-primary transition-colors" />
                     <div className="w-full sm:w-32 h-40 sm:h-32 shrink-0 rounded-[16px] bg-gray-100 overflow-hidden relative">
                       <div className="absolute top-3 left-3 w-7 h-7 bg-white/90 backdrop-blur-md text-gray-900 rounded-full flex items-center justify-center font-bold text-xs shadow-sm z-10">2</div>
@@ -169,11 +169,11 @@ export default function TripDetailView() {
 
         {/* Right: Sticky Sidebar CTA & Partners */}
         <div className="w-full lg:w-[400px] shrink-0">
-          <div className="sticky top-8 bg-white p-8 rounded-[32px] shadow-sm border border-gray-100">
+          <div className="surface-card sticky top-8 p-8">
             
             <div className="mb-10">
-              <h3 className="text-2xl font-black text-gray-900 mb-4 tracking-tight">Sẵn sàng khởi hành?</h3>
-              <p className="text-sm text-gray-500 leading-relaxed mb-8">
+              <h3 className="text-h3 text-text-main mb-4">Sẵn sàng khởi hành?</h3>
+              <p className="text-sm text-text-sub leading-relaxed mb-8">
                 Sao chép lộ trình này vào tài khoản của bạn để chỉnh sửa các điểm dừng theo ý thích.
               </p>
               

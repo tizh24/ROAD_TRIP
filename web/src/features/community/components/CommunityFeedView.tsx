@@ -11,14 +11,14 @@ const FEED_TRIPS = [
 
 export default function CommunityFeedView() {
   return (
-    <div className="w-full min-h-screen bg-[#F8FAFC] pt-10 pb-24 font-sans text-gray-900">
+    <div className="w-full min-h-screen bg-background pt-10 pb-24 font-sans text-text-main">
       <div className="max-w-[1200px] mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12">
         
         {/* MAIN FEED */}
         <div className="lg:col-span-8 space-y-8">
           
           {/* Banner Challenge */}
-          <div className="w-full bg-gray-900 rounded-[32px] p-8 md:p-10 text-white shadow-xl relative overflow-hidden group cursor-pointer">
+          <div className="w-full bg-secondary rounded-[32px] p-8 md:p-10 text-white shadow-card-hover relative overflow-hidden group cursor-pointer">
             <div className="absolute right-0 bottom-0 opacity-10 transform translate-x-1/4 translate-y-1/4 transition-transform duration-700 group-hover:scale-110">
               <Trophy size={200} />
             </div>
@@ -70,7 +70,7 @@ export default function CommunityFeedView() {
         {/* RIGHT SIDEBAR: Stats & Trending locations */}
         <div className="lg:col-span-4 space-y-8">
           
-          <div className="bg-white p-8 rounded-[32px] border border-gray-100 shadow-sm">
+          <div className="surface-card p-8">
             <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-6 flex items-center gap-2">
               <Flame size={14} className="text-orange-500" /> Top Tỉnh Thành Tuần Này
             </h3>
@@ -91,7 +91,7 @@ export default function CommunityFeedView() {
             </div>
           </div>
 
-          <div className="bg-white p-8 rounded-[32px] border border-gray-100 shadow-sm">
+          <div className="surface-card p-8">
             <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-4 flex items-center gap-2">
               <Edit3 size={14} className="text-blue-500" /> Góp ý cho cộng đồng
             </h3>
