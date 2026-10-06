@@ -11,7 +11,7 @@ const MY_COLLECTIONS = [
 
 export default function UserProfileView() {
   return (
-    <div className="w-full min-h-[calc(100vh-72px)] bg-[#F8FAFC] pb-24 pt-10 font-sans text-gray-900">
+    <div className="w-full min-h-[calc(100vh-72px)] bg-background-warm pb-24 pt-10 font-sans text-text-main">
       <div className="max-w-[1200px] mx-auto px-6 grid grid-cols-1 md:grid-cols-12 gap-12">
         
         {/* Left: Profile & Subscription */}
@@ -71,11 +71,9 @@ export default function UserProfileView() {
             <h3 className="text-sm font-black text-orange-900 uppercase tracking-widest mb-3 relative z-10 flex items-center gap-2">
               <Crown size={16} /> Explorer Pass
             </h3>
-            <p className="text-sm text-orange-800 leading-relaxed mb-6 relative z-10 font-medium">Bạn đang sử dụng gói Miễn phí. Nâng cấp 49k/tháng để mở khóa Cảnh báo tốc độ độc quyền & Icon VIP.</p>
-            <Link href="/profile/billing">
-              <button className="bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold px-6 py-3.5 rounded-xl transition-colors shadow-lg shadow-orange-500/20 relative z-10">
-                Nâng cấp ngay
-              </button>
+            <p className="text-sm text-orange-800 leading-relaxed mb-6 relative z-10 font-medium">Gói trả phí chưa được kích hoạt. Khi sẵn sàng, trạng thái và hoá đơn sẽ xuất hiện trong phần thanh toán.</p>
+            <Link href="/profile/billing" className="focus-ring inline-flex bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold px-6 py-3.5 rounded-xl transition-colors shadow-lg shadow-orange-500/20 relative z-10">
+              Xem trạng thái thanh toán
             </Link>
           </div>
         </div>

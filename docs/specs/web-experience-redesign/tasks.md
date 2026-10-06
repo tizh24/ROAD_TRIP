@@ -72,8 +72,8 @@ real login flow. Lint and typecheck pass.
 ## Phase 6 — Profile and monetization
 
 - [ ] T6.1 Redesign UserProfileView with identity, public travel proof, edit affordances and privacy-aware sections.
-- [ ] T6.2 Redesign profile settings with grouped account, notification and location/privacy controls; retain existing form behavior.
-- [ ] T6.3 Redesign billing with plan, payment and invoice states that distinguish unavailable/demo data from live data.
+- [x] T6.2 Redesign profile settings with grouped account, notification and location/privacy controls; retain existing form behavior.
+- [x] T6.3 Redesign billing with plan, payment and invoice states that distinguish unavailable/demo data from live data.
 - [ ] T6.4 Redesign partner overview with contextual KPIs, recent activity and quick actions.
 - [ ] T6.5 Redesign partner campaigns, analytics, reviews and billing panels for responsive cards/tables, filters and action placement.
 - [ ] T6.6 Verify partner routes preserve their existing access boundaries.

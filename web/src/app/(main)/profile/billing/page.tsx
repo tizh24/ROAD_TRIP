@@ -1,19 +1,6 @@
-import React from "react";
-import { CreditCard } from "lucide-react";
+import Link from "next/link";
+import { CreditCard, FileText, ShieldCheck } from "lucide-react";
 
 export default function ProfileBillingPage() {
-  return (
-    <div className="min-h-screen bg-[#F8FAFC] py-16 px-6 font-sans">
-      <div className="max-w-2xl mx-auto">
-        <h1 className="text-3xl font-black text-gray-900 mb-8">Thanh toán & Gói cước</h1>
-        <div className="bg-white p-8 rounded-[32px] border border-gray-100 shadow-sm flex flex-col items-center justify-center py-20 text-center">
-          <div className="w-20 h-20 bg-orange-50 rounded-full flex items-center justify-center text-orange-500 mb-6">
-            <CreditCard size={32} />
-          </div>
-          <h2 className="text-xl font-bold text-gray-900 mb-2">Thanh toán an toàn qua VNPay</h2>
-          <p className="text-sm text-gray-500">Chức năng nâng cấp gói Explorer Pass (49k/tháng) đang được tích hợp.</p>
-        </div>
-      </div>
-    </div>
-  );
+  return <main className="min-h-screen bg-background-warm px-4 py-10 text-text-main sm:px-6"><div className="page-shell max-w-3xl px-0"><Link href="/profile" className="focus-ring text-sm font-bold text-primary hover:underline">← Hồ sơ</Link><header className="mt-5"><p className="text-xs font-extrabold uppercase tracking-[.14em] text-primary">Gói dịch vụ</p><h1 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">Thanh toán & hoá đơn</h1><p className="mt-3 text-sm leading-6 text-text-sub">Chưa có cổng thanh toán hoặc gói trả phí nào được kích hoạt trong sản phẩm hiện tại.</p></header><section className="surface-card mt-8 overflow-hidden"><div className="border-b border-border-main p-6"><div className="flex items-center gap-3"><span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/10 text-primary"><CreditCard size={21} /></span><div><h2 className="font-extrabold">Trạng thái thanh toán</h2><p className="text-sm text-text-sub">Chưa có phương thức thanh toán được liên kết.</p></div></div></div><div className="grid gap-4 p-6 sm:grid-cols-2"><div className="rounded-2xl bg-background-warm p-4"><ShieldCheck className="text-secondary" size={20} /><h3 className="mt-3 font-bold">Gói hiện tại</h3><p className="mt-1 text-sm text-text-sub">Không có gói trả phí đang hoạt động.</p></div><div className="rounded-2xl bg-background-warm p-4"><FileText className="text-secondary" size={20} /><h3 className="mt-3 font-bold">Hoá đơn</h3><p className="mt-1 text-sm text-text-sub">Chưa có hoá đơn để hiển thị.</p></div></div></section></div></main>;
 }
