@@ -1,86 +1,12 @@
 "use client";
-
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import { CalendarDays, Plus, Users } from "lucide-react";
+import { ArrowUpRight, CalendarDays, Plus, Users } from "lucide-react";
 import { GatewayApiError } from "@/features/trip-planning/api/gateway-request";
 import { listTrips } from "@/features/trip-planning/api/trips";
 import type { TripListItem } from "@/features/trip-planning/api/trip-model";
 import FeedbackState from "@/components/ui/FeedbackState";
-import PageHeader from "@/components/ui/PageHeader";
-
-type LoadState =
-  | { kind: "loading" }
-  | { kind: "content"; trips: readonly TripListItem[] }
-  | { kind: "error"; message: string };
-
-const statusLabels: Record<TripListItem["status"], string> = {
-  PLANNING: "Đang lên kế hoạch",
-  ONGOING: "Đang diễn ra",
-  COMPLETED: "Đã hoàn thành",
-  CANCELLED: "Đã hủy",
-};
-
-function formatDateRange(startDate: string, endDate: string) {
-  const formatter = new Intl.DateTimeFormat("vi-VN", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    timeZone: "UTC",
-  });
-  return `${formatter.format(new Date(`${startDate}T00:00:00Z`))} – ${formatter.format(new Date(`${endDate}T00:00:00Z`))}`;
-}
-
-function errorMessage(error: unknown) {
-  if (error instanceof GatewayApiError) {
-    if (error.code === "AUTH_REQUIRED") return "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.";
-    return error.message;
-  }
-  return "Không thể tải các chuyến đi lúc này. Vui lòng thử lại.";
-}
-
-export default function TripListView() {
-  const [state, setState] = useState<LoadState>({ kind: "loading" });
-
-  const load = useCallback(async () => {
-    setState({ kind: "loading" });
-    try {
-      setState({ kind: "content", trips: await listTrips() });
-    } catch (error) {
-      setState({ kind: "error", message: errorMessage(error) });
-    }
-  }, []);
-
-  useEffect(() => {
-    queueMicrotask(() => {
-      void load();
-    });
-  }, [load]);
-
-  return (
-    <section className="page-shell w-full py-10 sm:py-14" aria-labelledby="trips-heading">
-      <PageHeader eyebrow="Không gian lập kế hoạch" title="Chuyến đi của bạn" description="Tạo, theo dõi và tiếp tục chỉnh sửa mọi lịch trình road trip của bạn." actions={<Link href="/trips/new" className="focus-ring inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-bold text-white shadow-card smooth-transition hover:bg-primary-hover">
-          <Plus size={18} aria-hidden="true" /> Tạo chuyến đi
-        </Link>} />
-      <div className="mt-10">
-
-      {state.kind === "loading" && <TripListLoading />}
-      {state.kind === "error" && <TripListError message={state.message} onRetry={load} />}
-      {state.kind === "content" && state.trips.length === 0 && <TripListEmpty />}
-      {state.kind === "content" && state.trips.length > 0 && <TripList trips={state.trips} />}
-      </div>
-    </section>
-  );
-}
-
-function TripListLoading() {
-  return <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3" aria-label="Đang tải chuyến đi" aria-busy="true">{[0, 1, 2].map((index) => <div key={index} className="h-52 animate-pulse rounded-2xl border border-gray-100 bg-white" />)}</div>;
-}
-
-function TripListError({ message, onRetry }: { message: string; onRetry: () => void }) { return <FeedbackState kind="error" title="Không tải được chuyến đi" description={message} actionLabel="Thử lại" onAction={onRetry} />; }
-
-function TripListEmpty() { return <FeedbackState kind="empty" title="Chưa có chuyến đi nào" description="Bắt đầu một lịch trình để lưu điểm dừng, ngày đi và kế hoạch của cả nhóm."><Link href="/trips/new" className="focus-ring inline-flex rounded-xl bg-primary px-4 py-3 text-sm font-bold text-white hover:bg-primary-hover">Tạo chuyến đi đầu tiên</Link></FeedbackState>; }
-
-function TripList({ trips }: { trips: readonly TripListItem[] }) {
-  return <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3" aria-label="Danh sách chuyến đi">{trips.map((trip) => <li key={trip.id}><Link href={`/trips/${trip.id}`} className="group block h-full rounded-2xl border border-gray-200 bg-white p-6 shadow-card transition hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-card-hover"><div className="flex items-start justify-between gap-3"><span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary">{statusLabels[trip.status]}</span><span className="inline-flex items-center gap-1 text-xs font-semibold text-gray-500"><Users size={14} aria-hidden="true" />{trip.role === "OWNER" ? "Chủ chuyến đi" : trip.permission === "EDIT" ? "Thành viên · Có thể chỉnh sửa" : "Thành viên · Chỉ xem"}</span></div><h2 className="mt-7 text-xl font-bold text-gray-900 group-hover:text-primary">{trip.title}</h2><p className="mt-4 flex items-center gap-2 text-sm text-gray-600"><CalendarDays size={16} aria-hidden="true" />{formatDateRange(trip.startDate, trip.endDate)}</p><span className="mt-7 inline-block text-sm font-bold text-primary">Mở lịch trình <span aria-hidden="true">→</span></span></Link></li>)}</ul>;
-}
+type State = { kind: "loading" } | { kind: "content"; trips: readonly TripListItem[] } | { kind: "error"; message: string };
+const labels: Record<TripListItem["status"], string> = { PLANNING: "Đang chuẩn bị", ONGOING: "Đang trên đường", COMPLETED: "Đã hoàn thành", CANCELLED: "Đã hủy" };
+const date = (start: string, end: string) => new Intl.DateTimeFormat("vi-VN", { day: "2-digit", month: "short", year: "numeric", timeZone: "UTC" }).formatRange(new Date(`${start}T00:00:00Z`), new Date(`${end}T00:00:00Z`));
+export default function TripListView() { const [state, setState] = useState<State>({ kind: "loading" }); const load = useCallback(async () => { setState({ kind: "loading" }); try { setState({ kind: "content", trips: await listTrips() }); } catch (error) { setState({ kind: "error", message: error instanceof GatewayApiError ? error.message : "Không thể tải các chuyến đi lúc này." }); } }, []); useEffect(() => { queueMicrotask(() => void load()); }, [load]); return <main className="min-h-screen bg-[#f7f1e8] pb-16"><section className="bg-secondary px-4 py-12 text-white sm:px-6"><div className="page-shell flex flex-col gap-6 px-0 sm:flex-row sm:items-end sm:justify-between"><div><p className="text-xs font-extrabold uppercase tracking-[.16em] text-[#f2c369]">Không gian của bạn</p><h1 className="mt-3 text-4xl font-extrabold tracking-[-.04em] sm:text-5xl">Những hành trình<br />đang chờ lên đường.</h1></div><Link href="/trips/new" className="focus-ring inline-flex w-fit items-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-bold text-white hover:bg-primary-hover"><Plus size={17} /> Tạo chuyến đi</Link></div></section><section className="page-shell px-4 py-10 sm:px-6">{state.kind === "loading" && <div className="space-y-3" aria-busy="true">{[1,2,3].map((item) => <div key={item} className="h-28 animate-pulse rounded-2xl bg-surface" />)}</div>}{state.kind === "error" && <FeedbackState kind="error" title="Không tải được hành trình" description={state.message} actionLabel="Thử lại" onAction={load} />}{state.kind === "content" && state.trips.length === 0 && <FeedbackState kind="empty" title="Chuyến đi đầu tiên sẽ bắt đầu ở đây" description="Tạo lịch trình để lưu ngày đi, các điểm dừng và mời người đồng hành."><Link href="/trips/new" className="focus-ring inline-flex rounded-full bg-primary px-5 py-3 text-sm font-bold text-white">Tạo chuyến đi</Link></FeedbackState>}{state.kind === "content" && state.trips.length > 0 && <div className="divide-y divide-border-main border-y border-border-main">{state.trips.map((trip) => <Link href={`/trips/${trip.id}`} key={trip.id} className="group grid gap-4 py-6 sm:grid-cols-[9rem_minmax(0,1fr)_auto] sm:items-center"><div className="hidden aspect-[4/3] rounded-xl bg-[linear-gradient(145deg,#d96532,#235b41)] sm:block" /><div><p className="text-xs font-extrabold uppercase tracking-[.14em] text-primary">{labels[trip.status]}</p><h2 className="mt-2 text-2xl font-extrabold tracking-[-.025em] group-hover:text-primary">{trip.title}</h2><div className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-sm text-text-sub"><span className="inline-flex items-center gap-2"><CalendarDays size={15} />{date(trip.startDate, trip.endDate)}</span><span className="inline-flex items-center gap-2"><Users size={15} />{trip.role === "OWNER" ? "Bạn là chủ chuyến đi" : trip.permission === "EDIT" ? "Có thể chỉnh sửa" : "Chỉ xem"}</span></div></div><ArrowUpRight className="hidden text-primary transition group-hover:translate-x-1 group-hover:-translate-y-1 sm:block" /></Link>)}</div>}</section></main>; }
