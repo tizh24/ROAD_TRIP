@@ -4,13 +4,13 @@ import { Link2 } from "lucide-react";
 
 export default function AdminAffiliatesPanel() {
   return (
-    <div className="p-4 md:p-8 max-w-[1400px] mx-auto animate-fade-in-up">
+    <div className="min-h-full bg-[#f4f6f3] p-4 sm:p-8 max-w-[1400px] mx-auto">
       <div className="mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Affiliates & Commission</h2>
-        <p className="text-sm text-gray-500">Quản lý doanh thu từ Booking, Agoda, Klook và Vexere.</p>
+        <p className="text-xs font-extrabold uppercase tracking-[.16em] text-secondary">Operations</p><h2 className="mt-3 text-3xl font-extrabold tracking-[-.03em] text-text-main">Affiliates</h2>
+        <p className="mt-3 text-sm text-text-sub">Commission chỉ hiển thị khi affiliate integration được kích hoạt.</p>
       </div>
       
-      <div className="bg-white rounded-2xl border border-gray-100 flex flex-col items-center justify-center py-20 text-center shadow-sm">
+      <div className="rounded-[1.75rem] border border-border-main bg-surface flex flex-col items-center justify-center py-20 text-center shadow-card">
         <div className="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center text-green-500 mb-6 shadow-sm">
           <Link2 size={32} />
         </div>
