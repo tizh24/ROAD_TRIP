@@ -1,128 +1,17 @@
 "use client";
-import React, { useState } from "react";
-import TripCard, { TripData } from "@/components/ui/TripCard";
-import { Search, Map as MapIcon, List, SlidersHorizontal, MapPin } from "lucide-react";
 
-const EXPLORE_TRIPS: TripData[] = [
-  { id: "1", title: "Cung đường chữ S - Khám phá Tây Bắc", image: "https://images.unsplash.com/photo-1596700543598-68e37cb0cc2c?auto=format&fit=crop&w=600&q=80", province: "Lai Châu", clones: 1250, author: { name: "Nguyễn Nam", avatar: "https://i.pravatar.cc/150?u=1" }, duration: "4 Ngày", distance: "450 km", cost: "1.2M đ" },
-  { id: "2", title: "Vòng lặp Hà Giang Mùa Vàng", image: "https://images.unsplash.com/photo-1626021200230-01d0c1598f1f?auto=format&fit=crop&w=600&q=80", province: "Hà Giang", clones: 3400, author: { name: "Phượt Thủ 99", avatar: "https://i.pravatar.cc/150?u=2" }, duration: "5 Ngày", distance: "350 km", cost: "1.5M đ" },
-  { id: "3", title: "Khám phá Thác Bản Giốc", image: "https://images.unsplash.com/photo-1627917865664-df818cb49b8f?auto=format&fit=crop&w=600&q=80", province: "Cao Bằng", clones: 950, author: { name: "Trần Anh", avatar: "https://i.pravatar.cc/150?u=3" }, duration: "2 Ngày", distance: "180 km", cost: "800k đ" },
-  { id: "4", title: "Săn mây Tà Xùa", image: "https://images.unsplash.com/photo-1541628951107-a55850900b9d?auto=format&fit=crop&w=600&q=80", province: "Sơn La", clones: 2100, author: { name: "Phượt Thủ 99", avatar: "https://i.pravatar.cc/150?u=2" }, duration: "2 Ngày", distance: "200 km", cost: "900k đ" },
-];
+import Link from "next/link";
+import { useState } from "react";
+import { List, Map, MapPin, Search, SlidersHorizontal } from "lucide-react";
+
+const journeys = [
+  { id: "2", name: "Vòng lặp Hà Giang mùa vàng", place: "Hà Giang", meta: "5 ngày · 350 km", image: "https://images.unsplash.com/photo-1626021200230-01d0c1598f1f?auto=format&fit=crop&w=900&q=85", x: "45%", y: "42%" },
+  { id: "1", name: "Những khúc cua lên mây", place: "Tây Bắc", meta: "4 ngày · 450 km", image: "https://images.unsplash.com/photo-1596700543598-68e37cb0cc2c?auto=format&fit=crop&w=900&q=85", x: "57%", y: "55%" },
+  { id: "3", name: "Một cuối tuần ở Bản Giốc", place: "Cao Bằng", meta: "2 ngày · 180 km", image: "https://images.unsplash.com/photo-1627917865664-df818cb0cc2c?auto=format&fit=crop&w=900&q=85", x: "67%", y: "33%" },
+] as const;
 
 export default function ExploreView() {
-  const [hoveredTripId, setHoveredTripId] = useState<string | null>(null);
-  const [showMobileMap, setShowMobileMap] = useState(false);
-  
-  return (
-    <div className="flex flex-col lg:flex-row w-full h-[calc(100vh-72px)] bg-background overflow-hidden relative font-sans">
-      
-      {/* LEFT SIDEBAR: Filters & List */}
-      <div className={`w-full lg:w-[500px] xl:w-[550px] flex flex-col border-r border-border-light bg-surface shrink-0 h-full relative z-20 shadow-card transition-transform duration-300 ${showMobileMap ? '-translate-x-full lg:translate-x-0 absolute lg:relative' : 'translate-x-0'}`}>
-        
-        {/* Sticky Filters Header */}
-        <div className="p-4 md:p-6 border-b border-border-light bg-surface/95 backdrop-blur-md z-10 space-y-4 shrink-0">
-          <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-secondary">Cảm hứng lên đường</p>
-          <h1 className="text-h2 text-text-main">Khám phá lộ trình</h1>
-          
-          <div className="relative w-full">
-            <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-            <input 
-              type="text" 
-              placeholder="Tìm kiếm điểm đến, tỉnh thành..." 
-              className="w-full pl-10 pr-4 py-2.5 bg-background-warm border border-border-main rounded-xl outline-none focus:bg-white focus:border-secondary/40 focus:ring-4 focus:ring-secondary/10 transition-all text-sm"
-            />
-          </div>
-          
-          <div className="pt-2">
-            <div className="flex items-center gap-2 overflow-x-auto pb-2 custom-scrollbar">
-              <span className="px-4 py-1.5 rounded-full bg-gray-900 text-white text-xs font-semibold cursor-pointer shrink-0 shadow-md shadow-gray-900/20">Miền Bắc</span>
-              <span className="px-4 py-1.5 rounded-full bg-white text-gray-600 text-xs font-semibold border border-gray-200 hover:border-gray-900 hover:text-gray-900 cursor-pointer transition-colors shrink-0">Miền Trung</span>
-              <span className="px-4 py-1.5 rounded-full bg-white text-gray-600 text-xs font-semibold border border-gray-200 hover:border-gray-900 hover:text-gray-900 cursor-pointer transition-colors shrink-0">Tây Nguyên</span>
-              <button className="px-3 py-1.5 rounded-full bg-gray-50 text-gray-600 text-xs font-semibold border border-gray-200 hover:bg-gray-100 cursor-pointer transition-colors shrink-0 flex items-center gap-1.5 ml-auto">
-                <SlidersHorizontal size={12} /> Bộ lọc
-              </button>
-            </div>
-          </div>
-        </div>
-        
-        {/* Scrollable Trips List */}
-        <div className="flex-1 overflow-y-auto p-4 md:p-6 bg-background custom-scrollbar">
-          <p className="text-[11px] text-gray-500 font-bold mb-4 uppercase tracking-wider flex items-center gap-2">
-            Tìm thấy {EXPLORE_TRIPS.length} lộ trình phù hợp
-          </p>
-          <div className="flex flex-col gap-5 pb-24 lg:pb-6">
-            {EXPLORE_TRIPS.map(trip => (
-              <div 
-                key={trip.id}
-                onMouseEnter={() => setHoveredTripId(trip.id)}
-                onMouseLeave={() => setHoveredTripId(null)}
-                className="transition-transform duration-300 hover:-translate-y-1"
-              >
-                <TripCard trip={trip} />
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-      
-      {/* RIGHT SIDE: Interactive Map */}
-      <div className={`flex-1 relative bg-gray-100 overflow-hidden items-center justify-center transition-transform duration-300 ${!showMobileMap ? 'translate-x-full lg:translate-x-0 absolute lg:relative w-full h-full' : 'translate-x-0 w-full h-full'}`}>
-        
-        {/* Abstract Map Background (Google Maps / Mapbox simulation) */}
-        <div className="absolute inset-0 bg-[#E5EEE7]">
-          <div className="absolute inset-0 opacity-30 bg-[url('https://www.transparenttextures.com/patterns/cartographer.png')]" />
-        </div>
-        
-        {/* Mock Map Overlay UI */}
-        <div className="absolute top-6 left-6 z-10 flex gap-2">
-          <div className="bg-white/95 backdrop-blur-md px-4 py-2 rounded-xl shadow-sm flex items-center gap-2 border border-gray-100">
-            <div className="w-2 h-2 rounded-full bg-primary animate-pulse shadow-[0_0_8px_rgba(255,107,53,0.8)]" />
-            <span className="text-xs font-bold text-gray-800">Bản đồ tương tác</span>
-          </div>
-        </div>
-        
-        {/* Map Markers with Hover Synchronization */}
-        {EXPLORE_TRIPS.map((trip, idx) => {
-          const isHovered = hoveredTripId === trip.id;
-          return (
-            <div 
-              key={trip.id}
-              className={`absolute transition-all duration-300 transform -translate-x-1/2 -translate-y-1/2 z-10
-                ${isHovered ? 'scale-125 z-20' : 'scale-100 hover:scale-110'}
-              `}
-              style={{ left: `${45 + idx * 8}%`, top: `${35 + idx * 10}%`, cursor: 'pointer' }}
-            >
-              <div className={`flex flex-col items-center group`}>
-                {isHovered && (
-                  <div className="bg-gray-900 text-white text-[10px] font-bold px-2.5 py-1 rounded-md mb-1 shadow-lg whitespace-nowrap animate-fade-in-up">
-                    {trip.title}
-                  </div>
-                )}
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center shadow-lg transition-colors border-2 ${isHovered ? 'bg-primary border-white text-white' : 'bg-white border-primary text-primary'}`}>
-                  <MapPin size={16} className={isHovered ? 'fill-primary' : 'fill-none'} />
-                </div>
-              </div>
-            </div>
-          );
-        })}
-        
-        {/* Fake Route connecting the pins (Stylistic only) */}
-        <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 5 }}>
-          <path d="M 45% 35% L 53% 45% L 61% 55% L 69% 65%" fill="none" stroke="rgba(0,0,0,0.1)" strokeWidth="3" strokeDasharray="4,4" className="drop-shadow-sm" />
-        </svg>
-      </div>
-
-      {/* Floating Map Toggle Button for Mobile */}
-      <div className="lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50">
-        <button 
-          onClick={() => setShowMobileMap(!showMobileMap)}
-          className="focus-ring bg-secondary text-white px-6 py-3.5 rounded-full font-bold shadow-card flex items-center gap-2 active:scale-95 smooth-transition hover:bg-[#184631]"
-        >
-          {showMobileMap ? <List size={18} /> : <MapIcon size={18} />}
-          <span>{showMobileMap ? 'Xem Danh Sách' : 'Xem Bản Đồ'}</span>
-        </button>
-      </div>
-    </div>
-  );
+  const [mapOpen, setMapOpen] = useState(false);
+  const [active, setActive] = useState<string>(journeys[0].id);
+  return <main className="min-h-[calc(100svh-72px)] bg-[#f7f1e8]"><header className="border-b border-border-main bg-surface px-4 py-7 sm:px-6"><div className="page-shell flex flex-col gap-5 px-0 lg:flex-row lg:items-end lg:justify-between"><div><p className="text-xs font-extrabold uppercase tracking-[.16em] text-primary">Khám phá</p><h1 className="mt-2 text-3xl font-extrabold tracking-[-.035em] sm:text-4xl">Chọn một hướng đi.</h1></div><label className="relative block w-full max-w-xl"><span className="sr-only">Tìm lộ trình</span><Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-text-sub" /><input className="field bg-background pl-11" placeholder="Tìm tỉnh thành, cung đường, điểm dừng…" /></label></div></header><div className="grid min-h-[calc(100svh-210px)] lg:grid-cols-[minmax(21rem,34rem)_1fr]"><section className={`relative z-20 bg-surface p-4 sm:p-6 ${mapOpen ? "hidden lg:block" : "block"}`}><div className="flex items-center justify-between gap-3"><p className="text-sm font-bold text-text-sub">3 hành trình được chọn lọc</p><button className="focus-ring inline-flex items-center gap-2 rounded-full border border-border-main px-3 py-2 text-xs font-bold hover:bg-background-warm"><SlidersHorizontal size={14} /> Bộ lọc</button></div><div className="mt-5 space-y-4">{journeys.map((journey) => <Link href={`/trip/${journey.id}`} key={journey.id} onMouseEnter={() => setActive(journey.id)} className={`group flex gap-4 rounded-2xl p-2 transition ${active === journey.id ? "bg-background-warm" : "hover:bg-background-warm/60"}`}><img src={journey.image} alt="" className="h-28 w-28 rounded-xl object-cover" /><div className="flex min-w-0 flex-1 flex-col justify-center"><p className="text-xs font-bold uppercase tracking-[.12em] text-primary">{journey.place}</p><h2 className="mt-1 text-lg font-extrabold leading-tight">{journey.name}</h2><p className="mt-2 text-sm text-text-sub">{journey.meta}</p></div></Link>)}</div></section><section className={`relative overflow-hidden bg-[#dbe8d7] ${mapOpen ? "block" : "hidden lg:block"}`}><div className="absolute inset-0 opacity-35 bg-[url('https://www.transparenttextures.com/patterns/cartographer.png')]" /><div className="map-overlay absolute left-5 top-5 z-10 flex items-center gap-2 px-4 py-3 text-sm font-bold"><Map size={17} className="text-secondary" /> Bản đồ hành trình</div>{journeys.map((journey) => <Link href={`/trip/${journey.id}`} key={journey.id} onMouseEnter={() => setActive(journey.id)} style={{ left: journey.x, top: journey.y }} className={`absolute z-10 -translate-x-1/2 -translate-y-1/2 ${active === journey.id ? "scale-110" : ""}`}><span className="flex h-11 w-11 items-center justify-center rounded-full border-4 border-white bg-primary text-white shadow-float"><MapPin size={18} /></span><span className={`absolute left-1/2 top-12 w-max -translate-x-1/2 rounded-lg bg-secondary px-3 py-2 text-xs font-bold text-white shadow-card ${active === journey.id ? "block" : "hidden"}`}>{journey.place}</span></Link>)}</section></div><button onClick={() => setMapOpen((value) => !value)} className="focus-ring fixed bottom-5 left-1/2 z-30 inline-flex -translate-x-1/2 items-center gap-2 rounded-full bg-secondary px-5 py-3 text-sm font-bold text-white shadow-float lg:hidden">{mapOpen ? <List size={17} /> : <Map size={17} />}{mapOpen ? "Danh sách" : "Bản đồ"}</button></main>;
 }
