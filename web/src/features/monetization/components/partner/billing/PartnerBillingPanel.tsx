@@ -1,7 +1,6 @@
 "use client";
 import React from "react";
-import { CreditCard, Wallet } from "lucide-react";
-import CTAButton from "@/components/ui/CTAButton";
+import { Wallet } from "lucide-react";
 
 export default function PartnerBillingPanel() {
   return (
@@ -15,11 +14,8 @@ export default function PartnerBillingPanel() {
         <div className="w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center text-emerald-500 mb-6 shadow-sm">
           <Wallet size={32} />
         </div>
-        <h3 className="text-xl font-bold text-gray-900 mb-2">Số dư hiện tại: 1.500.000 đ</h3>
-        <p className="text-gray-500 text-sm max-w-md mb-8">Nạp thêm tiền qua VNPay hoặc chuyển khoản ngân hàng để duy trì chiến dịch.</p>
-        <CTAButton variant="primary" className="px-6 py-2.5 rounded-xl text-sm flex items-center gap-2 shadow-md" onClick={() => alert('Đang chuyển hướng sang cổng thanh toán VNPay...')}>
-          <CreditCard size={16} /> Nạp Tiền Ngay
-        </CTAButton>
+        <h3 className="text-xl font-bold text-gray-900 mb-2">Chưa có dữ liệu thanh toán</h3>
+        <p className="text-gray-500 text-sm max-w-md">Số dư, phương thức nạp tiền và hoá đơn sẽ xuất hiện khi hệ thống thanh toán đối tác được kết nối.</p>
       </div>
     </div>
   );
