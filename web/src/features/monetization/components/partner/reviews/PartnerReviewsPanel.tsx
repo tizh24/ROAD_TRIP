@@ -4,13 +4,13 @@ import { Star } from "lucide-react";
 
 export default function PartnerReviewsPanel() {
   return (
-    <div className="p-4 md:p-8 max-w-[1400px] mx-auto animate-fade-in-up">
+    <div className="min-h-full bg-[#f7f1e8] p-4 sm:p-8">
       <div className="mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Đánh giá của khách hàng</h2>
-        <p className="text-sm text-gray-500">Xem và phản hồi đánh giá từ những backpacker đã ghé thăm doanh nghiệp của bạn.</p>
+        <p className="text-xs font-extrabold uppercase tracking-[.16em] text-primary">Partner workspace</p><h2 className="mt-3 text-3xl font-extrabold tracking-[-.03em] text-text-main">Đánh giá</h2>
+        <p className="mt-3 text-sm text-text-sub">Phản hồi từ khách sẽ xuất hiện khi review được kích hoạt.</p>
       </div>
       
-      <div className="bg-white rounded-2xl border border-gray-100 flex flex-col items-center justify-center py-20 text-center shadow-sm">
+      <div className="rounded-[1.75rem] border border-border-main bg-surface flex flex-col items-center justify-center py-20 text-center shadow-card">
         <div className="w-20 h-20 bg-amber-50 rounded-full flex items-center justify-center text-amber-500 mb-6 shadow-sm">
           <Star size={32} />
         </div>

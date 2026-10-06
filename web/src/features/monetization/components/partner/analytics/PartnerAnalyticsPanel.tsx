@@ -4,13 +4,13 @@ import { BarChart3 } from "lucide-react";
 
 export default function PartnerAnalyticsPanel() {
   return (
-    <div className="p-4 md:p-8 max-w-[1400px] mx-auto animate-fade-in-up">
+    <div className="min-h-full bg-[#f7f1e8] p-4 sm:p-8">
       <div className="mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Phân tích dữ liệu</h2>
-        <p className="text-sm text-gray-500">Thống kê chi tiết lượng người dùng xem, click và check-in vào doanh nghiệp của bạn.</p>
+        <p className="text-xs font-extrabold uppercase tracking-[.16em] text-primary">Partner workspace</p><h2 className="mt-3 text-3xl font-extrabold tracking-[-.03em] text-text-main">Phân tích</h2>
+        <p className="mt-3 text-sm text-text-sub">Chỉ số hiệu quả sẽ xuất hiện khi có nguồn dữ liệu được kết nối.</p>
       </div>
       
-      <div className="bg-white rounded-2xl border border-gray-100 flex flex-col items-center justify-center py-20 text-center shadow-sm">
+      <div className="rounded-[1.75rem] border border-border-main bg-surface flex flex-col items-center justify-center py-20 text-center shadow-card">
         <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center text-blue-500 mb-6 shadow-sm">
           <BarChart3 size={32} />
         </div>

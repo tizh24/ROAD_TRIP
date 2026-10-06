@@ -4,13 +4,13 @@ import { Wallet } from "lucide-react";
 
 export default function PartnerBillingPanel() {
   return (
-    <div className="p-4 md:p-8 max-w-[1400px] mx-auto animate-fade-in-up">
+    <div className="min-h-full bg-[#f7f1e8] p-4 sm:p-8">
       <div className="mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Thanh toán & Hóa đơn</h2>
-        <p className="text-sm text-gray-500">Quản lý số dư tài khoản Ads và lịch sử giao dịch nạp tiền.</p>
+        <p className="text-xs font-extrabold uppercase tracking-[.16em] text-primary">Partner workspace</p><h2 className="mt-3 text-3xl font-extrabold tracking-[-.03em] text-text-main">Thanh toán</h2>
+        <p className="mt-3 text-sm text-text-sub">Phương thức thanh toán và hoá đơn chỉ hiện khi integration sẵn sàng.</p>
       </div>
       
-      <div className="bg-white rounded-2xl border border-gray-100 flex flex-col items-center justify-center py-20 text-center shadow-sm">
+      <div className="rounded-[1.75rem] border border-border-main bg-surface flex flex-col items-center justify-center py-20 text-center shadow-card">
         <div className="w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center text-emerald-500 mb-6 shadow-sm">
           <Wallet size={32} />
         </div>
