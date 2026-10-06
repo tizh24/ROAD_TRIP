@@ -1,22 +1,22 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #D96532;
-  --color-primary-hover: #B94E23;
-  --color-secondary: #235B41;
-  --color-accent: #D5A43B;
-  --color-success: #287A51;
+  --color-primary: #C8532B;
+  --color-primary-hover: #A84020;
+  --color-secondary: #2C2927;
+  --color-accent: #D7A43B;
+  --color-success: #4E795C;
   --color-warning: #B86A12;
   --color-danger: #B9382B;
   --color-info: #286A9A;
-  --color-background: #FFF9F0;
-  --color-background-warm: #F7EFE2;
+  --color-background: #FCF7EF;
+  --color-background-warm: #F2E8D9;
   --color-surface: #FFFFFF;
   
-  --color-text-main: #26322C;
-  --color-text-sub: #66736A;
-  --color-border-main: #E9DECE;
-  --color-border-light: #F4EDE2;
+  --color-text-main: #292522;
+  --color-text-sub: #756D65;
+  --color-border-main: #E4D7C5;
+  --color-border-light: #F3EADF;
   --font-sans: var(--font-plus-jakarta-sans), ui-sans-serif, system-ui, sans-serif;
   
   /* Cấu trúc font hiện đại */
