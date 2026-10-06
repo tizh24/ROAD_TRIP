@@ -1,7 +1,6 @@
 import React from "react";
 import StopRow from "@/components/ui/StopRow";
-import CTAButton from "@/components/ui/CTAButton";
-import { Wallet, Clock, Plus, Wand2 } from "lucide-react";
+import { Wallet, Clock } from "lucide-react";
 import type { StopRowProps } from "@/components/ui/StopRow";
 
 type Stop = StopRowProps["stop"];
@@ -37,7 +36,7 @@ export default function PlannerSidebar({ stops, handlers }: { stops: Stop[]; han
                 <Wallet size={12} /> Tổng Dự Toán
               </span>
               <span className="text-xl lg:text-2xl font-black text-gray-900 tracking-tight">{totalCost.toLocaleString()} đ</span>
-              <span className="text-[10px] font-semibold text-green-600 block mt-1">Tiết kiệm 15%</span>
+              <span className="text-[10px] font-semibold text-text-sub block mt-1">{stops.length} điểm dừng</span>
             </div>
             <div className="w-px bg-gray-200" />
             <div className="flex-1 pl-2">
@@ -69,9 +68,7 @@ export default function PlannerSidebar({ stops, handlers }: { stops: Stop[]; han
       <div className="flex-1 overflow-y-auto p-4 lg:p-6 bg-[#FAFAFA] space-y-3 custom-scrollbar">
         <div className="flex items-center justify-between mb-3 px-1">
           <span className="text-[11px] font-bold uppercase tracking-wider text-gray-500">Lịch trình di chuyển</span>
-          <button className="flex items-center gap-1.5 text-xs font-semibold text-primary hover:text-primary/80 transition-colors bg-primary/10 px-2.5 py-1 rounded-md">
-            <Wand2 size={12} /> Tự động tối ưu
-          </button>
+          <span className="text-xs font-semibold text-text-sub">Dùng mũi tên để đổi thứ tự</span>
         </div>
 
         <div className="space-y-3">
@@ -88,17 +85,8 @@ export default function PlannerSidebar({ stops, handlers }: { stops: Stop[]; han
           ))}
         </div>
 
-        <CTAButton variant="ghost" className="w-full border-2 border-dashed border-gray-200 py-3 text-gray-500 hover:text-primary hover:border-primary/30 hover:bg-white font-semibold mt-4 rounded-xl flex items-center justify-center gap-2 transition-all">
-          <Plus size={16} /> Thêm điểm dừng mới
-        </CTAButton>
       </div>
       
-      {/* Footer Actions */}
-      <div className="p-4 lg:p-6 border-t border-gray-50 bg-white z-10 shrink-0">
-        <CTAButton variant="primary" className="w-full shadow-sm hover:shadow-md py-3 rounded-xl font-bold">
-          Lưu lộ trình & Mời bạn bè
-        </CTAButton>
-      </div>
     </div>
   );
 }

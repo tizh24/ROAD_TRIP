@@ -21,14 +21,14 @@ export interface StopRowProps {
 
 export default function StopRow({ stop, index, onRemove, onUpdate, onMoveUp, onMoveDown }: StopRowProps) {
   return (
-    <div className="flex items-center gap-3 p-3 bg-surface border border-border-main rounded-card shadow-sm hover:shadow-card-default transition-all smooth-transition group">
+    <div className="flex items-start gap-3 rounded-card border border-border-main bg-surface p-3 shadow-sm transition-all smooth-transition hover:shadow-card-default sm:items-center">
       {/* Drag handle / Order index */}
       <div className="flex flex-col items-center gap-1 text-text-sub">
-        <button type="button" onClick={onMoveUp} className="hover:text-primary"><IconArrowUp className="w-4 h-4" /></button>
+        <button type="button" aria-label={`Đưa ${stop.name} lên`} disabled={!onMoveUp || index === 0} onClick={onMoveUp} className="focus-ring rounded p-1 hover:text-primary disabled:cursor-not-allowed disabled:opacity-30"><IconArrowUp className="w-4 h-4" /></button>
         <span className="w-6 h-6 flex items-center justify-center bg-background font-bold rounded-full text-caption text-text-main">
           {index + 1}
         </span>
-        <button type="button" onClick={onMoveDown} className="hover:text-primary"><IconArrowDown className="w-4 h-4" /></button>
+        <button type="button" aria-label={`Đưa ${stop.name} xuống`} disabled={!onMoveDown} onClick={onMoveDown} className="focus-ring rounded p-1 hover:text-primary disabled:cursor-not-allowed disabled:opacity-30"><IconArrowDown className="w-4 h-4" /></button>
       </div>
 
       {/* Thumbnail */}
@@ -50,19 +50,23 @@ export default function StopRow({ stop, index, onRemove, onUpdate, onMoveUp, onM
             </span>
           )}
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <label className="sr-only" htmlFor={`${stop.id}-cost`}>Chi phí cho {stop.name}</label>
           <input
+            id={`${stop.id}-cost`}
             type="number"
             value={stop.cost}
             onChange={(e) => onUpdate({ cost: Number(e.target.value) })}
-            className="w-24 px-2 py-1 rounded-input border border-border-main text-caption focus:outline-none focus:border-primary bg-background"
-            placeholder="Cost (VND)"
+            className="focus-ring w-28 rounded-input border border-border-main bg-background px-2 py-1 text-caption"
+            placeholder="Chi phí (đ)"
           />
+          <label className="sr-only" htmlFor={`${stop.id}-duration`}>Thời lượng tại {stop.name}</label>
           <input
+            id={`${stop.id}-duration`}
             type="number"
             value={stop.duration}
             onChange={(e) => onUpdate({ duration: Number(e.target.value) })}
-            className="w-20 px-2 py-1 rounded-input border border-border-main text-caption focus:outline-none focus:border-primary bg-background"
+            className="focus-ring w-20 rounded-input border border-border-main bg-background px-2 py-1 text-caption"
             placeholder="Giờ"
           />
         </div>
@@ -72,7 +76,8 @@ export default function StopRow({ stop, index, onRemove, onUpdate, onMoveUp, onM
       <button
         type="button"
         onClick={onRemove}
-        className="p-2 text-text-sub hover:text-red-500 hover:bg-red-50 rounded-btn transition-colors shrink-0"
+        aria-label={`Xóa ${stop.name}`}
+        className="focus-ring shrink-0 rounded-btn p-2 text-text-sub transition-colors hover:bg-red-50 hover:text-red-500"
       >
         <IconTrash className="w-5 h-5" />
       </button>

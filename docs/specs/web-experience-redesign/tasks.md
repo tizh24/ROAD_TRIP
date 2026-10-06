@@ -55,9 +55,9 @@ real login flow. Lint and typecheck pass.
 
 - [x] T4.1 Redesign TripListView and TripCard with image-led cards, ownership/status signals, search/filter space and useful empty states.
 - [x] T4.2 Redesign CreateTripForm into a clear progressive journey while retaining existing validation and submit safeguards.
-- [ ] T4.3 Redesign TripDetailView and TripEditorView around cover, trip facts, progress, itinerary and contextual actions.
-- [ ] T4.4 Redesign day tabs, PlaceSearch, StopRow and stop cards for touch-friendly reorder, move and delete affordances.
-- [ ] T4.5 Redesign RouteMap, MapPanel and SaveStatus into the map-centric planner: split desktop layout and mobile map drawer/fullscreen.
+- [x] T4.3 Redesign TripDetailView and TripEditorView around cover, trip facts, progress, itinerary and contextual actions.
+- [x] T4.4 Redesign day tabs, PlaceSearch, StopRow and stop cards for touch-friendly reorder, move and delete affordances.
+- [x] T4.5 Redesign RouteMap, MapPanel and SaveStatus into the map-centric planner: split desktop layout and mobile map drawer/fullscreen.
 - [x] T4.6 Redesign CollaborationPanel and invitation landing for owner, editor, viewer, pending, expired and revoked states.
 - [ ] T4.7 Verify create → add stops → route → save → reload and invitation role gates against the existing E2E journeys.
 
