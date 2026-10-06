@@ -74,9 +74,9 @@ export default function TripCard({ trip }: TripCardProps) {
               <span className="text-[10px] text-text-sub uppercase font-bold tracking-widest mb-1">Dự toán</span>
               <span className="text-lg font-black text-primary">{trip.cost}</span>
             </div>
-            <button className="w-10 h-10 rounded-full bg-background-warm text-text-main flex items-center justify-center group-hover:bg-primary group-hover:text-white smooth-transition">
+            <span aria-hidden="true" className="w-10 h-10 rounded-full bg-background-warm text-text-main flex items-center justify-center group-hover:bg-primary group-hover:text-white smooth-transition">
               <span className="text-lg">→</span>
-            </button>
+            </span>
           </div>
         </div>
       </div>

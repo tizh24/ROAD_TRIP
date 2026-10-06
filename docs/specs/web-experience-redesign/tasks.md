@@ -63,10 +63,10 @@ real login flow. Lint and typecheck pass.
 
 ## Phase 5 — On-the-road, memory and community
 
-- [ ] T5.1 Rework shared map components into a full-canvas on-the-road presentation with floating, accessible route/progress controls.
-- [ ] T5.2 Redesign TripMemoryView as a chronological story/timeline with media cards, privacy labels and empty/share states.
-- [ ] T5.3 Redesign CommunityFeedView, LandingPage community elements and feed cards as activity-led travel social content.
-- [ ] T5.4 Ensure comment, save, report and moderation affordances remain consistent with currently supported actions only.
+- [x] T5.1 Rework shared map components into a full-canvas on-the-road presentation with floating, accessible route/progress controls.
+- [x] T5.2 Redesign TripMemoryView as a chronological story/timeline with media cards, privacy labels and empty/share states.
+- [x] T5.3 Redesign CommunityFeedView, LandingPage community elements and feed cards as activity-led travel social content.
+- [x] T5.4 Ensure comment, save, report and moderation affordances remain consistent with currently supported actions only.
 - [ ] T5.5 Test map and timeline behavior at mobile and desktop widths, including no-map/no-memory/error fallback states.
 
 ## Phase 6 — Profile and monetization

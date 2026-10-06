@@ -1,110 +1,29 @@
 "use client";
-import React from "react";
-import CTAButton from "@/components/ui/CTAButton";
+
+import Link from "next/link";
 import TripCard from "@/components/ui/TripCard";
-import { Trophy, TrendingUp, Clock, MapPin, Edit3, Flame } from "lucide-react";
+import { Compass, MapPin, Sparkles, TrendingUp } from "lucide-react";
 
 const FEED_TRIPS = [
-  { id: "1", title: "Khám phá Vịnh Hạ Long", image: "https://images.unsplash.com/photo-1627917865664-df818cb49b8f?auto=format&fit=crop&w=600&q=80", province: "Quảng Ninh", clones: 950, author: { name: "Trần Anh", avatar: "https://i.pravatar.cc/150?u=3" }, duration: "2 Ngày", distance: "180 km", cost: "800k đ" },
-  { id: "2", title: "Cung đường chữ S - Tây Bắc", image: "https://images.unsplash.com/photo-1596700543598-68e37cb0cc2c?auto=format&fit=crop&w=600&q=80", province: "Lai Châu", clones: 1250, author: { name: "Nguyễn Nam", avatar: "https://i.pravatar.cc/150?u=1" }, duration: "4 Ngày", distance: "450 km", cost: "1.2M đ" },
-];
+  { id: "1", title: "Khám phá Vịnh Hạ Long", image: "https://images.unsplash.com/photo-1627917865664-df818cb49b8f?auto=format&fit=crop&w=900&q=80", province: "Quảng Ninh", clones: 950, author: { name: "Trần Anh", avatar: "https://i.pravatar.cc/150?u=3" }, duration: "2 ngày", distance: "180 km", cost: "800k đ" },
+  { id: "2", title: "Cung đường chữ S — Tây Bắc", image: "https://images.unsplash.com/photo-1596700543598-68e37cb0cc2c?auto=format&fit=crop&w=900&q=80", province: "Lai Châu", clones: 1250, author: { name: "Nguyễn Nam", avatar: "https://i.pravatar.cc/150?u=1" }, duration: "4 ngày", distance: "450 km", cost: "1.2M đ" },
+] as const;
 
 export default function CommunityFeedView() {
-  return (
-    <div className="w-full min-h-screen bg-background pt-10 pb-24 font-sans text-text-main">
-      <div className="max-w-[1200px] mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12">
-        
-        {/* MAIN FEED */}
-        <div className="lg:col-span-8 space-y-8">
-          
-          {/* Banner Challenge */}
-          <div className="w-full bg-secondary rounded-[32px] p-8 md:p-10 text-white shadow-card-hover relative overflow-hidden group cursor-pointer">
-            <div className="absolute right-0 bottom-0 opacity-10 transform translate-x-1/4 translate-y-1/4 transition-transform duration-700 group-hover:scale-110">
-              <Trophy size={200} />
-            </div>
-            <div className="relative z-10">
-              <span className="px-4 py-1.5 bg-gradient-to-r from-orange-500 to-primary text-white text-[10px] font-black rounded-md uppercase tracking-widest shadow-sm mb-6 inline-flex items-center gap-2">
-                <Flame size={12} /> Thử thách tháng 10
-              </span>
-              <h2 className="text-3xl md:text-4xl font-black mb-3 tracking-tight">Chinh Phục 4 Cực Việt Nam</h2>
-              <p className="text-sm md:text-base text-gray-400 max-w-md leading-relaxed mb-8 font-medium">
-                Đăng tải lộ trình check-in 1 trong 4 điểm cực của tổ quốc để nhận ngay Badge Độc quyền và Voucher 500.000đ từ Klook.
-              </p>
-              <CTAButton variant="primary" className="shadow-lg shadow-primary/20 px-8 py-3.5 rounded-xl font-bold text-sm">
-                Tham gia ngay
-              </CTAButton>
-            </div>
-          </div>
+  return <main className="min-h-screen bg-background-warm py-10 pb-24 text-text-main sm:py-14">
+    <div className="page-shell grid gap-8 px-4 sm:px-6 lg:grid-cols-[minmax(0,1fr)_19rem]">
+      <section>
+        <header className="relative overflow-hidden rounded-[2rem] bg-secondary p-7 text-white shadow-card sm:p-10">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_90%_10%,rgba(239,177,91,.3),transparent_26%),radial-gradient(circle_at_60%_100%,rgba(217,101,50,.35),transparent_30%)]" />
+          <div className="relative max-w-2xl"><p className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 text-xs font-bold"><Sparkles size={14} /> Cảm hứng từ cộng đồng</p><h1 className="mt-5 text-3xl font-extrabold tracking-tight sm:text-5xl">Những cung đường đáng nhớ</h1><p className="mt-4 max-w-xl text-sm leading-6 text-white/75 sm:text-base">Khám phá các lộ trình công khai để lấy cảm hứng cho chuyến đi tiếp theo của bạn.</p><Link href="/explore" className="focus-ring mt-6 inline-flex items-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-bold text-white shadow-card hover:bg-primary-hover"><Compass size={16} /> Khám phá lộ trình</Link></div>
+        </header>
 
-          {/* Feed Categories */}
-          <div className="flex gap-3 overflow-x-auto pb-4 custom-scrollbar">
-            <span className="px-6 py-2.5 bg-gray-900 text-white text-xs font-bold rounded-full whitespace-nowrap cursor-pointer shadow-md">Đề xuất cho bạn</span>
-            <span className="px-6 py-2.5 bg-white text-gray-600 border border-gray-200 hover:border-gray-900 hover:text-gray-900 text-xs font-bold rounded-full whitespace-nowrap cursor-pointer transition-colors flex items-center gap-2">
-              <TrendingUp size={14} /> Đang Trending
-            </span>
-            <span className="px-6 py-2.5 bg-white text-gray-600 border border-gray-200 hover:border-gray-900 hover:text-gray-900 text-xs font-bold rounded-full whitespace-nowrap cursor-pointer transition-colors flex items-center gap-2">
-              <Clock size={14} /> Mới nhất
-            </span>
-            <span className="px-6 py-2.5 bg-white text-gray-600 border border-gray-200 hover:border-gray-900 hover:text-gray-900 text-xs font-bold rounded-full whitespace-nowrap cursor-pointer transition-colors flex items-center gap-2">
-              <MapPin size={14} /> Gần bạn
-            </span>
-          </div>
+        <div className="mt-8 flex gap-2 overflow-x-auto pb-2" aria-label="Bộ lọc cộng đồng"><span className="shrink-0 rounded-full bg-secondary px-4 py-2 text-xs font-bold text-white">Đề xuất</span><span className="shrink-0 rounded-full border border-border-main bg-surface px-4 py-2 text-xs font-bold text-text-sub"><TrendingUp size={13} className="mr-1 inline" />Phổ biến</span><span className="shrink-0 rounded-full border border-border-main bg-surface px-4 py-2 text-xs font-bold text-text-sub"><MapPin size={13} className="mr-1 inline" />Theo điểm đến</span></div>
+        <div className="mt-6 grid gap-6 sm:grid-cols-2">{FEED_TRIPS.map((trip) => <TripCard key={trip.id} trip={trip} />)}</div>
+        <p className="mt-8 rounded-2xl border border-dashed border-border-main bg-surface p-5 text-center text-sm text-text-sub">Bảng tin hiện hiển thị các lộ trình công khai được chọn lọc. Bình luận, báo cáo và lưu bài sẽ xuất hiện khi tính năng được hỗ trợ.</p>
+      </section>
 
-          {/* Posts/Trips Stream */}
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {FEED_TRIPS.map(trip => (
-                <div key={trip.id} className="transition-transform duration-300 hover:-translate-y-1">
-                  <TripCard trip={trip} />
-                </div>
-              ))}
-            </div>
-            
-            {/* Infinite Scroll Loader Mock */}
-            <div className="py-12 flex justify-center">
-              <div className="w-8 h-8 border-4 border-gray-200 border-t-primary rounded-full animate-spin" />
-            </div>
-          </div>
-        </div>
-
-        {/* RIGHT SIDEBAR: Stats & Trending locations */}
-        <div className="lg:col-span-4 space-y-8">
-          
-          <div className="surface-card p-8">
-            <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-6 flex items-center gap-2">
-              <Flame size={14} className="text-orange-500" /> Top Tỉnh Thành Tuần Này
-            </h3>
-            <div className="space-y-5">
-              {[
-                { name: "Hà Giang", count: 1245 },
-                { name: "Lâm Đồng", count: 850 },
-                { name: "Cao Bằng", count: 620 },
-              ].map((loc, i) => (
-                <div key={loc.name} className="flex items-center justify-between group cursor-pointer">
-                  <div className="flex items-center gap-4">
-                    <span className="text-lg font-black text-gray-200 group-hover:text-primary transition-colors">0{i+1}</span>
-                    <span className="font-bold text-gray-900 text-sm">{loc.name}</span>
-                  </div>
-                  <span className="text-[10px] bg-gray-50 text-gray-500 px-2.5 py-1 rounded-md font-bold border border-gray-100">{loc.count} lộ trình</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="surface-card p-8">
-            <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-4 flex items-center gap-2">
-              <Edit3 size={14} className="text-blue-500" /> Góp ý cho cộng đồng
-            </h3>
-            <p className="text-sm text-gray-500 leading-relaxed mb-6 font-medium">
-              Hệ thống đang thu thập đánh giá về tình trạng sạt lở đèo Bảo Lộc. Bạn vừa đi ngang qua?
-            </p>
-            <CTAButton variant="ghost" className="w-full text-sm font-bold py-3.5 border-2 border-gray-100 hover:border-gray-900 hover:bg-gray-900 hover:text-white rounded-xl transition-all">
-              Viết cập nhật đường sá
-            </CTAButton>
-          </div>
-        </div>
-        
-      </div>
+      <aside className="space-y-6 lg:sticky lg:top-6 lg:h-fit"><section className="surface-card p-6"><p className="text-xs font-extrabold uppercase tracking-[.14em] text-primary">Điểm đến nổi bật</p><h2 className="mt-2 text-xl font-extrabold">Đang được khám phá</h2><ol className="mt-5 space-y-4">{[{ name: "Hà Giang", count: "1.245 lộ trình" }, { name: "Lâm Đồng", count: "850 lộ trình" }, { name: "Cao Bằng", count: "620 lộ trình" }].map((location, index) => <li key={location.name} className="flex items-center gap-3"><span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-xs font-extrabold text-primary">0{index + 1}</span><div><strong className="block text-sm">{location.name}</strong><span className="text-xs text-text-sub">{location.count}</span></div></li>)}</ol></section><section className="surface-card border-primary/20 bg-primary/5 p-6"><h2 className="font-extrabold">Có một hành trình hay?</h2><p className="mt-2 text-sm leading-6 text-text-sub">Tạo chuyến đi của bạn để bắt đầu lập kế hoạch cùng nhóm.</p><Link href="/trips/new" className="focus-ring mt-4 inline-flex text-sm font-bold text-primary underline">Tạo chuyến đi</Link></section></aside>
     </div>
-  );
+  </main>;
 }

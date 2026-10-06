@@ -1,194 +1,21 @@
 "use client";
-import React from "react";
-import CTAButton from "@/components/ui/CTAButton";
-import { Receipt, Share2, Printer, CheckCircle2, CircleDashed, AlertCircle, Camera, MapPin, Coffee, Fuel, Bed } from "lucide-react";
+/* eslint-disable @next/next/no-img-element */
+
+import { Camera, Eye, MapPin, ShieldCheck } from "lucide-react";
+
+const STORIES = [
+  { day: "Ngày 1", place: "Cổng Trời Quản Bạ", title: "Check-in giữa biển mây", body: "Sương mù dày đặc nhưng cảnh quan nhìn từ trên cao vẫn rất hùng vĩ.", image: "https://images.unsplash.com/photo-1596700543598-68e37cb0cc2c?w=1000&q=80" },
+  { day: "Ngày 2", place: "Đồng Văn", title: "Đêm lửa trại", body: "Một buổi tối chậm rãi, cùng chia sẻ câu chuyện đường dài và món ăn địa phương.", image: "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=1000&q=80" },
+] as const;
 
 export default function TripMemoryView() {
-  return (
-    <div className="w-full min-h-screen bg-background pb-24 font-sans text-text-main">
-      {/* HEADER & COVER */}
-      <div className="relative w-full h-[50vh] bg-gray-900">
-        <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-70 mix-blend-overlay"
-          style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1541628951107-a55850900b9d?auto=format&fit=crop&w=2560&q=100")' }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#F8FAFC] via-gray-900/30 to-transparent" />
-        
-        <div className="absolute bottom-8 left-0 w-full px-6">
-          <div className="max-w-[1200px] mx-auto text-white text-center">
-            <span className="inline-block px-4 py-1.5 bg-white/20 backdrop-blur-md rounded-full text-[10px] font-bold tracking-widest uppercase mb-4 border border-white/20 shadow-sm">
-              Nhật ký Hành Trình
-            </span>
-            <h1 className="text-4xl md:text-6xl font-black drop-shadow-2xl mb-4 tracking-tight">Mùa Vàng Hà Giang</h1>
-            <p className="text-sm md:text-base font-medium text-white/90 drop-shadow-md">350km • 5 Ngày • Đi cùng 5 chiến hữu</p>
-          </div>
-        </div>
-      </div>
-
-      <div className="max-w-[1200px] mx-auto px-6 mt-8 grid grid-cols-1 lg:grid-cols-12 gap-12">
-        
-        {/* LEFT MAIN: Timeline & Album */}
-        <div className="lg:col-span-8 space-y-16">
-          
-          {/* Expense integration is not yet available; do not represent payment controls as live. */}
-          <section className="surface-card p-8 text-center relative overflow-hidden md:p-10">
-            <div className="absolute top-0 right-0 w-48 h-48 bg-primary/5 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none" />
-            
-            <div className="flex items-center justify-center gap-2 mb-2 text-gray-900">
-              <Receipt size={24} className="text-primary" />
-              <h2 className="text-2xl font-black tracking-tight">Nhật ký chuyến đi</h2>
-            </div>
-            <p className="text-sm text-text-sub mb-2 max-w-md mx-auto leading-relaxed">Lưu lại điểm dừng, khoảnh khắc và câu chuyện của cả nhóm theo từng ngày.</p>
-            <p className="text-xs font-bold text-warning">Tính năng chi tiêu và thanh toán đang được chuẩn bị.</p>
-            
-            <div className="flex flex-wrap justify-center gap-10 md:gap-16 mb-10">
-              <div className="text-center">
-                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Tổng chi toàn đoàn</p>
-                <p className="text-3xl md:text-4xl font-black text-gray-900">8.500.000 đ</p>
-              </div>
-              <div className="hidden sm:block w-px h-16 bg-gray-100 mt-2" />
-              <div className="text-center">
-                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Mỗi người cần chuyển</p>
-                <p className="text-3xl md:text-4xl font-black text-primary">1.700.000 đ</p>
-              </div>
-            </div>
-
-            <div className="flex justify-center gap-8 mb-10">
-              <div className="flex flex-col items-center gap-2">
-                <div className="w-12 h-12 rounded-2xl bg-orange-50 text-orange-600 flex items-center justify-center"><Coffee size={20} /></div>
-                <span className="text-xs font-bold text-gray-700">3.500k</span>
-              </div>
-              <div className="flex flex-col items-center gap-2">
-                <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center"><Fuel size={20} /></div>
-                <span className="text-xs font-bold text-gray-700">1.200k</span>
-              </div>
-              <div className="flex flex-col items-center gap-2">
-                <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center"><Bed size={20} /></div>
-                <span className="text-xs font-bold text-gray-700">2.800k</span>
-              </div>
-            </div>
-
-            <div className="mt-8 border-t border-border-light pt-8"><CTAButton variant="secondary" disabled>Chi tiêu nhóm sắp ra mắt</CTAButton></div>
-            
-            <div className="mt-10 text-left bg-gray-50/50 p-6 rounded-[24px] border border-gray-100">
-              <h4 className="font-bold text-gray-900 text-sm mb-5 tracking-tight">Trạng thái thu tiền (Đoàn 5 người)</h4>
-              <div className="space-y-4">
-                <div className="flex justify-between items-center text-sm bg-white p-3 rounded-xl shadow-sm border border-gray-100">
-                  <span className="font-medium text-gray-900">Tuấn (Bạn)</span>
-                  <span className="flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-600 font-bold rounded-md text-[10px] uppercase tracking-wider">
-                    <CheckCircle2 size={12} /> Đã thanh toán
-                  </span>
-                </div>
-                <div className="flex justify-between items-center text-sm bg-white p-3 rounded-xl shadow-sm border border-gray-100">
-                  <span className="font-medium text-gray-900">Nam Nguyễn</span>
-                  <span className="flex items-center gap-1.5 px-3 py-1 bg-amber-50 text-amber-600 font-bold rounded-md text-[10px] uppercase tracking-wider">
-                    <CircleDashed size={12} className="animate-spin-slow" /> Đang xử lý
-                  </span>
-                </div>
-                <div className="flex justify-between items-center text-sm bg-white p-3 rounded-xl shadow-sm border border-gray-100">
-                  <span className="font-medium text-gray-900">Hải Phạm</span>
-                  <span className="flex items-center gap-1.5 px-3 py-1 bg-red-50 text-red-600 font-bold rounded-md text-[10px] uppercase tracking-wider">
-                    <AlertCircle size={12} /> Chưa trả
-                  </span>
-                </div>
-              </div>
-              <button className="mt-5 text-xs font-bold text-primary hover:text-primary/80 transition-colors flex items-center gap-1.5">
-                Gửi thông báo nhắc nhở tự động
-              </button>
-            </div>
-          </section>
-
-          {/* Photo Scrapbook Album */}
-          <section>
-            <div className="flex items-center justify-center gap-3 mb-12">
-              <Camera size={28} className="text-gray-900" />
-              <h2 className="text-3xl font-black text-gray-900 tracking-tight">Album Hành Trình</h2>
-            </div>
-            
-            <div className="space-y-20 relative">
-              {/* Timeline Connector */}
-              <div className="absolute left-1/2 -translate-x-1/2 top-0 w-px h-full bg-gray-200 -z-10 hidden md:block" />
-              
-              {/* Day 1 */}
-              <div className="relative">
-                <div className="flex justify-center mb-10">
-                  <span className="bg-gray-900 text-white font-bold px-6 py-2 rounded-full shadow-lg text-sm tracking-wider uppercase z-10">Ngày 1</span>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-                  <div className="md:text-right pr-0 md:pr-10">
-                    <div className="flex items-center md:justify-end gap-2 text-gray-400 mb-2">
-                      <MapPin size={14} /> <span className="text-xs font-bold uppercase tracking-widest">Cổng Trời Quản Bạ</span>
-                    </div>
-                    <h4 className="text-2xl font-bold text-gray-900 mb-3 tracking-tight">Check-in Cổng Trời</h4>
-                    <p className="text-sm text-gray-500 leading-relaxed">Sương mù dày đặc nhưng cảnh quan từ trên cao nhìn xuống cực kỳ hùng vĩ.</p>
-                  </div>
-                  <div className="pl-0 md:pl-10">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src="https://images.unsplash.com/photo-1596700543598-68e37cb0cc2c?w=800&q=80" alt="Memory" className="rounded-3xl shadow-xl w-full object-cover aspect-[4/3] hover:scale-[1.02] transition-transform duration-500" />
-                  </div>
-                </div>
-              </div>
-
-              {/* Day 2 */}
-              <div className="relative">
-                <div className="flex justify-center mb-10">
-                  <span className="bg-gray-900 text-white font-bold px-6 py-2 rounded-full shadow-lg text-sm tracking-wider uppercase z-10">Ngày 2</span>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-                  <div className="order-2 md:order-1 pr-0 md:pr-10">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src="https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=800&q=80" alt="Memory" className="rounded-3xl shadow-xl w-full object-cover aspect-[4/3] hover:scale-[1.02] transition-transform duration-500" />
-                  </div>
-                  <div className="order-1 md:order-2 md:text-left pl-0 md:pl-10">
-                    <div className="flex items-center gap-2 text-gray-400 mb-2">
-                      <MapPin size={14} /> <span className="text-xs font-bold uppercase tracking-widest">Đồng Văn</span>
-                    </div>
-                    <h4 className="text-2xl font-bold text-gray-900 mb-3 tracking-tight">Đêm lửa trại Đồng Văn</h4>
-                    <p className="text-sm text-gray-500 leading-relaxed">Uống rượu ngô, ăn thắng cố và giao lưu cùng người dân bản địa.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-        </div>
-
-        {/* RIGHT SIDEBAR: Travel Book Widget */}
-        <div className="lg:col-span-4">
-          <div className="sticky top-8 bg-white p-8 rounded-[32px] shadow-sm border border-gray-100 text-center">
-            <h3 className="text-xl font-black text-gray-900 mb-2 tracking-tight">In Sách Kỷ Niệm</h3>
-            <p className="text-sm text-gray-500 mb-8 leading-relaxed">
-              Biến toàn bộ nhật ký này thành một cuốn Photobook tuyệt đẹp gửi thẳng đến nhà bạn.
-            </p>
-            
-            <div className="w-full aspect-[3/4] bg-gray-50 rounded-2xl border border-gray-100 mb-8 relative overflow-hidden group cursor-pointer shadow-inner">
-              <div className="absolute inset-6 bg-white shadow-xl transform rotate-2 group-hover:rotate-6 transition-all duration-500 flex flex-col items-center p-4">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="https://images.unsplash.com/photo-1541628951107-a55850900b9d?w=400&q=80" alt="Book Cover" className="w-full flex-1 object-cover rounded-md grayscale group-hover:grayscale-0 transition-all duration-500" />
-                <div className="pt-4 text-center">
-                  <h4 className="font-black text-gray-900 text-sm tracking-tight uppercase">Mùa Vàng Hà Giang</h4>
-                  <p className="text-[8px] text-gray-400 font-bold tracking-widest uppercase mt-1">Travel Book</p>
-                </div>
-              </div>
-            </div>
-
-            <CTAButton variant="primary" className="w-full py-4 rounded-xl shadow-lg shadow-primary/20 hover:-translate-y-1 transition-transform flex items-center justify-center gap-2">
-              <Printer size={18} /> Đặt In Sách (350.000 đ)
-            </CTAButton>
-            <div className="flex items-center justify-center gap-6 mt-6">
-              <button className="text-xs font-bold text-gray-500 hover:text-gray-900 transition-colors flex items-center gap-1.5">
-                Xem bản PDF
-              </button>
-              <div className="w-1 h-1 rounded-full bg-gray-300" />
-              <button className="text-xs font-bold text-gray-500 hover:text-gray-900 transition-colors flex items-center gap-1.5">
-                <Share2 size={12} /> Chia sẻ Web
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+  return <main className="min-h-screen bg-background-warm pb-24 text-text-main">
+    <header className="relative isolate min-h-[25rem] overflow-hidden bg-secondary px-4 pb-12 pt-28 text-white sm:px-6 sm:pt-36"><div className="absolute inset-0 -z-20 bg-cover bg-center opacity-55" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1541628951107-a55850900b9d?auto=format&fit=crop&w=2200&q=90')" }} /><div className="absolute inset-0 -z-10 bg-gradient-to-t from-secondary via-secondary/50 to-secondary/15" /><div className="page-shell px-0"><p className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-bold backdrop-blur"><Camera size={14} /> Nhật ký hành trình</p><h1 className="mt-5 max-w-3xl text-4xl font-extrabold tracking-tight sm:text-6xl">Mùa vàng Hà Giang</h1><p className="mt-4 text-sm font-medium text-white/80 sm:text-base">350 km · 5 ngày · cùng 5 người bạn</p></div></header>
+    <div className="page-shell grid gap-8 px-4 pt-8 sm:px-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
+      <section><div className="surface-card flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between"><div><p className="text-xs font-extrabold uppercase tracking-[.14em] text-primary">Câu chuyện trên đường</p><h2 className="mt-2 text-2xl font-extrabold">Lưu những điều đáng nhớ</h2><p className="mt-2 max-w-xl text-sm leading-6 text-text-sub">Mỗi khoảnh khắc được trình bày theo dòng thời gian để cả nhóm có thể xem lại hành trình một cách riêng tư.</p></div><span className="inline-flex w-fit items-center gap-2 rounded-full bg-secondary/10 px-3 py-2 text-xs font-bold text-secondary"><ShieldCheck size={14} /> Chỉ người trong chuyến đi</span></div>
+        <div className="relative mt-10 space-y-10 before:absolute before:bottom-0 before:left-4 before:top-0 before:w-px before:bg-border-main sm:before:left-1/2">{STORIES.map((story, index) => <article key={story.day} className={`relative grid gap-5 sm:grid-cols-2 sm:gap-10 ${index % 2 ? "sm:[&>div:first-child]:order-2" : ""}`}><span className="absolute left-4 top-5 z-10 h-3 w-3 -translate-x-1/2 rounded-full border-2 border-surface bg-primary sm:left-1/2" /><div className={`pl-9 sm:pl-0 ${index % 2 ? "sm:text-left" : "sm:text-right"}`}><span className="inline-flex rounded-full bg-secondary px-3 py-1 text-xs font-extrabold text-white">{story.day}</span><div className="mt-3"><p className={`flex items-center gap-1 text-xs font-bold uppercase tracking-[.12em] text-primary ${index % 2 ? "" : "sm:justify-end"}`}><MapPin size={13} /> {story.place}</p><h3 className="mt-2 text-2xl font-extrabold">{story.title}</h3><p className="mt-3 text-sm leading-6 text-text-sub">{story.body}</p></div></div><div className="pl-9 sm:pl-0"><div className="overflow-hidden rounded-[1.5rem] bg-surface shadow-card"><img src={story.image} alt={story.title} className="aspect-[4/3] w-full object-cover" /></div></div></article>)}</div>
+      </section>
+      <aside className="space-y-5 lg:sticky lg:top-6 lg:h-fit"><section className="surface-card p-6"><p className="text-xs font-extrabold uppercase tracking-[.14em] text-primary">Quyền riêng tư</p><div className="mt-4 flex gap-3"><Eye className="shrink-0 text-secondary" size={20} /><p className="text-sm leading-6 text-text-sub">Album này là bản xem trước UI. Chia sẻ công khai, tải PDF, in sách và chi tiêu nhóm chưa được kết nối trong sản phẩm hiện tại.</p></div></section><section className="surface-card p-6"><h2 className="font-extrabold">Bạn chưa có kỷ niệm?</h2><p className="mt-2 text-sm leading-6 text-text-sub">Khi chuyến đi có nội dung được lưu, timeline sẽ xuất hiện tại đây.</p></section></aside>
     </div>
-  );
+  </main>;
 }
