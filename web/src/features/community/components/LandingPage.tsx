@@ -3,7 +3,7 @@ import React from "react";
 import CTAButton from "@/components/ui/CTAButton";
 import TripCard from "@/components/ui/TripCard";
 import Link from "next/link";
-import { Map, Compass, Camera, ArrowRight, Star } from "lucide-react";
+import { Map, Compass, Camera, ArrowRight, LogIn, Star } from "lucide-react";
 
 const FEATURED_TRIPS = [
   { id: "1", title: "Cung đường chữ S - Khám phá Tây Bắc", image: "https://images.unsplash.com/photo-1596700543598-68e37cb0cc2c?auto=format&fit=crop&w=600&q=80", province: "Lai Châu", clones: 1250, author: { name: "Nguyễn Nam", avatar: "https://i.pravatar.cc/150?u=1" }, duration: "4 Ngày", distance: "450 km", cost: "1.2M đ" },
@@ -36,6 +36,11 @@ export default function LandingPage() {
           </p>
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-8">
+            <Link href="/login">
+              <CTAButton variant="secondary" className="w-full sm:w-auto px-8 py-3.5 rounded-xl text-base font-semibold">
+                <LogIn size={17} /> Đăng nhập
+              </CTAButton>
+            </Link>
             <Link href="/planner">
               <CTAButton variant="primary" className="w-full sm:w-auto px-8 py-3.5 rounded-xl shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all text-base font-semibold">
                 Tạo lộ trình đầu tiên

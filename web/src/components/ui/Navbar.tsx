@@ -4,7 +4,7 @@ import CTAButton from "./CTAButton";
 import SearchBar from "./SearchBar";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Map, Tent, Users, Plus, Menu, X } from "lucide-react";
+import { Map, Tent, Users, Plus, Menu, X, LogIn } from "lucide-react";
 
 export default function Navbar() {
   const pathname = usePathname() || "";
@@ -69,17 +69,8 @@ export default function Navbar() {
             </CTAButton>
           </Link>
           
-          <Link 
-            href="/profile" 
-            className={`w-10 h-10 rounded-full border-2 overflow-hidden transition-colors shrink-0 ${pathname === '/profile' ? 'border-primary' : 'border-gray-200 hover:border-gray-400'}`}
-            title="Trang cá nhân"
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img 
-              src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop" 
-              alt="User profile photo" 
-              className="w-full h-full object-cover" 
-            />
+          <Link href="/login" className="focus-ring hidden shrink-0 items-center gap-2 rounded-xl border border-border-main bg-surface px-3 py-2 text-sm font-bold text-text-main hover:bg-background-warm sm:inline-flex" title="Đăng nhập">
+            <LogIn size={16} aria-hidden="true" /> Đăng nhập
           </Link>
           <button
             type="button"
@@ -106,6 +97,7 @@ export default function Navbar() {
               );
             })}
             <Link href="/trips/new" onClick={() => setMobileOpen(false)} className="focus-ring mt-2 flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-bold text-white"><Plus size={17} aria-hidden="true" />Tạo chuyến đi</Link>
+            <Link href="/login" onClick={() => setMobileOpen(false)} className="focus-ring mt-1 flex items-center justify-center gap-2 rounded-xl border border-border-main px-4 py-3 text-sm font-bold text-text-main hover:bg-background-warm"><LogIn size={17} aria-hidden="true" />Đăng nhập</Link>
           </nav>
         </div>
       ) : null}
