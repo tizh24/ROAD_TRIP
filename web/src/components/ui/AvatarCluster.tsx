@@ -26,7 +26,7 @@ export default function AvatarCluster({ members, className = "", size = "md" }: 
       {visibleMembers.map((member, index) => {
         // Fallback user initial
         const initial = member.name.charAt(0).toUpperCase();
-        const bgColor = member.color || "#FF6B35";
+        const bgColor = member.color || "#006948";
 
         return (
           <div
@@ -54,7 +54,7 @@ export default function AvatarCluster({ members, className = "", size = "md" }: 
 
       {overflowCount > 0 && (
         <div
-          className={`relative rounded-full border-2 border-white bg-[#E5E0DB] text-[#1A1A2E] flex items-center justify-center font-black shadow-sm ${sizeClasses} ${offsetClasses}`}
+          className={`relative flex items-center justify-center rounded-full border-2 border-white bg-background-warm font-black text-secondary shadow-sm ${sizeClasses} ${offsetClasses}`}
           style={{ zIndex: 0 }}
         >
           +{overflowCount}

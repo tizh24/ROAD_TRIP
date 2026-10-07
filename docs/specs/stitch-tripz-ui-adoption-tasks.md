@@ -11,7 +11,7 @@
 
 ## Public and identity
 
-- [ ] T4. Rebuild landing and discovery-facing public surfaces from the Stitch direction.
+- [x] T4. Rebuild landing and discovery-facing public surfaces from the Stitch direction.
 - [ ] T5. Rebuild login presentation and preserve auth/callback error behavior.
 
 ## Traveler

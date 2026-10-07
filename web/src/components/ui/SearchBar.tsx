@@ -46,10 +46,10 @@ export default function SearchBar({ placeholder = "Tìm địa danh, cung đư�
   return (
     <div ref={containerRef} className={`relative flex-1 max-w-md ${className}`}>
       {/* Search Input Container */}
-      <div className={`relative flex items-center bg-white border smooth-transition h-11 px-3.5 rounded-[8px] ${
-        isFocused ? "border-[#FF6B35] ring-2 ring-[#FF6B35]/15" : "border-[#E5E0DB]"
+      <div className={`relative flex h-11 items-center rounded-lg border bg-white px-3.5 smooth-transition ${
+        isFocused ? "border-primary ring-2 ring-primary/15" : "border-border-main"
       }`}>
-        <svg className="w-5 h-5 text-[#6B7280]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <svg className="h-5 w-5 text-text-sub" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
         </svg>
         <input
@@ -61,12 +61,12 @@ export default function SearchBar({ placeholder = "Tìm địa danh, cung đư�
           }}
           onFocus={() => setIsFocused(true)}
           placeholder={placeholder}
-          className="w-full h-full bg-transparent border-none outline-none pl-3 text-sm text-[#1A1A2E] placeholder-[#6B7280] font-sans"
+          className="h-full w-full border-none bg-transparent pl-3 text-sm font-sans text-text-main outline-none placeholder:text-text-sub"
         />
         {value && (
           <button 
             onClick={() => { setValue(""); if (onSearch) onSearch(""); }}
-            className="text-[#6B7280] hover:text-[#1A1A2E] smooth-transition"
+            className="text-text-sub smooth-transition hover:text-text-main"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -77,10 +77,10 @@ export default function SearchBar({ placeholder = "Tìm địa danh, cung đư�
 
       {/* Suggestion Dropdown Panel */}
       {isFocused && (value.length > 0 || isFocused) && (
-        <div className="absolute top-[48px] left-0 w-full bg-white border border-[#E5E0DB] shadow-[0_8px_32px_rgba(0,0,0,0.12)] rounded-[20px] overflow-hidden z-[100] p-1.5 animate-slide-in">
+        <div className="absolute left-0 top-[48px] z-[100] w-full animate-slide-in overflow-hidden rounded-panel border border-border-main bg-white p-1.5 shadow-float">
           {filtered.length > 0 ? (
             <div>
-              <div className="text-[10px] uppercase tracking-wider font-bold text-[#6B7280] px-3.5 py-2">
+              <div className="px-3.5 py-2 text-[10px] font-bold uppercase tracking-wider text-text-sub">
                 {value ? `Kết quả tìm kiếm (${filtered.length})` : "Địa điểm nổi bật"}
               </div>
               <ul className="space-y-0.5">
@@ -92,13 +92,13 @@ export default function SearchBar({ placeholder = "Tìm địa danh, cung đư�
                         setIsFocused(false);
                         if (onSearch) onSearch(item.name);
                       }}
-                      className="w-full text-left px-3.5 py-2.5 hover:bg-[#F8F4F0] rounded-[16px] smooth-transition flex items-center justify-between"
+                      className="flex w-full items-center justify-between rounded-lg px-3.5 py-2.5 text-left smooth-transition hover:bg-background-warm"
                     >
                       <div>
-                        <div className="text-xs font-bold text-[#1A1A2E]">{item.name}</div>
-                        <div className="text-[10px] text-[#6B7280] mt-0.5">{item.province}</div>
+                        <div className="text-xs font-bold text-text-main">{item.name}</div>
+                        <div className="mt-0.5 text-[10px] text-text-sub">{item.province}</div>
                       </div>
-                      <span className="text-[10px] font-bold text-[#2D6A4F] bg-[#2D6A4F]/10 px-2 py-0.5 rounded-[4px]">
+                      <span className="rounded bg-primary/10 px-2 py-0.5 text-[10px] font-bold text-primary">
                         {item.type}
                       </span>
                     </button>
@@ -107,7 +107,7 @@ export default function SearchBar({ placeholder = "Tìm địa danh, cung đư�
               </ul>
             </div>
           ) : (
-            <div className="text-center py-6 text-xs text-[#6B7280] font-bold">
+            <div className="py-6 text-center text-xs font-bold text-text-sub">
               Không tìm thấy kết quả nào cho &quot;{value}&quot;
             </div>
           )}
