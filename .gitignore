@@ -25,3 +25,6 @@ server/.cloudflared*.log
 **/test-results/
 
 .vercel
+
+# Local design working notes
+docs/TRIPZ_EDITORIAL_UI_BLUEPRINT.md
