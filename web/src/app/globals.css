@@ -69,6 +69,16 @@ body {
   overflow-x: hidden;
 }
 
+html:has(.landing-page) {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html:has(.landing-page) {
+    scroll-behavior: auto;
+  }
+}
+
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-be-vietnam-pro), var(--font-plus-jakarta-sans), ui-sans-serif, system-ui, sans-serif;
 }
