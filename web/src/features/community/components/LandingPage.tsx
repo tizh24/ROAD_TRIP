@@ -19,13 +19,13 @@ export default function LandingPage() {
 
   return (
     <main className="bg-background text-text-main">
-      <section className="page-shell px-4 pb-16 pt-10 sm:px-6 lg:pt-14">
+      <section className="page-shell px-0 pb-12 pt-7 sm:px-6 sm:pb-16 sm:pt-10 lg:pt-14">
         <div className="grid items-center gap-10 lg:grid-cols-12 lg:gap-8">
           <div className="lg:col-span-6">
             <div className="inline-flex items-center gap-2 rounded-full bg-blue-100 px-3 py-1.5 text-xs font-bold tracking-wide text-secondary">
               <Compass size={15} /> Chuyên gia đường trường số 1 Việt Nam
             </div>
-            <h1 className="mt-5 max-w-xl text-4xl font-extrabold leading-[1.08] tracking-[-.045em] sm:text-5xl">
+            <h1 className="mt-5 max-w-xl text-[2.15rem] font-extrabold leading-[1.08] tracking-[-.045em] sm:text-5xl">
               Khám phá mọi dặm đường <span className="text-primary">cùng TripZ</span>
             </h1>
             <p className="mt-5 max-w-2xl text-base leading-7 text-text-sub">
@@ -35,9 +35,9 @@ export default function LandingPage() {
             <div className="mt-6 rounded-panel bg-white p-4 shadow-card sm:p-5">
               <div className="flex flex-col gap-3 border-b border-border-light pb-4 sm:flex-row sm:items-center sm:justify-between">
                 <span className="text-xs font-bold uppercase tracking-[.12em] text-text-sub">Phương thức di chuyển</span>
-                <div className="inline-flex w-fit rounded-lg bg-surface-container p-1">
-                  <button type="button" onClick={() => setVehicle("bike")} className={`focus-ring inline-flex items-center gap-2 rounded px-3 py-1.5 text-xs font-bold ${vehicle === "bike" ? "bg-primary text-white" : "text-text-sub"}`}><Bike size={15} /> Xe máy phượt</button>
-                  <button type="button" onClick={() => setVehicle("car")} className={`focus-ring inline-flex items-center gap-2 rounded px-3 py-1.5 text-xs font-bold ${vehicle === "car" ? "bg-primary text-white" : "text-text-sub"}`}><Car size={15} /> Ô tô tự lái</button>
+                <div className="grid w-full grid-cols-2 rounded-lg bg-surface-container p-1 sm:inline-flex sm:w-fit">
+                  <button type="button" onClick={() => setVehicle("bike")} className={`focus-ring inline-flex items-center justify-center gap-1.5 rounded px-2 py-2 text-xs font-bold sm:px-3 sm:py-1.5 ${vehicle === "bike" ? "bg-primary text-white" : "text-text-sub"}`}><Bike size={15} /> Xe máy</button>
+                  <button type="button" onClick={() => setVehicle("car")} className={`focus-ring inline-flex items-center justify-center gap-1.5 rounded px-2 py-2 text-xs font-bold sm:px-3 sm:py-1.5 ${vehicle === "car" ? "bg-primary text-white" : "text-text-sub"}`}><Car size={15} /> Ô tô</button>
                 </div>
               </div>
               <div className="mt-4 grid gap-3 sm:grid-cols-2">
@@ -56,7 +56,7 @@ export default function LandingPage() {
 
           <div className="lg:col-span-6">
             <div className="overflow-hidden rounded-[16px] bg-white shadow-card">
-              <div className="relative h-[430px] overflow-hidden sm:h-[500px]">
+                <div className="relative h-[20rem] overflow-hidden sm:h-[500px]">
                 <Image src="https://images.unsplash.com/photo-1541628951107-a55850900b9d?auto=format&fit=crop&w=1600&q=85" alt="Cung đường ven biển giữa Đà Nẵng và Huế" fill priority unoptimized className="object-cover" sizes="(min-width: 1024px) 50vw, 100vw" />
                 <div className="absolute inset-0 bg-[linear-gradient(160deg,rgba(251,249,245,.2),rgba(16,42,67,.38))]" />
                 <svg aria-hidden="true" className="absolute inset-0 h-full w-full" viewBox="0 0 600 500" fill="none"><path d="M475 420C430 365 370 333 326 270S245 215 195 155 125 95 90 70" stroke="#f59e0b" strokeDasharray="8 7" strokeLinecap="round" strokeWidth="5" /><path d="M475 420C430 365 370 333 326 270S245 215 195 155 125 95 90 70" stroke="#fff7e2" strokeLinecap="round" strokeOpacity=".65" strokeWidth="1.5" /></svg>
@@ -82,5 +82,5 @@ export default function LandingPage() {
 function Place({ label, value }: { label: string; value: string }) { return <div className="rounded-lg bg-surface-container-low p-3"><p className="text-[11px] font-bold uppercase tracking-[.12em] text-text-sub">{label}</p><p className="mt-1 text-sm font-bold text-text-main">{value}</p></div>; }
 function Stat({ value, label }: { value: string; label: string }) { return <div><p className="font-extrabold text-text-main">{value}</p><p className="mt-0.5 text-xs">{label}</p></div>; }
 function Metric({ label, value, accent = false }: { label: string; value: string; accent?: boolean }) { return <div><p className="text-[10px] font-bold uppercase tracking-[.1em] text-text-sub">{label}</p><p className={`mt-0.5 text-sm font-extrabold ${accent ? "text-amber-700" : "text-text-main"}`}>{value}</p></div>; }
-function Marker({ className, label, number, warn = false }: { className: string; label: string; number: string; warn?: boolean }) { return <div className={`absolute flex flex-col items-center ${className}`}><span className="mb-1 rounded bg-white px-2 py-1 text-[11px] font-bold text-text-main shadow">{label}</span><span className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold text-white ring-4 ${warn ? "bg-amber-700 ring-amber-100" : "bg-primary ring-emerald-100"}`}>{warn ? <MapPin size={15} /> : number}</span></div>; }
+function Marker({ className, label, number, warn = false }: { className: string; label: string; number: string; warn?: boolean }) { return <div className={`absolute flex flex-col items-center ${className}`}><span className="mb-1 hidden rounded bg-white px-2 py-1 text-[11px] font-bold text-text-main shadow sm:block">{label}</span><span aria-label={label} className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold text-white ring-4 ${warn ? "bg-amber-700 ring-amber-100" : "bg-primary ring-emerald-100"}`}>{warn ? <MapPin size={15} /> : number}</span></div>; }
 function Cost({ name, amount }: { name: string; amount: string }) { return <div className="flex justify-between gap-3"><span>{name}</span><span className="font-bold text-text-main">{amount}</span></div>; }
