@@ -35,9 +35,9 @@ export default function TripPlannerView() {
   };
 
   return (
-    <div className="flex h-[calc(100vh-72px)] w-full flex-col overflow-hidden bg-background lg:flex-row">
+    <main className="flex h-[calc(100vh-72px)] w-full flex-col overflow-hidden bg-background lg:flex-row">
       <MapPanel stops={stops} />
       <PlannerSidebar stops={stops} handlers={handlers} />
-    </div>
+    </main>
   );
 }

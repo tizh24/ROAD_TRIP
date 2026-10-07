@@ -1,13 +1,6 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import LoginAnalyticsMarker from "@/lib/analytics/LoginAnalyticsMarker";
-
-const plusJakarta = Plus_Jakarta_Sans({
-  variable: "--font-plus-jakarta-sans",
-  subsets: ["vietnamese", "latin"],
-  weight: ["400", "500", "600", "700", "800"],
-});
 
 export const metadata: Metadata = {
   title: "Road Trip Planner - Bản Đồ Phượt Việt Nam",
@@ -18,7 +11,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="vi"
-      className={`${plusJakarta.variable} h-full antialiased`}
+      className="h-full antialiased"
     >
       <body className="min-h-full flex flex-col bg-background text-text-main">
         <LoginAnalyticsMarker />

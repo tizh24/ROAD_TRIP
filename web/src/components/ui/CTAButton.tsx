@@ -14,7 +14,7 @@ export default function CTAButton({
   children,
   ...props
 }: CTAButtonProps) {
-  const baseStyles = "focus-ring inline-flex items-center justify-center gap-2 rounded-full font-bold smooth-transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60";
+  const baseStyles = "focus-ring inline-flex min-h-11 items-center justify-center gap-2 rounded-lg font-bold smooth-transition active:translate-y-px disabled:cursor-not-allowed disabled:opacity-60";
   
   const variants = {
     primary: "bg-primary text-white shadow-card hover:bg-primary-hover hover:shadow-card-hover",

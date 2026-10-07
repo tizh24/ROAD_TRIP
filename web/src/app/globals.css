@@ -1,23 +1,28 @@
 @import "tailwindcss";
 
+:root {
+  --font-plus-jakarta-sans: "Aptos", "Segoe UI", sans-serif;
+  --font-be-vietnam-pro: "Aptos Display", "Segoe UI", sans-serif;
+}
+
 @theme {
-  --color-primary: #C8532B;
-  --color-primary-hover: #A84020;
-  --color-secondary: #2C2927;
-  --color-accent: #D7A43B;
-  --color-success: #4E795C;
-  --color-warning: #B86A12;
+  --color-primary: #006948;
+  --color-primary-hover: #005137;
+  --color-secondary: #102A43;
+  --color-accent: #A36700;
+  --color-success: #28764F;
+  --color-warning: #A35E00;
   --color-danger: #B9382B;
-  --color-info: #286A9A;
-  --color-background: #FCF7EF;
-  --color-background-warm: #F2E8D9;
+  --color-info: #0369A1;
+  --color-background: #FBF9F5;
+  --color-background-warm: #F5F3EF;
   --color-surface: #FFFFFF;
-  
-  --color-text-main: #292522;
-  --color-text-sub: #756D65;
-  --color-border-main: #E4D7C5;
-  --color-border-light: #F3EADF;
+  --color-text-main: #1B1C1A;
+  --color-text-sub: #52605A;
+  --color-border-main: #D5DDD6;
+  --color-border-light: #E8ECE8;
   --font-sans: var(--font-plus-jakarta-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-be-vietnam-pro), var(--font-plus-jakarta-sans), ui-sans-serif, system-ui, sans-serif;
   
   /* Cấu trúc font hiện đại */
   --text-display: clamp(2.5rem, 6vw, 4.5rem);
@@ -38,13 +43,13 @@
   --text-h3--line-height: 1.4;
   --text-h3--font-weight: 700;
   
-  --shadow-card: 0 12px 30px -18px rgba(67, 48, 26, 0.32);
-  --shadow-card-hover: 0 22px 42px -22px rgba(67, 48, 26, 0.42);
-  --shadow-float: 0 18px 36px -20px rgba(38, 50, 44, 0.38);
+  --shadow-card: 0 1px 3px rgba(16, 42, 67, 0.07), 0 8px 22px -16px rgba(16, 42, 67, 0.22);
+  --shadow-card-hover: 0 10px 28px -15px rgba(16, 42, 67, 0.26);
+  --shadow-float: 0 14px 32px -18px rgba(16, 42, 67, 0.34);
   
   --radius-chip: 9999px;
-  --radius-card: 1.25rem;
-  --radius-panel: 1.75rem;
+  --radius-card: 0.875rem;
+  --radius-panel: 1rem;
 }
 
 @layer utilities {
@@ -62,6 +67,10 @@ body {
   color: var(--color-text-main);
   font-family: var(--font-plus-jakarta-sans), ui-sans-serif, system-ui, sans-serif;
   overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-be-vietnam-pro), var(--font-plus-jakarta-sans), ui-sans-serif, system-ui, sans-serif;
 }
 
 :where(a, button, input, select, textarea):focus-visible {
@@ -152,12 +161,12 @@ body {
 }
 
 /* Custom panels and animations */
-.glass-panel { background: rgba(255, 255, 255, 0.86); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.7); box-shadow: var(--shadow-float); }
+.glass-panel { background: rgba(255, 255, 255, 0.94); border: 1px solid var(--color-border-light); box-shadow: var(--shadow-float); }
 .smooth-transition { transition: color 180ms ease, background-color 180ms ease, border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease; }
 .page-shell { width: min(100% - 2rem, 76rem); margin-inline: auto; }
 .page-section { padding-block: clamp(2.5rem, 6vw, 5.5rem); }
 .surface-card { border: 1px solid var(--color-border-main); border-radius: var(--radius-card); background: var(--color-surface); box-shadow: var(--shadow-card); }
-.map-overlay { border: 1px solid rgba(255, 255, 255, 0.72); border-radius: 1rem; background: rgba(255, 255, 255, 0.9); box-shadow: var(--shadow-float); backdrop-filter: blur(16px); }
+.map-overlay { border: 1px solid var(--color-border-main); border-radius: 0.875rem; background: rgba(255, 255, 255, 0.96); box-shadow: var(--shadow-float); }
 .focus-ring:focus-visible { outline: 3px solid var(--color-secondary); outline-offset: 3px; }
 
 /* Custom Web Scrollbar */
@@ -169,9 +178,9 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #E5E0DB;
+  background: #D5DDD6;
   border-radius: 99px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #FF6B35;
+  background: var(--color-primary);
 }
