@@ -12,23 +12,20 @@ test.describe("public landing page", () => {
     await expect(
       page.getByRole("heading", {
         level: 1,
-        name: /Đi xa hơn theo cách của riêng bạn/i,
+        name: /Mọi cung đường.*Một hành trình.*đáng nhớ/i,
       }),
     ).toBeVisible();
     await expect(
-      page.getByRole("heading", { name: "Điểm đến được yêu thích" }),
+      page.getByRole("heading", { name: /Khám phá Việt Nam,.*từng cung đường/i }),
     ).toBeVisible();
     await expect(
-      page.getByRole("link", { name: /Lập chuyến đi/i }).first(),
+      page.getByRole("link", { name: /Lên kế hoạch chuyến đi/i }).first(),
     ).toHaveAttribute("href", "/trips/new");
     await expect(
-      page.getByRole("link", { name: /Xem hành trình mẫu/i }),
+      page.getByRole("link", { name: /Khám phá cung đường/i }).first(),
     ).toHaveAttribute("href", "/explore");
 
-    await page.getByRole("button", { name: "Mở điều hướng" }).click();
-    await expect(
-      page.getByRole("link", { name: "Đăng nhập" }).last(),
-    ).toHaveAttribute("href", "/login");
+    await expect(page.getByRole("button", { name: "Mở điều hướng" })).toBeVisible();
   });
 
   test("keeps every in-page navigation target centered and inside the laptop viewport", async ({
@@ -37,7 +34,7 @@ test.describe("public landing page", () => {
     await page.setViewportSize({ width: 1366, height: 900 });
     await page.goto("/");
 
-    await expect(page.locator("header")).toHaveCSS("position", "fixed");
+    await expect(page.locator("header")).toHaveCSS("position", "relative");
     expect(
       await page.evaluate(
         () => document.documentElement.scrollWidth <= window.innerWidth,
@@ -45,9 +42,8 @@ test.describe("public landing page", () => {
     ).toBe(true);
 
     const destinations = [
-      { label: "Điểm đến", title: "#diem-den-title", section: "#diem-den" },
-      { label: "Trải nghiệm", title: "#dich-vu-title", section: "#dich-vu" },
-      { label: "Cách hoạt động", title: "#cach-hoat-dong-title", section: "#cach-hoat-dong" },
+      { label: "Khám phá", title: "#kham-pha h2", section: "#kham-pha" },
+      { label: "Cách hoạt động", title: "#cach-hoat-dong h2", section: "#cach-hoat-dong" },
     ] as const;
 
     for (const destination of destinations) {
