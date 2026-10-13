@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Store, Rocket, Star, BarChart, CreditCard, Menu, X, ChevronLeft } from "lucide-react";
@@ -8,6 +8,14 @@ export default function PartnerSidebar() {
   const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+
+  useEffect(() => {
+    function handleEscape(event: KeyboardEvent) {
+      if (event.key === "Escape") setIsMobileOpen(false);
+    }
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, []);
 
   const navItems = [
     { id: "overview", path: "/partner", icon: Store, label: "Tổng quan" },
@@ -41,10 +49,10 @@ export default function PartnerSidebar() {
         ${isMobileOpen ? 'translate-x-0 w-64' : '-translate-x-full lg:translate-x-0'}
         bg-surface border-r border-border-light flex flex-col transition-all duration-300 ease-in-out shrink-0 shadow-card
       `}>
-        <div className="h-16 px-4 border-b border-gray-50 flex items-center justify-between">
+        <div className="h-16 px-4 border-b border-border-light flex items-center justify-between">
           {(!isCollapsed || isMobileOpen) && (
             <div>
-              <h2 className="text-[15px] font-bold text-gray-800 tracking-tight flex items-center gap-2 truncate">
+              <h2 className="text-[15px] font-bold text-text-main tracking-tight flex items-center gap-2 truncate">
                 <span className="w-2.5 h-2.5 rounded-full bg-secondary shadow-sm shrink-0"></span>
                 B2B Partner
               </h2>
@@ -72,10 +80,10 @@ export default function PartnerSidebar() {
                 href={item.path}
                 onClick={() => setIsMobileOpen(false)}
                 title={isCollapsed && !isMobileOpen ? item.label : undefined}
-                className={`w-full flex items-center ${isCollapsed && !isMobileOpen ? 'justify-center px-0' : 'justify-start px-3.5 gap-3.5'} py-2.5 rounded-xl text-sm font-medium transition-all duration-300 group ${
+                className={`flex min-h-11 w-full items-center ${isCollapsed && !isMobileOpen ? 'justify-center px-0' : 'justify-start px-3.5 gap-3.5'} py-2.5 rounded-xl text-sm font-medium transition-all duration-300 group ${
                   isActive 
                     ? "bg-secondary/10 text-secondary" 
-                    : "text-gray-500 hover:bg-gray-50 hover:text-gray-800"
+                    : "text-text-sub hover:bg-background-warm hover:text-text-main"
                 }`}
               >
                 <Icon size={18} className={`transition-transform duration-300 ${isActive ? 'scale-110' : 'group-hover:scale-110'}`} strokeWidth={isActive ? 2.5 : 2} />
@@ -86,10 +94,10 @@ export default function PartnerSidebar() {
         </nav>
         
         {(!isCollapsed || isMobileOpen) && (
-          <div className="p-4 border-t border-gray-50 bg-gray-50/50 m-4 rounded-xl text-center">
-            <p className="text-[10px] text-gray-500 uppercase font-bold tracking-wider mb-1">Số dư Ads</p>
+          <div className="m-4 rounded-xl border border-border-light bg-background-warm p-4 text-center">
+            <p className="text-[10px] text-text-sub uppercase font-bold tracking-wider mb-1">Số dư Ads</p>
             <p className="text-lg font-black text-secondary mb-3">1.5M đ</p>
-            <button className="w-full bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 text-xs font-semibold py-2 rounded-lg transition-colors shadow-sm">
+            <button className="w-full bg-surface border border-border-main text-text-main hover:bg-background text-xs font-semibold py-2 rounded-lg transition-colors shadow-sm">
               Nạp Thêm
             </button>
           </div>

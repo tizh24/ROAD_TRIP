@@ -1,26 +1,28 @@
 @import "tailwindcss";
 
 :root {
-  --font-plus-jakarta-sans: "Aptos", "Segoe UI", sans-serif;
-  --font-be-vietnam-pro: "Aptos Display", "Segoe UI", sans-serif;
+  --font-plus-jakarta-sans: "Inter", "Be Vietnam Pro", "Aptos", "Segoe UI", sans-serif;
+  --font-be-vietnam-pro: "Be Vietnam Pro", "Satoshi", "Aptos Display", "Segoe UI", sans-serif;
 }
 
 @theme {
-  --color-primary: #006948;
-  --color-primary-hover: #005137;
-  --color-secondary: #102A43;
-  --color-accent: #A36700;
-  --color-success: #28764F;
+  --color-primary: #E87535;
+  --color-primary-hover: #C95C24;
+  --color-secondary: #1B1B1B;
+  --color-accent: #FFF1E6;
+  --color-accent-sub: #F8DDC9;
+  --color-success: #46705A;
   --color-warning: #A35E00;
   --color-danger: #B9382B;
   --color-info: #0369A1;
-  --color-background: #FBF9F5;
-  --color-background-warm: #F5F3EF;
+  --color-background: #FAF9F6;
+  --color-background-warm: #FFF1E6;
   --color-surface: #FFFFFF;
-  --color-text-main: #1B1C1A;
-  --color-text-sub: #52605A;
-  --color-border-main: #D5DDD6;
-  --color-border-light: #E8ECE8;
+  --color-surface-tint: #F8E6D8;
+  --color-text-main: #1B1B1B;
+  --color-text-sub: #6E665E;
+  --color-border-main: #EAE7E2;
+  --color-border-light: #F0EDE8;
   --font-sans: var(--font-plus-jakarta-sans), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-be-vietnam-pro), var(--font-plus-jakarta-sans), ui-sans-serif, system-ui, sans-serif;
   
@@ -43,9 +45,9 @@
   --text-h3--line-height: 1.4;
   --text-h3--font-weight: 700;
   
-  --shadow-card: 0 1px 3px rgba(16, 42, 67, 0.07), 0 8px 22px -16px rgba(16, 42, 67, 0.22);
-  --shadow-card-hover: 0 10px 28px -15px rgba(16, 42, 67, 0.26);
-  --shadow-float: 0 14px 32px -18px rgba(16, 42, 67, 0.34);
+  --shadow-card: 0 1px 2px rgba(56, 42, 29, 0.04), 0 8px 22px -16px rgba(56, 42, 29, 0.18);
+  --shadow-card-hover: 0 12px 28px -17px rgba(56, 42, 29, 0.26);
+  --shadow-float: 0 16px 34px -19px rgba(56, 42, 29, 0.28);
   
   --radius-chip: 9999px;
   --radius-card: 0.875rem;
@@ -69,12 +71,12 @@ body {
   overflow-x: hidden;
 }
 
-html:has(.landing-page) {
+html {
   scroll-behavior: smooth;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html:has(.landing-page) {
+  html {
     scroll-behavior: auto;
   }
 }
@@ -84,7 +86,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 :where(a, button, input, select, textarea):focus-visible {
-  outline: 3px solid var(--color-secondary);
+  outline: 3px solid var(--color-primary);
   outline-offset: 3px;
 }
 
@@ -125,8 +127,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .field:focus {
-  border-color: var(--color-secondary);
-  outline: 2px solid color-mix(in srgb, var(--color-secondary) 24%, transparent);
+  border-color: var(--color-primary);
+  outline: 2px solid color-mix(in srgb, var(--color-primary) 24%, transparent);
   outline-offset: 1px;
 }
 
@@ -177,7 +179,7 @@ h1, h2, h3, h4, h5, h6 {
 .page-section { padding-block: clamp(2.5rem, 6vw, 5.5rem); }
 .surface-card { border: 1px solid var(--color-border-main); border-radius: var(--radius-card); background: var(--color-surface); box-shadow: var(--shadow-card); }
 .map-overlay { border: 1px solid var(--color-border-main); border-radius: 0.875rem; background: rgba(255, 255, 255, 0.96); box-shadow: var(--shadow-float); }
-.focus-ring:focus-visible { outline: 3px solid var(--color-secondary); outline-offset: 3px; }
+.focus-ring:focus-visible { outline: 3px solid var(--color-primary); outline-offset: 3px; }
 
 /* Custom Web Scrollbar */
 ::-webkit-scrollbar {
@@ -188,7 +190,7 @@ h1, h2, h3, h4, h5, h6 {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #D5DDD6;
+  background: var(--color-border-main);
   border-radius: 99px;
 }
 ::-webkit-scrollbar-thumb:hover {

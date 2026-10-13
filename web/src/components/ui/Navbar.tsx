@@ -22,8 +22,8 @@ export default function Navbar() {
         
         {/* Left Side: Brand Logo */}
         <Link href="/" className="flex items-center gap-3 cursor-pointer shrink-0 group">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-white shadow-card transition-transform group-hover:-translate-y-0.5"><Compass size={20} /></div>
-          <span className="font-display text-xl font-extrabold tracking-[-0.045em] text-secondary">TripZ</span>
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-white shadow-card transition-transform group-hover:-translate-y-0.5"><Compass size={20} /></div>
+          <span className="font-display text-xl font-extrabold tracking-[-0.045em] text-secondary">Tripz</span>
         </Link>
 
         {/* Center: Search Bar */}
@@ -69,7 +69,7 @@ export default function Navbar() {
           </Link>
           <button
             type="button"
-            className="focus-ring inline-flex h-10 w-10 items-center justify-center rounded-lg text-text-main hover:bg-background-warm lg:hidden"
+            className="focus-ring inline-flex h-11 w-11 items-center justify-center rounded-xl text-text-main hover:bg-background-warm lg:hidden"
             aria-label={mobileOpen ? "Đóng điều hướng" : "Mở điều hướng"}
             aria-expanded={mobileOpen}
             onClick={() => setMobileOpen((open) => !open)}

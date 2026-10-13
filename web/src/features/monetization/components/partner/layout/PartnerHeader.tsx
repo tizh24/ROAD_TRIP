@@ -24,6 +24,17 @@ export default function PartnerHeader() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    function handleEscape(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setShowNotifications(false);
+        setShowProfileMenu(false);
+      }
+    }
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, []);
   
   const getTitle = () => {
     if (pathname === '/partner') return 'Tổng quan Kinh Doanh';
@@ -37,7 +48,7 @@ export default function PartnerHeader() {
   return (
     <header className="relative z-[60] flex h-16 shrink-0 items-center justify-between border-b border-border-light bg-surface px-4 md:px-8">
       <div className="flex items-center gap-2">
-        <h1 className="text-base md:text-lg font-bold text-gray-800 tracking-tight">{getTitle()}</h1>
+        <h1 className="text-base md:text-lg font-bold text-text-main tracking-tight">{getTitle()}</h1>
       </div>
       
       <div className="flex items-center gap-3 md:gap-4">
@@ -49,7 +60,7 @@ export default function PartnerHeader() {
               setShowNotifications(!showNotifications);
               setShowProfileMenu(false);
             }}
-            className={`focus-ring relative flex h-9 w-9 items-center justify-center rounded-full transition-all ${showNotifications ? 'bg-secondary/10 text-secondary ring-2 ring-secondary/20' : 'bg-background-warm text-text-sub hover:bg-secondary/10'}`}
+            className={`focus-ring relative flex h-11 w-11 items-center justify-center rounded-full transition-all ${showNotifications ? 'bg-secondary/10 text-secondary ring-2 ring-secondary/20' : 'bg-background-warm text-text-sub hover:bg-secondary/10'}`}
             aria-label="Mở thông báo"
             aria-expanded={showNotifications}
           >
@@ -59,29 +70,29 @@ export default function PartnerHeader() {
 
           {/* Notification Dropdown */}
           {showNotifications && (
-            <div className="absolute top-[48px] right-0 w-80 bg-white border border-gray-100 shadow-[0_10px_40px_rgba(0,0,0,0.1)] rounded-[20px] overflow-hidden z-50 animate-slide-in">
-              <div className="p-4 border-b border-gray-50 flex justify-between items-center bg-gray-50/50">
-                <h3 className="text-sm font-bold text-gray-900">Thông báo mới</h3>
+            <div className="absolute right-0 top-[52px] z-50 w-80 overflow-hidden rounded-2xl border border-border-light bg-surface shadow-card animate-slide-in">
+              <div className="flex items-center justify-between border-b border-border-light bg-background-warm/50 p-4">
+                <h3 className="text-sm font-bold text-text-main">Thông báo mới</h3>
                 <span className="text-[10px] font-bold text-secondary bg-secondary/10 px-2 py-0.5 rounded-md">1 chưa đọc</span>
               </div>
               <div className="max-h-[300px] overflow-y-auto">
-                <div className="p-4 border-b border-gray-50 hover:bg-gray-50 transition-colors cursor-pointer flex gap-3">
-                  <div className="w-8 h-8 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center shrink-0">🎉</div>
+                <div className="flex cursor-pointer gap-3 border-b border-border-light p-4 transition-colors hover:bg-background-warm">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary" aria-hidden="true">•</div>
                   <div>
-                    <p className="text-sm font-semibold text-gray-900 mb-0.5">Chiến dịch &quot;Mùa lúa chín&quot; đã được duyệt!</p>
-                    <p className="text-xs text-gray-500">Quảng cáo của bạn sẽ bắt đầu phân phối trên lộ trình Hoàng Su Phì.</p>
-                    <p className="text-[10px] text-gray-400 mt-2 font-medium">10 phút trước</p>
+                    <p className="mb-0.5 text-sm font-semibold text-text-main">Chiến dịch &quot;Mùa lúa chín&quot; đã được duyệt!</p>
+                    <p className="text-xs text-text-sub">Quảng cáo của bạn sẽ bắt đầu phân phối trên lộ trình Hoàng Su Phì.</p>
+                    <p className="mt-2 text-[10px] font-medium text-text-sub">10 phút trước</p>
                   </div>
                 </div>
               </div>
-              <div className="p-3 text-center border-t border-gray-50 bg-gray-50/30">
-                <button className="text-xs font-bold text-gray-500 hover:text-gray-900 transition-colors">Xem tất cả</button>
+              <div className="border-t border-border-light bg-background-warm/30 p-3 text-center">
+                <button className="focus-ring rounded-md px-2 py-1 text-xs font-bold text-text-sub transition-colors hover:text-text-main">Xem tất cả</button>
               </div>
             </div>
           )}
         </div>
 
-        <div className="w-px h-6 bg-gray-200 hidden md:block" />
+        <div className="w-px h-6 bg-border-main hidden md:block" />
 
         {/* Profile Avatar */}
         <div className="relative" ref={profileRef}>
@@ -95,26 +106,26 @@ export default function PartnerHeader() {
             aria-expanded={showProfileMenu}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=100&q=80" alt="Avatar" className="w-9 h-9 rounded-full object-cover border border-gray-200 shadow-sm" />
+            <img src="https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=100&q=80" alt="Avatar của A Páo Homestay" className="h-9 w-9 rounded-full border border-border-main object-cover shadow-sm" />
             <div className="text-right hidden sm:block pr-2">
-              <p className="text-sm font-semibold text-gray-800">A Páo Homestay</p>
+              <p className="text-sm font-semibold text-text-main">A Páo Homestay</p>
               <p className="text-[10px] text-secondary font-bold uppercase tracking-widest leading-none">Premium</p>
             </div>
           </button>
 
           {/* Profile Dropdown */}
           {showProfileMenu && (
-            <div className="absolute top-[52px] right-0 w-56 bg-white border border-gray-100 shadow-[0_10px_40px_rgba(0,0,0,0.1)] rounded-[20px] overflow-hidden z-50 animate-slide-in py-2">
-              <button className="w-full text-left px-4 py-2.5 hover:bg-gray-50 transition-colors flex items-center gap-3 group">
-                <User size={16} className="text-gray-400 group-hover:text-gray-900 transition-colors" />
-                <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900">Hồ sơ doanh nghiệp</span>
+            <div className="absolute right-0 top-[52px] z-50 w-56 overflow-hidden rounded-2xl border border-border-light bg-surface py-2 shadow-card animate-slide-in">
+              <button className="focus-ring group flex min-h-11 w-full items-center gap-3 px-4 py-2.5 text-left transition-colors hover:bg-background-warm">
+                <User size={16} className="text-text-sub transition-colors group-hover:text-text-main" />
+                <span className="text-sm font-medium text-text-sub group-hover:text-text-main">Hồ sơ doanh nghiệp</span>
               </button>
-              <button className="w-full text-left px-4 py-2.5 hover:bg-gray-50 transition-colors flex items-center gap-3 group">
-                <Settings size={16} className="text-gray-400 group-hover:text-gray-900 transition-colors" />
-                <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900">Cài đặt thanh toán</span>
+              <button className="focus-ring group flex min-h-11 w-full items-center gap-3 px-4 py-2.5 text-left transition-colors hover:bg-background-warm">
+                <Settings size={16} className="text-text-sub transition-colors group-hover:text-text-main" />
+                <span className="text-sm font-medium text-text-sub group-hover:text-text-main">Cài đặt thanh toán</span>
               </button>
-              <div className="h-px bg-gray-100 my-2" />
-              <button className="w-full text-left px-4 py-2.5 hover:bg-red-50 transition-colors flex items-center gap-3 group">
+              <div className="my-2 h-px bg-border-light" />
+              <button className="focus-ring group flex min-h-11 w-full items-center gap-3 px-4 py-2.5 text-left transition-colors hover:bg-red-50">
                 <LogOut size={16} className="text-red-400 group-hover:text-red-600 transition-colors" />
                 <span className="text-sm font-medium text-red-500 group-hover:text-red-700">Đăng xuất</span>
               </button>

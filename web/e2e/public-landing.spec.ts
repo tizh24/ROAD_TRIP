@@ -25,7 +25,12 @@ test.describe("public landing page", () => {
       page.getByRole("link", { name: /Khám phá cung đường/i }).first(),
     ).toHaveAttribute("href", "/explore");
 
-    await expect(page.getByRole("button", { name: "Mở điều hướng" })).toBeVisible();
+    const menu = page.locator('summary[aria-label="Mở hoặc đóng điều hướng"]');
+    await expect(menu).toBeVisible();
+    await menu.click();
+    await expect(page.getByRole("navigation", { name: "Điều hướng di động" })).toBeVisible();
+    await menu.click();
+    await expect(page.getByRole("navigation", { name: "Điều hướng di động" })).toBeHidden();
   });
 
   test("keeps every in-page navigation target centered and inside the laptop viewport", async ({

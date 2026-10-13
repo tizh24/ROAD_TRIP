@@ -4,9 +4,9 @@ import PartnerHeader from "@/features/monetization/components/partner/layout/Par
 
 export default function PartnerLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex h-screen bg-gray-50 text-gray-900 font-sans overflow-hidden antialiased">
+    <div className="flex h-screen bg-background text-text-main font-sans overflow-hidden antialiased">
       <PartnerSidebar />
-      <main className="flex-1 flex flex-col h-screen overflow-hidden bg-[#FAFAFA]">
+      <main className="flex-1 flex flex-col h-screen overflow-hidden bg-background">
         <PartnerHeader />
         <div className="flex-1 overflow-y-auto custom-scrollbar relative">
           {children}
