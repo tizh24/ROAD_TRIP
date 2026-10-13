@@ -177,7 +177,7 @@ export default function LoginView({ authError, nextPath }: LoginViewProps) {
                   <label htmlFor="password" className="block text-xs font-bold uppercase tracking-wider text-text-main">
                     Mật khẩu
                   </label>
-                  <span className="text-[11px] font-medium text-text-sub">Tối thiểu 6 ký tự</span>
+                  <Link href="/forgot-password" className="focus-ring text-[11px] font-bold text-primary hover:underline">Quên mật khẩu?</Link>
                 </div>
                 <div className="mt-1.5">
                   <input
@@ -185,7 +185,7 @@ export default function LoginView({ authError, nextPath }: LoginViewProps) {
                     name="password"
                     type="password"
                     autoComplete="current-password"
-                    minLength={6}
+                    minLength={8}
                     required
                     placeholder="••••••••"
                     className="focus-ring min-h-11 w-full rounded-lg border border-border-main bg-background-warm px-3.5 py-2.5 text-sm font-normal text-text-main placeholder:text-text-sub transition-colors focus:border-secondary focus:bg-surface"
@@ -198,12 +198,12 @@ export default function LoginView({ authError, nextPath }: LoginViewProps) {
 
             {/* Auxiliary Links */}
             <div className="mt-6 border-t border-border-main/60 pt-5 text-center text-xs text-text-sub">
-              <span>Chưa có kế hoạch? </span>
+              <span>Chưa có tài khoản? </span>
               <Link
-                href="/explore"
+                href={nextPath ? `/signup?next=${encodeURIComponent(nextPath)}` : "/signup"}
                 className="font-bold text-primary underline-offset-4 hover:underline"
               >
-                Khám phá cung đường mẫu
+                Tạo tài khoản
               </Link>
             </div>
           </div>
