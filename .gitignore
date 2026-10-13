@@ -28,3 +28,8 @@ server/.cloudflared*.log
 
 # Local design working notes
 docs/TRIPZ_EDITORIAL_UI_BLUEPRINT.md
+
+# Local agent, design-review and screenshot artifacts
+.codex/
+.impeccable/
+web/.impeccable/
