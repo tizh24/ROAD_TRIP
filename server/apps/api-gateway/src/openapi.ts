@@ -1,6 +1,6 @@
 import type { OpenAPIObject, OperationObject } from '@nestjs/swagger';
 
-const bearerSecurity = [{ supabaseBearer: [] }];
+const sessionSecurity = [{ supabaseBearer: [] }, { sessionCookie: [] }];
 const emptyResponse = { description: 'Successful response.' };
 const errorResponse = {
   description: 'A stable error envelope.',
@@ -17,7 +17,7 @@ const authenticated = (
 ): OperationObject => ({
   operationId,
   summary,
-  security: bearerSecurity,
+  security: sessionSecurity,
   responses: {
     '200': emptyResponse,
     '401': errorResponse,
@@ -41,6 +41,87 @@ const mutation = (operationId: string, summary: string): OperationObject => ({
   },
 });
 
+function publicAuthOperation(
+  operationId: string,
+  summary: string,
+  requestSchema: string,
+  responseSchema: string,
+): OperationObject {
+  return {
+    operationId,
+    summary,
+    tags: ['Session'],
+    requestBody: {
+      required: true,
+      content: {
+        'application/json': {
+          schema: { $ref: `#/components/schemas/${requestSchema}` },
+        },
+      },
+    },
+    responses: {
+      '200': schemaResponse(responseSchema),
+      '201': schemaResponse(responseSchema),
+      '202': schemaResponse(responseSchema),
+      '400': errorResponse,
+      '429': errorResponse,
+    },
+  };
+}
+
+function cookieMutation(
+  operationId: string,
+  summary: string,
+  responseSchema: string,
+): OperationObject {
+  return {
+    operationId,
+    summary,
+    tags: ['Session'],
+    security: [{ sessionCookie: [] }],
+    parameters: [
+      {
+        name: 'X-CSRF-Token',
+        in: 'header',
+        required: true,
+        schema: { type: 'string', minLength: 32 },
+      },
+    ],
+    responses: {
+      '200': schemaResponse(responseSchema),
+      '401': errorResponse,
+      '403': errorResponse,
+    },
+  };
+}
+
+function schemaResponse(schema: string) {
+  return {
+    description: 'Successful response.',
+    content: {
+      'application/json': {
+        schema: { $ref: `#/components/schemas/${schema}` },
+      },
+    },
+  };
+}
+
+function successEnvelope(data: object) {
+  return {
+    type: 'object',
+    required: ['data', 'meta'],
+    additionalProperties: false,
+    properties: {
+      data,
+      meta: {
+        type: 'object',
+        required: ['correlationId'],
+        properties: { correlationId: { type: 'string' } },
+      },
+    },
+  };
+}
+
 const tripResource = {
   get: authenticated('getTrip', 'Get a trip available to the current user.'),
   patch: mutation(
@@ -63,9 +144,10 @@ export function createPublicOpenApiDocument(): OpenAPIObject {
         'Public API contracts served by the API Gateway. Internal service endpoints are intentionally excluded.',
     },
     servers: [{ url: '/api/v1', description: 'API Gateway v1' }],
-    security: bearerSecurity,
+    security: sessionSecurity,
     tags: [
       { name: 'Session' },
+      { name: 'Profile' },
       { name: 'Trips' },
       { name: 'Stops' },
       { name: 'Invitations' },
@@ -73,6 +155,51 @@ export function createPublicOpenApiDocument(): OpenAPIObject {
       { name: 'Routes' },
     ],
     paths: {
+      '/auth/register': {
+        post: publicAuthOperation(
+          'register',
+          'Register an email/password account. A response never reveals whether an email already exists.',
+          'RegistrationRequest',
+          'RegistrationResponse',
+        ),
+      },
+      '/auth/login': {
+        post: publicAuthOperation(
+          'login',
+          'Start a cookie-backed browser session.',
+          'LoginRequest',
+          'AuthenticationResponse',
+        ),
+      },
+      '/auth/refresh': {
+        post: cookieMutation(
+          'refreshSession',
+          'Rotate the cookie-backed browser session.',
+          'AuthenticationResponse',
+        ),
+      },
+      '/auth/logout': {
+        post: cookieMutation(
+          'logout',
+          'End the browser session and clear its cookies.',
+          'AuthenticationResponse',
+        ),
+      },
+      '/auth/password/reset': {
+        post: publicAuthOperation(
+          'requestPasswordReset',
+          'Request a password-reset email without revealing account existence.',
+          'EmailRequest',
+          'AcceptedResponse',
+        ),
+      },
+      '/auth/password/change': {
+        post: cookieMutation(
+          'changePassword',
+          'Change the password for the current session.',
+          'PasswordChangeResponse',
+        ),
+      },
       '/me': {
         get: {
           ...authenticated(
@@ -81,6 +208,31 @@ export function createPublicOpenApiDocument(): OpenAPIObject {
           ),
           tags: ['Session'],
         },
+      },
+      '/profile': {
+        get: {
+          ...authenticated('getProfile', 'Get the signed-in user profile.'),
+          tags: ['Profile'],
+        },
+        patch: {
+          ...cookieMutation(
+            'updateProfile',
+            'Update only the signed-in user presentation fields.',
+            'ProfileResponse',
+          ),
+          tags: ['Profile'],
+        },
+      },
+      '/public/trips': {
+        get: { operationId: 'listPublicTrips', summary: 'List published trips for discovery.', tags: ['Trips'], responses: { '200': schemaResponse('PublicTripListResponse') } },
+      },
+      '/public/trips/{tripId}': {
+        get: { operationId: 'getPublicTrip', summary: 'Get a published trip.', tags: ['Trips'], responses: { '200': schemaResponse('PublicTripResponse'), '404': errorResponse } },
+        parameters: [tripIdParameter()],
+      },
+      '/public/trips/{tripId}/clone': {
+        post: { ...mutation('clonePublicTrip', 'Clone a published trip into a private draft.'), tags: ['Trips'], responses: { '200': schemaResponse('TripResponse'), '401': errorResponse, '404': errorResponse, '409': errorResponse } },
+        parameters: [tripIdParameter()],
       },
       '/trips': {
         get: {
@@ -139,6 +291,13 @@ export function createPublicOpenApiDocument(): OpenAPIObject {
         parameters: [tripIdParameter()],
       },
       '/trips/{tripId}/invitations': {
+        get: {
+          ...authenticated(
+            'listTripInvitations',
+            'List invitations. Requires trip owner permission.',
+          ),
+          tags: ['Invitations'],
+        },
         post: {
           ...mutation('createInvitation', 'Invite a member to a trip.'),
           tags: ['Invitations'],
@@ -214,6 +373,13 @@ export function createPublicOpenApiDocument(): OpenAPIObject {
           bearerFormat: 'JWT',
           description: 'Supabase access token.',
         },
+        sessionCookie: {
+          type: 'apiKey',
+          in: 'cookie',
+          name: '__Secure-rt_access',
+          description:
+            'Gateway HttpOnly access cookie. Local development can configure a different name.',
+        },
       },
       parameters: {
         IdempotencyKey: {
@@ -234,6 +400,31 @@ export function createPublicOpenApiDocument(): OpenAPIObject {
         },
       },
       schemas: {
+        EmailRequest: {
+          type: 'object',
+          required: ['email'],
+          additionalProperties: false,
+          properties: { email: { type: 'string', format: 'email' } },
+        },
+        LoginRequest: {
+          type: 'object',
+          required: ['email', 'password'],
+          additionalProperties: false,
+          properties: {
+            email: { type: 'string', format: 'email' },
+            password: { type: 'string', format: 'password', minLength: 8 },
+          },
+        },
+        RegistrationRequest: {
+          type: 'object',
+          required: ['email', 'password', 'fullName'],
+          additionalProperties: false,
+          properties: {
+            email: { type: 'string', format: 'email' },
+            password: { type: 'string', format: 'password', minLength: 8 },
+            fullName: { type: 'string', minLength: 2, maxLength: 80 },
+          },
+        },
         ErrorResponse: {
           type: 'object',
           required: ['error', 'meta'],
@@ -257,6 +448,48 @@ export function createPublicOpenApiDocument(): OpenAPIObject {
             },
           },
         },
+        AuthenticationResponse: successEnvelope({
+          type: 'object',
+          required: ['authenticated'],
+          properties: { authenticated: { type: 'boolean' } },
+        }),
+        RegistrationResponse: successEnvelope({
+          type: 'object',
+          required: ['confirmationRequired'],
+          properties: { confirmationRequired: { type: 'boolean' } },
+        }),
+        AcceptedResponse: successEnvelope({
+          type: 'object',
+          required: ['accepted'],
+          properties: { accepted: { type: 'boolean' } },
+        }),
+        PasswordChangeResponse: successEnvelope({
+          type: 'object',
+          required: ['changed'],
+          properties: { changed: { type: 'boolean' } },
+        }),
+        ProfileResponse: successEnvelope({
+          type: 'object',
+          required: ['id', 'email', 'fullName', 'role', 'status'],
+          properties: {
+            id: { type: 'string', format: 'uuid' },
+            email: { type: 'string', format: 'email' },
+            fullName: { type: 'string' },
+            avatarUrl: { type: 'string', format: 'uri', nullable: true },
+            role: { type: 'string', enum: ['USER', 'PARTNER', 'ADMIN'] },
+            status: {
+              type: 'string',
+              enum: ['ACTIVE', 'BANNED', 'DELETED'],
+            },
+          },
+        }),
+        PublicTripListResponse: successEnvelope({ type: 'array', items: { $ref: '#/components/schemas/PublicTrip' } }),
+        PublicTripResponse: successEnvelope({ $ref: '#/components/schemas/PublicTrip' }),
+        TripResponse: successEnvelope({ type: 'object', required: ['id'], properties: { id: { type: 'string', format: 'uuid' } } }),
+        PublicTrip: {
+          type: 'object', required: ['id', 'title', 'startDate', 'endDate', 'budgetAmount', 'currency', 'days'],
+          properties: { id: { type: 'string', format: 'uuid' }, title: { type: 'string' }, description: { type: 'string', nullable: true }, startDate: { type: 'string', format: 'date' }, endDate: { type: 'string', format: 'date' }, budgetAmount: { type: 'number' }, currency: { type: 'string' }, days: { type: 'array', items: { type: 'object' } } },
+        },
       },
     },
   };
@@ -265,6 +498,8 @@ export function createPublicOpenApiDocument(): OpenAPIObject {
 const stableErrorCodes = [
   'AUTH_REQUIRED',
   'AUTH_INVALID',
+  'AUTH_RATE_LIMITED',
+  'AUTH_UNAVAILABLE',
   'FORBIDDEN',
   'TRIP_NOT_FOUND',
   'TRIP_DATE_RANGE_INVALID',
