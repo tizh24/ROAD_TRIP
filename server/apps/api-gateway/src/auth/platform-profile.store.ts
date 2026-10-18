@@ -28,14 +28,16 @@ export class SupabasePlatformProfileStore implements PlatformProfileStore {
     url.searchParams.set('select', 'id,email,full_name,avatar_url,role,status');
     url.searchParams.set('limit', '1');
     const response = await fetch(url, {
-      headers: serviceAuthorizationHeaders(this.config.SUPABASE_SERVICE_ROLE_KEY),
+      headers: serviceAuthorizationHeaders(
+        this.config.SUPABASE_SERVICE_ROLE_KEY,
+      ),
     });
     if (!response.ok) throw new PlatformProfileUnavailableError();
     const body: unknown = await response.json();
     if (!Array.isArray(body) || body.length !== 1) {
       throw new PlatformProfileNotFoundError();
     }
-    const profile = body[0];
+    const profile: unknown = body[0];
     if (!isProfile(profile)) throw new PlatformProfileUnavailableError();
     return toPlatformProfile(profile);
   }
@@ -156,7 +158,10 @@ export class SupabasePlatformProfileStore implements PlatformProfileStore {
     limit?: number;
     offset?: number;
   }): Promise<readonly PlatformAuditRecord[]> {
-    const url = new URL('/rest/v1/platform_audit_logs', this.config.SUPABASE_URL);
+    const url = new URL(
+      '/rest/v1/platform_audit_logs',
+      this.config.SUPABASE_URL,
+    );
     url.searchParams.set('select', '*');
     url.searchParams.set('order', 'created_at.desc');
     url.searchParams.set('limit', String(query?.limit ?? 50));
@@ -165,24 +170,14 @@ export class SupabasePlatformProfileStore implements PlatformProfileStore {
     }
 
     const response = await fetch(url, {
-      headers: serviceAuthorizationHeaders(this.config.SUPABASE_SERVICE_ROLE_KEY),
+      headers: serviceAuthorizationHeaders(
+        this.config.SUPABASE_SERVICE_ROLE_KEY,
+      ),
     });
     if (!response.ok) throw new PlatformProfileUnavailableError();
     const body: unknown = await response.json();
     if (!Array.isArray(body)) throw new PlatformProfileUnavailableError();
-    return body.map((row) => ({
-      id: String(row.id),
-      actorId: String(row.actor_id),
-      action: String(row.action),
-      entityType: String(row.entity_type),
-      entityId: String(row.entity_id),
-      oldValues: row.old_values as Record<string, unknown> | null,
-      newValues: row.new_values as Record<string, unknown> | null,
-      correlationId: row.correlation_id ? String(row.correlation_id) : null,
-      ipAddress: row.ip_address ? String(row.ip_address) : null,
-      userAgent: row.user_agent ? String(row.user_agent) : null,
-      createdAt: String(row.created_at),
-    }));
+    return (body as unknown[]).map(toAuditRecord);
   }
 
   private async recordAudit(record: {
@@ -195,7 +190,10 @@ export class SupabasePlatformProfileStore implements PlatformProfileStore {
     correlationId?: string | undefined;
   }): Promise<void> {
     try {
-      const url = new URL('/rest/v1/platform_audit_logs', this.config.SUPABASE_URL);
+      const url = new URL(
+        '/rest/v1/platform_audit_logs',
+        this.config.SUPABASE_URL,
+      );
       await fetch(url, {
         method: 'POST',
         headers: {
@@ -240,7 +238,9 @@ function toPlatformProfile(profile: {
 export class PlatformProfileNotFoundError extends Error {}
 export class PlatformProfileUnavailableError extends Error {}
 
-function serviceAuthorizationHeaders(serviceKey: string): Record<string, string> {
+function serviceAuthorizationHeaders(
+  serviceKey: string,
+): Record<string, string> {
   // New `sb_secret_` keys authenticate via `apikey` and are not bearer JWTs.
   // Legacy service_role keys are JWTs and still require both headers for PostgREST.
   return serviceKey.startsWith('sb_secret_')
@@ -268,4 +268,42 @@ function isProfile(value: unknown): value is {
     typeof row.status === 'string' &&
     statuses.has(row.status as AccountStatus)
   );
+}
+
+function toAuditRecord(value: unknown): PlatformAuditRecord {
+  if (typeof value !== 'object' || value === null) {
+    throw new PlatformProfileUnavailableError();
+  }
+  const row = value as Record<string, unknown>;
+  const required = [
+    'id',
+    'actor_id',
+    'action',
+    'entity_type',
+    'entity_id',
+    'created_at',
+  ];
+  if (required.some((key) => typeof row[key] !== 'string')) {
+    throw new PlatformProfileUnavailableError();
+  }
+  return {
+    id: row.id as string,
+    actorId: row.actor_id as string,
+    action: row.action as string,
+    entityType: row.entity_type as string,
+    entityId: row.entity_id as string,
+    oldValues: isRecordOrNull(row.old_values),
+    newValues: isRecordOrNull(row.new_values),
+    correlationId:
+      typeof row.correlation_id === 'string' ? row.correlation_id : null,
+    ipAddress: typeof row.ip_address === 'string' ? row.ip_address : null,
+    userAgent: typeof row.user_agent === 'string' ? row.user_agent : null,
+    createdAt: row.created_at as string,
+  };
+}
+
+function isRecordOrNull(value: unknown): Record<string, unknown> | null {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : null;
 }

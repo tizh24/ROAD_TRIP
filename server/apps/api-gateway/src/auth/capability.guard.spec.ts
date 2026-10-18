@@ -1,6 +1,6 @@
 import { ExecutionContext, ForbiddenException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { CapabilityGuard, REQUIRE_CAPABILITY_KEY } from './capability.guard';
+import { CapabilityGuard } from './capability.guard';
 import type { AuthenticatedRequest } from './supabase-auth.guard';
 
 describe('CapabilityGuard', () => {
@@ -57,13 +57,17 @@ describe('CapabilityGuard', () => {
   });
 
   it('denies moderator from admin operations', () => {
-    jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue('admin.role.grant');
+    jest
+      .spyOn(reflector, 'getAllAndOverride')
+      .mockReturnValue('admin.role.grant');
     const modContext = createMockContext('MODERATOR');
     expect(() => guard.canActivate(modContext)).toThrow(ForbiddenException);
   });
 
   it('allows moderator for content moderation', () => {
-    jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue('content.moderation.execute');
+    jest
+      .spyOn(reflector, 'getAllAndOverride')
+      .mockReturnValue('content.moderation.execute');
     const modContext = createMockContext('MODERATOR');
     expect(guard.canActivate(modContext)).toBe(true);
   });
