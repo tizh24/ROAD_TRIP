@@ -311,8 +311,10 @@ export class CommunityController {
           400,
         );
       }
-      await this.community.updatePostStatus(postId, status);
-      return success({ id: postId, status });
+      const validatedStatus = status as
+        'PUBLISHED' | 'HIDDEN' | 'FLAGGED' | 'DELETED';
+      await this.community.updatePostStatus(postId, validatedStatus);
+      return success({ id: postId, status: validatedStatus });
     } catch (error) {
       throw responseError(error);
     }
