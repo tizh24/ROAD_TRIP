@@ -13,6 +13,7 @@ describe('public OpenAPI document', () => {
     });
     expect(document.paths['/trips']?.post?.security).toEqual([
       { supabaseBearer: [] },
+      { sessionCookie: [] },
     ]);
   });
 
