@@ -6,11 +6,12 @@ import {
   createGeoLocationUpstream,
 } from './http-upstream.client';
 import { UpstreamController } from './upstream.controller';
+import { PublicTripController } from './public-trip.controller';
 import { CORE_TRIP_UPSTREAM, GEO_LOCATION_UPSTREAM } from './upstream.types';
 
 @Module({
   imports: [AuthModule],
-  controllers: [UpstreamController],
+  controllers: [UpstreamController, PublicTripController],
   providers: [
     {
       provide: CORE_TRIP_UPSTREAM,

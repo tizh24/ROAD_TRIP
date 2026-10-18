@@ -150,6 +150,26 @@ export class TripUseCases {
     }
   }
 
+  async listPublished() {
+    return this.trips.listPublished();
+  }
+
+  async getPublished(tripId: string) {
+    const trip = await this.trips.getPublished(tripId);
+    if (!trip) throw new TripApplicationError('TRIP_NOT_FOUND', 'Trip does not exist.');
+    return trip;
+  }
+
+  async clonePublished(actorId: string, sourceTripId: string, idempotencyKey?: string) {
+    try {
+      const ownerId = UserId.from(actorId).value;
+      const id = TripId.create(idempotencyKey ? idempotentUuid(ownerId, `clone:${sourceTripId}`, idempotencyKey) : undefined).value;
+      const trip = await this.trips.clonePublished(sourceTripId, ownerId, id);
+      if (!trip) throw new TripApplicationError('TRIP_NOT_FOUND', 'Trip does not exist.');
+      return trip;
+    } catch (error) { throw mapTripApplicationError(error); }
+  }
+
   async get(actorId: string, tripId: string): Promise<TripDetailRow> {
     try {
       await this.authorization.assertCanRead(tripId, actorId);

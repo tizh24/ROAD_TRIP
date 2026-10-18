@@ -70,4 +70,13 @@ describe('TripUseCases', () => {
       ),
     ).toMatchObject({ code: 'STOP_NOT_FOUND' });
   });
+
+  it('clones only a published source through the repository and is idempotent per caller', async () => {
+    const cloned = { id: tripId, title: 'North loop' };
+    const trips = { clonePublished: jest.fn().mockResolvedValue(cloned) };
+    const useCases = new TripUseCases(trips as never, {} as never, new TripAuthorizationPolicy(new OwnerReader()));
+
+    await expect(useCases.clonePublished(actorId, tripId, 'clone-1')).resolves.toEqual(cloned);
+    expect(trips.clonePublished).toHaveBeenCalledWith(tripId, actorId, expect.any(String));
+  });
 });

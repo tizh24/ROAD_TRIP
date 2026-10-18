@@ -166,6 +166,25 @@ export class TripController {
     }
   }
 
+  @Get('public')
+  async listPublished() {
+    try { return success(await this.trips.listPublished()); } catch (error) { throw responseError(error); }
+  }
+
+  @Get('public/:tripId')
+  async getPublished(@Param('tripId') tripId: string) {
+    try { return success(await this.trips.getPublished(tripId)); } catch (error) { throw responseError(error); }
+  }
+
+  @Post('public/:tripId/clone')
+  async clonePublished(
+    @Param('tripId') tripId: string,
+    @Headers('x-roadtrip-user-id') actorId: string | undefined,
+    @Headers('idempotency-key') idempotencyKey: string | undefined,
+  ) {
+    try { return success(toTripDetailDto(await this.trips.clonePublished(requiredHeader(actorId, 'x-roadtrip-user-id'), tripId, idempotencyKey))); } catch (error) { throw responseError(error); }
+  }
+
   @Get()
   async list(@Headers('x-roadtrip-user-id') actorId: string | undefined) {
     try {

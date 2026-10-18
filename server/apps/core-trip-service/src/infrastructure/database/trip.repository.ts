@@ -26,6 +26,17 @@ export interface TripDetailRow extends TripListRow {
   readonly days: readonly TripDayRow[];
 }
 
+export interface PublicTripRow {
+  readonly id: string;
+  readonly title: string;
+  readonly description: string | null;
+  readonly startDate: string;
+  readonly endDate: string;
+  readonly budgetAmount: number;
+  readonly currency: string;
+  readonly days: readonly TripDayRow[];
+}
+
 export interface TripDayRow {
   readonly id: string;
   readonly date: string;
@@ -131,6 +142,76 @@ export class TripRepository {
       [userId],
     );
     return result.rows;
+  }
+
+  async listPublished(): Promise<readonly Pick<PublicTripRow, 'id' | 'title' | 'description' | 'startDate' | 'endDate' | 'budgetAmount' | 'currency'>[]> {
+    const result = await this.database.query<Pick<PublicTripRow, 'id' | 'title' | 'description' | 'startDate' | 'endDate' | 'budgetAmount' | 'currency'>>(
+      `SELECT id, title, description, start_date::text AS "startDate", end_date::text AS "endDate", budget_amount::float8 AS "budgetAmount", currency
+         FROM trip_schema.trips
+        WHERE visibility = 'PUBLISHED' AND deleted_at IS NULL
+        ORDER BY published_at DESC, updated_at DESC
+        LIMIT 50`,
+    );
+    return result.rows;
+  }
+
+  async getPublished(id: string): Promise<PublicTripRow | undefined> {
+    const trip = await this.database.query<Omit<PublicTripRow, 'days'>>(
+      `SELECT id, title, description, start_date::text AS "startDate", end_date::text AS "endDate", budget_amount::float8 AS "budgetAmount", currency
+         FROM trip_schema.trips
+        WHERE id=$1 AND visibility='PUBLISHED' AND deleted_at IS NULL`,
+      [id],
+    );
+    const row = trip.rows[0];
+    if (!row) return undefined;
+    const detail = await this.getPublicDays(id);
+    return { ...row, days: detail };
+  }
+
+  async clonePublished(sourceTripId: string, ownerId: string, id: string): Promise<TripDetailRow | undefined> {
+    await this.database.transaction(async (transaction) => {
+      const source = await transaction.query<{ id: string }>(
+        `SELECT id FROM trip_schema.trips WHERE id=$1 AND visibility='PUBLISHED' AND deleted_at IS NULL FOR SHARE`,
+        [sourceTripId],
+      );
+      if (!source.rows[0]) return;
+      await transaction.query(
+        `INSERT INTO trip_schema.trips (id, owner_id, title, description, start_date, end_date, status, budget_amount, currency, version, visibility, source_trip_id)
+         SELECT $2, $3, title, description, start_date, end_date, 'PLANNING', budget_amount, currency, 1, 'PRIVATE', id
+           FROM trip_schema.trips WHERE id=$1
+         ON CONFLICT (id) DO NOTHING`,
+        [sourceTripId, id, ownerId],
+      );
+      await transaction.query(
+        `INSERT INTO trip_schema.trip_members (trip_id,user_id,role,permission,status) VALUES ($1,$2,'OWNER','EDIT','ACTIVE') ON CONFLICT DO NOTHING`,
+        [id, ownerId],
+      );
+      await transaction.query(
+        `INSERT INTO trip_schema.trip_days (id, trip_id, date, day_index, status)
+         SELECT gen_random_uuid(), $2, date, day_index, 'ACTIVE' FROM trip_schema.trip_days WHERE trip_id=$1
+         ON CONFLICT (trip_id, day_index) DO NOTHING`,
+        [sourceTripId, id],
+      );
+      await transaction.query(
+        `INSERT INTO trip_schema.trip_stops (id, trip_id, day_id, place_id, name, address, latitude, longitude, notes, stop_index, status, version)
+         SELECT gen_random_uuid(), $2, target_day.id, stop.place_id, stop.name, stop.address, stop.latitude, stop.longitude, stop.notes, stop.stop_index, 'ACTIVE', 1
+           FROM trip_schema.trip_stops stop
+           JOIN trip_schema.trip_days source_day ON source_day.id=stop.day_id
+           JOIN trip_schema.trip_days target_day ON target_day.trip_id=$2 AND target_day.day_index=source_day.day_index
+          WHERE stop.trip_id=$1 AND stop.status='ACTIVE'
+         ON CONFLICT (day_id, stop_index) DO NOTHING`,
+        [sourceTripId, id],
+      );
+    });
+    return this.getByIdForUser(id, ownerId);
+  }
+
+  private async getPublicDays(id: string): Promise<readonly TripDayRow[]> {
+    const days = await this.database.query<{ id: string; date: string; dayIndex: number }>(
+      `SELECT id, date::text AS date, day_index AS "dayIndex" FROM trip_schema.trip_days WHERE trip_id=$1 AND status='ACTIVE' ORDER BY day_index`, [id]);
+    const stops = await this.database.query<TripStopRow & { dayId: string }>(
+      `SELECT id, day_id AS "dayId", place_id AS "placeId", name, address, latitude::float8 AS latitude, longitude::float8 AS longitude, notes, stop_index AS "stopIndex", version FROM trip_schema.trip_stops WHERE trip_id=$1 AND status='ACTIVE' ORDER BY stop_index`, [id]);
+    return days.rows.map((day) => ({ ...day, stops: stops.rows.filter((stop) => stop.dayId === day.id).map(({ dayId: _dayId, ...stop }) => stop) }));
   }
 
   async getByIdForUser(
