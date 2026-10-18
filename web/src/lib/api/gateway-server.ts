@@ -69,7 +69,7 @@ export async function gatewayProfileMutation(
 export async function gatewayCurrentSession(): Promise<GatewayEnvelope<{
   id: string;
   email?: string;
-  platformRole?: "USER" | "PARTNER" | "ADMIN";
+  platformRole?: "USER" | "PARTNER" | "MODERATOR" | "ADMIN";
 }>> {
   const cookieStore = await cookies();
   try {
@@ -80,7 +80,7 @@ export async function gatewayCurrentSession(): Promise<GatewayEnvelope<{
     return (await response.json()) as GatewayEnvelope<{
       id: string;
       email?: string;
-      platformRole?: "USER" | "PARTNER" | "ADMIN";
+      platformRole?: "USER" | "PARTNER" | "MODERATOR" | "ADMIN";
     }>;
   } catch {
     return { error: { code: "GATEWAY_UNAVAILABLE" } };

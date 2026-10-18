@@ -1,10 +1,10 @@
 import React from "react";
 import PartnerSidebar from "@/features/monetization/components/partner/layout/PartnerSidebar";
 import PartnerHeader from "@/features/monetization/components/partner/layout/PartnerHeader";
-import { requireRole } from "@/lib/auth/authorization";
+import { requireCapability } from "@/lib/auth/authorization";
 
 export default async function PartnerLayout({ children }: { children: React.ReactNode }) {
-  await requireRole("PARTNER", "/partner");
+  await requireCapability("partner.access", "/partner");
 
   return (
     <div className="flex h-screen bg-background text-text-main font-sans overflow-hidden antialiased">

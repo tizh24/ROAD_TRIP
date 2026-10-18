@@ -12,7 +12,11 @@ import {
 
 type AuthErrorCode = Extract<
   ErrorCode,
-  'AUTH_REQUIRED' | 'AUTH_INVALID' | 'AUTH_UNAVAILABLE' | 'ACCOUNT_INACTIVE'
+  | 'AUTH_REQUIRED'
+  | 'AUTH_INVALID'
+  | 'AUTH_UNAVAILABLE'
+  | 'ACCOUNT_INACTIVE'
+  | 'FORBIDDEN'
 >;
 
 const messages: Record<AuthErrorCode, string> = {
@@ -20,6 +24,7 @@ const messages: Record<AuthErrorCode, string> = {
   AUTH_INVALID: 'Authentication token is invalid or expired.',
   AUTH_UNAVAILABLE: 'Authentication service is temporarily unavailable.',
   ACCOUNT_INACTIVE: 'This account is not active.',
+  FORBIDDEN: 'You do not have permission to perform this action.',
 };
 
 export function authError(
@@ -35,7 +40,7 @@ export function authError(
     },
   };
 
-  return code === 'ACCOUNT_INACTIVE'
+  return code === 'ACCOUNT_INACTIVE' || code === 'FORBIDDEN'
     ? new ForbiddenException(body)
     : code === 'AUTH_UNAVAILABLE'
       ? new ServiceUnavailableException(body)

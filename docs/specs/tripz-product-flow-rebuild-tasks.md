@@ -12,11 +12,11 @@
 
 ## 1. Slice 0 — authorization and contracts
 
-- [ ] Write role/capability matrix and authorization test matrix.
-- [ ] Add immutable migration for platform-role expansion and audit records.
-- [ ] Implement capability resolver in Gateway/owning services; remove exact
+- [x] Write role/capability matrix and authorization test matrix.
+- [x] Add immutable migration for platform-role expansion and audit records.
+- [x] Implement capability resolver in Gateway/owning services; remove exact
   role checks where capability checks are required.
-- [ ] Add standard unauthorized, forbidden and concealed-not-found responses.
+- [x] Add standard unauthorized, forbidden and concealed-not-found responses.
 - [x] Publish OpenAPI schemas/error contracts for clone, public trip and planner
   routes before controllers are written.
 

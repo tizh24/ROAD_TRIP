@@ -1,11 +1,12 @@
--- Seed dummy admin user (Password: password123)
+-- Seed test fixture users (Password: password123 for all test accounts)
 INSERT INTO auth.users (
   instance_id, id, aud, role, email, encrypted_password,
   email_confirmed_at, raw_app_meta_data, raw_user_meta_data,
   created_at, updated_at, confirmation_token, email_change,
   email_change_token_new, recovery_token
 )
-VALUES (
+VALUES
+(
     '00000000-0000-0000-0000-000000000000',
     'a1b2c3d4-e5f6-4a5b-8c9d-0123456789ab',
     'authenticated',
@@ -17,12 +18,58 @@ VALUES (
     '{"full_name":"Admin RoadTrip","avatar_url":"https://i.pravatar.cc/150?u=admin"}',
     NOW(),
     NOW(),
-    '',
-    '',
-    '',
-    ''
-);
--- Note: The trigger public.handle_new_user() will automatically insert a row into public.user_profiles
+    '', '', '', ''
+),
+(
+    '00000000-0000-0000-0000-000000000000',
+    'a2b2c3d4-e5f6-4a5b-8c9d-0123456789ab',
+    'authenticated',
+    'authenticated',
+    'moderator@roadtrip.com',
+    crypt('password123', gen_salt('bf')),
+    NOW(),
+    '{"provider":"email","providers":["email"]}',
+    '{"full_name":"Moderator RoadTrip","avatar_url":"https://i.pravatar.cc/150?u=moderator"}',
+    NOW(),
+    NOW(),
+    '', '', '', ''
+),
+(
+    '00000000-0000-0000-0000-000000000000',
+    'a3b2c3d4-e5f6-4a5b-8c9d-0123456789ab',
+    'authenticated',
+    'authenticated',
+    'partner@roadtrip.com',
+    crypt('password123', gen_salt('bf')),
+    NOW(),
+    '{"provider":"email","providers":["email"]}',
+    '{"full_name":"Partner RoadTrip","avatar_url":"https://i.pravatar.cc/150?u=partner"}',
+    NOW(),
+    NOW(),
+    '', '', '', ''
+),
+(
+    '00000000-0000-0000-0000-000000000000',
+    'a4b2c3d4-e5f6-4a5b-8c9d-0123456789ab',
+    'authenticated',
+    'authenticated',
+    'traveler@roadtrip.com',
+    crypt('password123', gen_salt('bf')),
+    NOW(),
+    '{"provider":"email","providers":["email"]}',
+    '{"full_name":"Traveler RoadTrip","avatar_url":"https://i.pravatar.cc/150?u=traveler"}',
+    NOW(),
+    NOW(),
+    '', '', '', ''
+)
+ON CONFLICT (id) DO NOTHING;
+
+-- Assign platform roles for test fixtures
+UPDATE public.user_profiles SET role = 'ADMIN' WHERE id = 'a1b2c3d4-e5f6-4a5b-8c9d-0123456789ab';
+UPDATE public.user_profiles SET role = 'MODERATOR' WHERE id = 'a2b2c3d4-e5f6-4a5b-8c9d-0123456789ab';
+UPDATE public.user_profiles SET role = 'PARTNER' WHERE id = 'a3b2c3d4-e5f6-4a5b-8c9d-0123456789ab';
+UPDATE public.user_profiles SET role = 'USER' WHERE id = 'a4b2c3d4-e5f6-4a5b-8c9d-0123456789ab';
+
 
 -- Seed sample published trips
 INSERT INTO trip_schema.trips (id, owner_id, title, description, start_date, end_date, budget_amount, visibility, published_at)

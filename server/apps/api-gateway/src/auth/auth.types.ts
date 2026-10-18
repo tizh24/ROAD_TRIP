@@ -1,5 +1,10 @@
-export type PlatformRole = 'USER' | 'PARTNER' | 'ADMIN';
-export type AccountStatus = 'ACTIVE' | 'BANNED' | 'DELETED';
+import type {
+  AccountStatus,
+  PlatformCapability,
+  PlatformRole,
+} from '@roadtrip/contracts';
+
+export type { AccountStatus, PlatformCapability, PlatformRole };
 
 export interface AuthenticatedUserContext {
   userId: string;
@@ -19,12 +24,42 @@ export interface PlatformProfile {
   status: AccountStatus;
 }
 
+export interface PlatformAuditRecord {
+  id: string;
+  actorId: string;
+  action: string;
+  entityType: string;
+  entityId: string;
+  oldValues?: Record<string, unknown> | null;
+  newValues?: Record<string, unknown> | null;
+  correlationId?: string | null;
+  ipAddress?: string | null;
+  userAgent?: string | null;
+  createdAt: string;
+}
+
 export interface PlatformProfileStore {
   getRequired(userId: string): Promise<PlatformProfile>;
   updateSelf(
     userId: string,
     update: { fullName?: string; avatarUrl?: string | null },
   ): Promise<PlatformProfile>;
+  updateRole(
+    actorId: string,
+    targetUserId: string,
+    role: PlatformRole,
+    correlationId?: string,
+  ): Promise<PlatformProfile>;
+  updateStatus(
+    actorId: string,
+    targetUserId: string,
+    status: AccountStatus,
+    correlationId?: string,
+  ): Promise<PlatformProfile>;
+  listAuditLogs(query?: {
+    limit?: number;
+    offset?: number;
+  }): Promise<readonly PlatformAuditRecord[]>;
 }
 
 export const PLATFORM_PROFILE_STORE = Symbol('PLATFORM_PROFILE_STORE');

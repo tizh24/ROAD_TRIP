@@ -11,10 +11,19 @@ import { AuthBffController } from './auth-bff.controller';
 import { CsrfGuard } from './csrf.guard';
 import { ProfileController } from './profile.controller';
 
+import { AdminController } from './admin.controller';
+import { CapabilityGuard } from './capability.guard';
+
 @Module({
-  controllers: [AuthController, AuthBffController, ProfileController],
+  controllers: [
+    AuthController,
+    AuthBffController,
+    ProfileController,
+    AdminController,
+  ],
   providers: [
     SupabaseAuthGuard,
+    CapabilityGuard,
     CsrfGuard,
     PlatformAuthorizationService,
     {
@@ -46,6 +55,7 @@ import { ProfileController } from './profile.controller';
     AUTH_TOKEN_VERIFIER,
     GATEWAY_AUTH_CONFIG,
     SupabaseAuthGuard,
+    CapabilityGuard,
     PlatformAuthorizationService,
   ],
 })

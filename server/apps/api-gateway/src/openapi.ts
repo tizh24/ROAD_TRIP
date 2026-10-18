@@ -223,6 +223,39 @@ export function createPublicOpenApiDocument(): OpenAPIObject {
           tags: ['Profile'],
         },
       },
+      '/admin/users/{userId}/role': {
+        patch: {
+          ...cookieMutation(
+            'updateUserRole',
+            'Update a platform user role (audited).',
+            'ProfileResponse',
+          ),
+          tags: ['Admin'],
+        },
+        parameters: [pathParameter('userId')],
+      },
+      '/admin/users/{userId}/status': {
+        patch: {
+          ...cookieMutation(
+            'updateUserStatus',
+            'Update a platform user account status (audited).',
+            'ProfileResponse',
+          ),
+          tags: ['Admin'],
+        },
+        parameters: [pathParameter('userId')],
+      },
+      '/admin/audit-logs': {
+        get: {
+          ...authenticated('listAuditLogs', 'List platform audit logs.'),
+          tags: ['Admin'],
+          responses: {
+            '200': schemaResponse('AdminAuditLogListResponse'),
+            '401': errorResponse,
+            '403': errorResponse,
+          },
+        },
+      },
       '/public/trips': {
         get: { operationId: 'listPublicTrips', summary: 'List published trips for discovery.', tags: ['Trips'], responses: { '200': schemaResponse('PublicTripListResponse') } },
       },
@@ -476,7 +509,10 @@ export function createPublicOpenApiDocument(): OpenAPIObject {
             email: { type: 'string', format: 'email' },
             fullName: { type: 'string' },
             avatarUrl: { type: 'string', format: 'uri', nullable: true },
-            role: { type: 'string', enum: ['USER', 'PARTNER', 'ADMIN'] },
+            role: {
+              type: 'string',
+              enum: ['USER', 'PARTNER', 'MODERATOR', 'ADMIN'],
+            },
             status: {
               type: 'string',
               enum: ['ACTIVE', 'BANNED', 'DELETED'],
@@ -486,6 +522,27 @@ export function createPublicOpenApiDocument(): OpenAPIObject {
         PublicTripListResponse: successEnvelope({ type: 'array', items: { $ref: '#/components/schemas/PublicTrip' } }),
         PublicTripResponse: successEnvelope({ $ref: '#/components/schemas/PublicTrip' }),
         TripResponse: successEnvelope({ type: 'object', required: ['id'], properties: { id: { type: 'string', format: 'uuid' } } }),
+        AdminAuditLogListResponse: successEnvelope({
+          type: 'array',
+          items: { $ref: '#/components/schemas/AdminAuditLog' },
+        }),
+        AdminAuditLog: {
+          type: 'object',
+          required: ['id', 'actorId', 'action', 'entityType', 'entityId', 'createdAt'],
+          properties: {
+            id: { type: 'string', format: 'uuid' },
+            actorId: { type: 'string', format: 'uuid' },
+            action: { type: 'string' },
+            entityType: { type: 'string' },
+            entityId: { type: 'string' },
+            oldValues: { type: 'object', nullable: true },
+            newValues: { type: 'object', nullable: true },
+            correlationId: { type: 'string', nullable: true },
+            ipAddress: { type: 'string', nullable: true },
+            userAgent: { type: 'string', nullable: true },
+            createdAt: { type: 'string', format: 'date-time' },
+          },
+        },
         PublicTrip: {
           type: 'object', required: ['id', 'title', 'startDate', 'endDate', 'budgetAmount', 'currency', 'days'],
           properties: { id: { type: 'string', format: 'uuid' }, title: { type: 'string' }, description: { type: 'string', nullable: true }, startDate: { type: 'string', format: 'date' }, endDate: { type: 'string', format: 'date' }, budgetAmount: { type: 'number' }, currency: { type: 'string' }, days: { type: 'array', items: { type: 'object' } } },

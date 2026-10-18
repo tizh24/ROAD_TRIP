@@ -1,10 +1,10 @@
 import React from "react";
 import AdminSidebar from "@/features/admin/components/layout/AdminSidebar";
 import AdminHeader from "@/features/admin/components/layout/AdminHeader";
-import { requireRole } from "@/lib/auth/authorization";
+import { requireCapability } from "@/lib/auth/authorization";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  await requireRole("ADMIN", "/admin");
+  await requireCapability("admin.access", "/admin");
 
   return (
     <div className="flex h-screen bg-background text-text-main font-sans overflow-hidden antialiased">

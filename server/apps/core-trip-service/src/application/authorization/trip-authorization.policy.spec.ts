@@ -71,6 +71,19 @@ describe('TripAuthorizationPolicy', () => {
     '%s follows the owner/editor/viewer/outsider matrix',
     async (_name, record, actor, canEdit, deniedRead) => {
       const policy = new TripAuthorizationPolicy(new Reader(record));
+      if (deniedRead) {
+        // Outsiders and removed members must receive TRIP_NOT_FOUND to conceal trip existence
+        await expect(policy.assertCanRead('trip', actor)).rejects.toMatchObject(
+          { code: 'TRIP_NOT_FOUND' },
+        );
+        await expect(
+          policy.assertCanManageTrip('trip', actor),
+        ).rejects.toMatchObject({ code: 'TRIP_NOT_FOUND' });
+        await expect(
+          policy.assertCanManageMembers('trip', actor),
+        ).rejects.toMatchObject({ code: 'TRIP_NOT_FOUND' });
+        return;
+      }
       if (_name !== 'owner') {
         await expect(
           policy.assertCanManageTrip('trip', actor),
@@ -78,12 +91,6 @@ describe('TripAuthorizationPolicy', () => {
         await expect(
           policy.assertCanManageMembers('trip', actor),
         ).rejects.toMatchObject({ code: 'FORBIDDEN' });
-      }
-      if (deniedRead) {
-        await expect(policy.assertCanRead('trip', actor)).rejects.toMatchObject(
-          { code: 'FORBIDDEN' },
-        );
-        return;
       }
       await expect(policy.assertCanRead('trip', actor)).resolves.toBeDefined();
       if (canEdit)

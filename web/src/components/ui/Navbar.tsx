@@ -8,7 +8,7 @@ import { Compass, Map, Users, Plus, Menu, X, LogIn, LogOut, UserRound } from "lu
 
 type NavbarUser = {
   email?: string;
-  platformRole?: "USER" | "PARTNER" | "ADMIN";
+  platformRole?: "USER" | "PARTNER" | "MODERATOR" | "ADMIN";
 };
 
 export default function Navbar({ user }: { user?: NavbarUser }) {

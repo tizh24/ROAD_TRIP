@@ -38,7 +38,13 @@ export class TripAuthorizationPolicy {
     const record = await this.reader.getAccessRecord(tripId, userId);
     if (!record.tripExists) throw new TripAuthorizationError('TRIP_NOT_FOUND');
     const level = resolveAccessLevel(record, userId);
-    if (!allows(level, action)) throw new TripAuthorizationError('FORBIDDEN');
+    if (!allows(level, action)) {
+      // Concealed Not Found: non-members receive TRIP_NOT_FOUND (404) to avoid leaking trip existence
+      if (level === 'OUTSIDER') {
+        throw new TripAuthorizationError('TRIP_NOT_FOUND');
+      }
+      throw new TripAuthorizationError('FORBIDDEN');
+    }
     return level;
   }
 
