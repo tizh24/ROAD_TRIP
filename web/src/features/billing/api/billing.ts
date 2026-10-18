@@ -53,21 +53,6 @@ export async function listBillingOrders(): Promise<readonly OrderRecord[]> {
   );
 }
 
-export async function simulatePayment(
-  orderId: string,
-  paymentMethod: string = "VIETQR",
-): Promise<OrderRecord> {
-  return requestGateway(
-    {
-      baseUrl: gatewayUrl(),
-      path: "api/v1/billing/checkout/simulate",
-      method: "POST",
-      body: { orderId, paymentMethod },
-    },
-    orderRecordSchema,
-  );
-}
-
 export async function getOrCreateTravelBook(tripId: string): Promise<TravelBookRecord> {
   return requestGateway(
     {

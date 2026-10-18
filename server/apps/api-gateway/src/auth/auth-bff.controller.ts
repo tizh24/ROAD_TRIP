@@ -16,7 +16,11 @@ import {
 import type { GatewayConfig } from '@roadtrip/config';
 import { getCorrelationId } from '@roadtrip/observability';
 import type { Request, Response } from 'express';
-import { GATEWAY_AUTH_CONFIG } from './auth.types';
+import {
+  AUTH_TOKEN_VERIFIER,
+  GATEWAY_AUTH_CONFIG,
+  type AuthTokenVerifier,
+} from './auth.types';
 import { CsrfGuard } from './csrf.guard';
 import {
   readCookies,
@@ -38,6 +42,7 @@ export class AuthBffController {
 
   constructor(
     @Inject(GATEWAY_AUTH_CONFIG) private readonly config: GatewayConfig,
+    @Inject(AUTH_TOKEN_VERIFIER) private readonly verifier: AuthTokenVerifier,
   ) {
     this.auth = new SupabaseAuthClient(config);
   }
@@ -89,6 +94,28 @@ export class AuthBffController {
       }
       this.logger.error('Supabase login request failed unexpectedly', error);
       throw authUnavailable();
+    }
+  }
+
+  /**
+   * Bridges a Supabase OAuth/PKCE callback into the same HttpOnly Gateway
+   * session used by password login. The access token is verified before any
+   * cookie is issued.
+   */
+  @Post('session/import')
+  @HttpCode(200)
+  @RateLimit('public')
+  async importSession(
+    @Body() body: unknown,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    try {
+      const session = importedSession(body);
+      await this.verifier.verify(session.accessToken);
+      setSessionCookies(response, this.config, session);
+      return success({ authenticated: true });
+    } catch {
+      return invalidCredentials();
     }
   }
 
@@ -216,6 +243,27 @@ function passwordFrom(body: unknown): string {
   return password;
 }
 
+function importedSession(body: unknown) {
+  if (typeof body !== 'object' || body === null) {
+    throw new SupabaseAuthRequestError(400);
+  }
+  const value = body as Record<string, unknown>;
+  if (
+    typeof value.accessToken !== 'string' ||
+    typeof value.refreshToken !== 'string' ||
+    typeof value.expiresIn !== 'number' ||
+    !Number.isFinite(value.expiresIn) ||
+    value.expiresIn <= 0
+  ) {
+    throw new SupabaseAuthRequestError(400);
+  }
+  return {
+    accessToken: value.accessToken,
+    refreshToken: value.refreshToken,
+    expiresIn: Math.floor(value.expiresIn),
+  };
+}
+
 function success(data: object) {
   return { data, meta: { correlationId: getCorrelationId() ?? '' } };
 }
@@ -228,13 +276,16 @@ function invalidCredentials() {
 }
 
 function authRateLimited() {
-  return new HttpException({
-    error: {
-      code: 'AUTH_RATE_LIMITED',
-      message: 'Too many authentication requests. Please try again later.',
+  return new HttpException(
+    {
+      error: {
+        code: 'AUTH_RATE_LIMITED',
+        message: 'Too many authentication requests. Please try again later.',
+      },
+      meta: { correlationId: getCorrelationId() ?? '' },
     },
-    meta: { correlationId: getCorrelationId() ?? '' },
-  }, HttpStatus.TOO_MANY_REQUESTS);
+    HttpStatus.TOO_MANY_REQUESTS,
+  );
 }
 
 function authUnavailable() {
@@ -246,4 +297,3 @@ function authUnavailable() {
     meta: { correlationId: getCorrelationId() ?? '' },
   });
 }
-

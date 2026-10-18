@@ -10,7 +10,6 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { createHmac } from 'node:crypto';
 import { getCorrelationId } from '@roadtrip/observability';
 import { BillingRepository } from '../infrastructure/database/billing.repository';
 import { TripAuthorizationPolicy } from '../application/authorization/trip-authorization.policy';
@@ -38,7 +37,10 @@ export class BillingController {
       if (isNaN(amount) || amount <= 0) {
         throw new HttpException(
           {
-            error: { code: 'VALIDATION_FAILED', message: 'Số tiền thanh toán phải lớn hơn 0.' },
+            error: {
+              code: 'VALIDATION_FAILED',
+              message: 'Số tiền thanh toán phải lớn hơn 0.',
+            },
             meta: { correlationId: correlationId() },
           },
           400,
@@ -73,7 +75,10 @@ export class BillingController {
       if (!order) {
         throw new HttpException(
           {
-            error: { code: 'ORDER_NOT_FOUND', message: 'Đơn hàng không tồn tại.' },
+            error: {
+              code: 'ORDER_NOT_FOUND',
+              message: 'Đơn hàng không tồn tại.',
+            },
             meta: { correlationId: correlationId() },
           },
           404,
@@ -99,12 +104,17 @@ export class BillingController {
   @Post('billing/webhook')
   async handleWebhook(@Body() body: any) {
     try {
+      // The public Gateway validates the provider HMAC before forwarding this
+      // command over the internal-service channel. Core never accepts a
+      // browser-originated webhook directly.
       const transactionId = string(body?.transactionId, 'transactionId');
       const orderId = string(body?.orderId, 'orderId');
       const amount = Number(body?.amount);
       const status = body?.status === 'SUCCESS' ? 'SUCCESS' : 'FAILED';
       const signature = string(body?.signature, 'signature');
-      const paymentMethod = body?.paymentMethod ? String(body.paymentMethod) : 'VIETQR';
+      const paymentMethod = body?.paymentMethod
+        ? String(body.paymentMethod)
+        : 'VIETQR';
 
       const result = await this.billing.processWebhook({
         transactionId,
@@ -116,50 +126,6 @@ export class BillingController {
         payload: body?.payload || {},
       });
       return success(result);
-    } catch (error) {
-      throw responseError(error);
-    }
-  }
-
-  @Post('billing/checkout/simulate')
-  async simulatePayment(
-    @Body() body: any,
-    @Headers('x-roadtrip-user-id') actorId?: string,
-  ) {
-    try {
-      const userId = requiredHeader(actorId, 'x-roadtrip-user-id');
-      const orderId = string(body?.orderId, 'orderId');
-      const order = await this.billing.getOrder(orderId, userId);
-      if (!order) {
-        throw new HttpException(
-          {
-            error: { code: 'ORDER_NOT_FOUND', message: 'Đơn hàng không tồn tại.' },
-            meta: { correlationId: correlationId() },
-          },
-          404,
-        );
-      }
-      if (order.status === 'COMPLETED') {
-        return success(order);
-      }
-
-      const transactionId = `tx_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
-      const signature = createHmac('sha256', 'mock_secret_key')
-        .update(`${order.id}:${order.amount}:${transactionId}`)
-        .digest('hex');
-
-      await this.billing.processWebhook({
-        transactionId,
-        orderId: order.id,
-        amount: order.amount,
-        status: 'SUCCESS',
-        signature,
-        paymentMethod: body?.paymentMethod || 'VIETQR',
-        payload: { simulatedAt: new Date().toISOString() },
-      });
-
-      const updated = await this.billing.getOrder(orderId, userId);
-      return success(updated);
     } catch (error) {
       throw responseError(error);
     }
@@ -191,7 +157,10 @@ export class BillingController {
       if (!book) {
         throw new HttpException(
           {
-            error: { code: 'TRAVEL_BOOK_NOT_FOUND', message: 'Không tìm thấy ấn phẩm Travel Book.' },
+            error: {
+              code: 'TRAVEL_BOOK_NOT_FOUND',
+              message: 'Không tìm thấy ấn phẩm Travel Book.',
+            },
             meta: { correlationId: correlationId() },
           },
           404,
@@ -216,7 +185,10 @@ export class BillingController {
       if (!book) {
         throw new HttpException(
           {
-            error: { code: 'TRAVEL_BOOK_NOT_FOUND', message: 'Không tìm thấy ấn phẩm Travel Book.' },
+            error: {
+              code: 'TRAVEL_BOOK_NOT_FOUND',
+              message: 'Không tìm thấy ấn phẩm Travel Book.',
+            },
             meta: { correlationId: correlationId() },
           },
           404,
@@ -243,7 +215,10 @@ function requiredHeader(value: string | undefined, name: string): string {
   if (!value || typeof value !== 'string') {
     throw new HttpException(
       {
-        error: { code: 'AUTH_REQUIRED', message: `Missing required header ${name}` },
+        error: {
+          code: 'AUTH_REQUIRED',
+          message: `Missing required header ${name}`,
+        },
         meta: { correlationId: correlationId() },
       },
       401,
@@ -256,7 +231,10 @@ function string(value: unknown, field: string): string {
   if (typeof value !== 'string' || value.trim().length === 0) {
     throw new HttpException(
       {
-        error: { code: 'VALIDATION_FAILED', message: `${field} must be a non-empty string.` },
+        error: {
+          code: 'VALIDATION_FAILED',
+          message: `${field} must be a non-empty string.`,
+        },
         meta: { correlationId: correlationId() },
       },
       400,
@@ -274,7 +252,10 @@ function responseError(error: unknown): HttpException {
   );
   return new HttpException(
     {
-      error: { code: 'INTERNAL_ERROR', message: error instanceof Error ? error.message : 'Internal error.' },
+      error: {
+        code: 'INTERNAL_ERROR',
+        message: error instanceof Error ? error.message : 'Internal error.',
+      },
       meta: { correlationId: correlationId() },
     },
     500,

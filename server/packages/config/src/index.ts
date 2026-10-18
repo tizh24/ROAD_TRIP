@@ -92,6 +92,9 @@ export const gatewayConfigSchema = z.object({
   CSRF_COOKIE_NAME: z.string().min(1).default('__Secure-rt_csrf'),
   AUTH_ACCESS_COOKIE_MAX_AGE_SECONDS: positiveInteger.default(900),
   AUTH_REFRESH_COOKIE_MAX_AGE_SECONDS: positiveInteger.default(2_592_000),
+  // HMAC secret used only by the public payment-provider webhook endpoint.
+  // Leaving it unset disables that endpoint rather than accepting unsigned data.
+  PAYMENT_WEBHOOK_SECRET: z.string().min(32).optional(),
 });
 
 export const coreTripConfigSchema = z.object({

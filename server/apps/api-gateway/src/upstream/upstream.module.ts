@@ -7,11 +7,16 @@ import {
 } from './http-upstream.client';
 import { UpstreamController } from './upstream.controller';
 import { PublicTripController } from './public-trip.controller';
+import { BillingWebhookController } from './billing-webhook.controller';
 import { CORE_TRIP_UPSTREAM, GEO_LOCATION_UPSTREAM } from './upstream.types';
 
 @Module({
   imports: [AuthModule],
-  controllers: [UpstreamController, PublicTripController],
+  controllers: [
+    BillingWebhookController,
+    UpstreamController,
+    PublicTripController,
+  ],
   providers: [
     {
       provide: CORE_TRIP_UPSTREAM,

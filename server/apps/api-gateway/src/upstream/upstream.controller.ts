@@ -11,6 +11,7 @@ import { getCorrelationId } from '@roadtrip/observability';
 import type { Request, Response } from 'express';
 import { CurrentUser } from '../auth/current-user.decorator';
 import { SupabaseAuthGuard } from '../auth/supabase-auth.guard';
+import { CsrfGuard } from '../auth/csrf.guard';
 import type { AuthenticatedUserContext } from '../auth/auth.types';
 import { RateLimit } from '../security/rate-limit.types';
 import {
@@ -21,7 +22,7 @@ import {
 } from './upstream.types';
 
 @Controller('api/v1')
-@UseGuards(SupabaseAuthGuard)
+@UseGuards(SupabaseAuthGuard, CsrfGuard)
 @RateLimit('authenticated')
 export class UpstreamController {
   constructor(

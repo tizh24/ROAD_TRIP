@@ -148,6 +148,9 @@ export function createPublicOpenApiDocument(): OpenAPIObject {
     tags: [
       { name: 'Session' },
       { name: 'Profile' },
+      { name: 'Community' },
+      { name: 'Partner' },
+      { name: 'Billing' },
       { name: 'Trips' },
       { name: 'Stops' },
       { name: 'Invitations' },
@@ -168,6 +171,14 @@ export function createPublicOpenApiDocument(): OpenAPIObject {
           'login',
           'Start a cookie-backed browser session.',
           'LoginRequest',
+          'AuthenticationResponse',
+        ),
+      },
+      '/auth/session/import': {
+        post: publicAuthOperation(
+          'importOAuthSession',
+          'Convert a verified Supabase OAuth callback into Gateway cookies.',
+          'ImportedSessionRequest',
           'AuthenticationResponse',
         ),
       },
@@ -257,14 +268,108 @@ export function createPublicOpenApiDocument(): OpenAPIObject {
         },
       },
       '/public/trips': {
-        get: { operationId: 'listPublicTrips', summary: 'List published trips for discovery.', tags: ['Trips'], responses: { '200': schemaResponse('PublicTripListResponse') } },
+        get: {
+          operationId: 'listPublicTrips',
+          summary: 'List published trips for discovery.',
+          tags: ['Trips'],
+          responses: { '200': schemaResponse('PublicTripListResponse') },
+        },
       },
       '/public/trips/{tripId}': {
-        get: { operationId: 'getPublicTrip', summary: 'Get a published trip.', tags: ['Trips'], responses: { '200': schemaResponse('PublicTripResponse'), '404': errorResponse } },
+        get: {
+          operationId: 'getPublicTrip',
+          summary: 'Get a published trip.',
+          tags: ['Trips'],
+          responses: {
+            '200': schemaResponse('PublicTripResponse'),
+            '404': errorResponse,
+          },
+        },
         parameters: [tripIdParameter()],
       },
       '/public/trips/{tripId}/clone': {
-        post: { ...mutation('clonePublicTrip', 'Clone a published trip into a private draft.'), tags: ['Trips'], responses: { '200': schemaResponse('TripResponse'), '401': errorResponse, '404': errorResponse, '409': errorResponse } },
+        post: {
+          ...mutation(
+            'clonePublicTrip',
+            'Clone a published trip into a private draft.',
+          ),
+          tags: ['Trips'],
+          responses: {
+            '200': schemaResponse('TripResponse'),
+            '401': errorResponse,
+            '404': errorResponse,
+            '409': errorResponse,
+          },
+        },
+        parameters: [tripIdParameter()],
+      },
+      '/trips/{tripId}/visibility': {
+        patch: {
+          ...mutation(
+            'updateTripVisibility',
+            'Set private, unlisted or published visibility.',
+          ),
+          tags: ['Trips'],
+        },
+        parameters: [tripIdParameter()],
+      },
+      '/trips/{tripId}/status': {
+        patch: {
+          ...mutation(
+            'updateTripStatus',
+            'Update planning, active or completed trip status.',
+          ),
+          tags: ['Trips'],
+        },
+        parameters: [tripIdParameter()],
+      },
+      '/trips/{tripId}/memory': {
+        get: {
+          ...authenticated('getTripMemory', 'Read the trip memory.'),
+          tags: ['Trips'],
+        },
+        put: {
+          ...mutation('updateTripMemory', 'Update the trip memory.'),
+          tags: ['Trips'],
+        },
+        parameters: [tripIdParameter()],
+      },
+      '/trips/{tripId}/memory/photos': {
+        post: {
+          ...mutation('addTripMemoryPhoto', 'Add a photo to a trip memory.'),
+          tags: ['Trips'],
+        },
+        parameters: [tripIdParameter()],
+      },
+      '/trips/{tripId}/expenses': {
+        get: {
+          ...authenticated('listTripExpenses', 'List trip expenses.'),
+          tags: ['Trips'],
+        },
+        post: {
+          ...mutation('createTripExpense', 'Record a trip expense.'),
+          tags: ['Trips'],
+        },
+        parameters: [tripIdParameter()],
+      },
+      '/trips/{tripId}/locations': {
+        get: {
+          ...authenticated(
+            'listTripLocations',
+            'List consented active-trip locations.',
+          ),
+          tags: ['Trips'],
+        },
+        parameters: [tripIdParameter()],
+      },
+      '/trips/{tripId}/location': {
+        post: {
+          ...mutation(
+            'recordTripLocation',
+            'Record a consented active-trip location.',
+          ),
+          tags: ['Trips'],
+        },
         parameters: [tripIdParameter()],
       },
       '/trips': {
@@ -397,6 +502,141 @@ export function createPublicOpenApiDocument(): OpenAPIObject {
           tags: ['Routes'],
         },
       },
+      '/community/posts': {
+        get: {
+          ...authenticated('listCommunityPosts', 'List community posts.'),
+          tags: ['Community'],
+        },
+        post: {
+          ...mutation('createCommunityPost', 'Create a community post.'),
+          tags: ['Community'],
+        },
+      },
+      '/community/posts/{postId}': {
+        get: {
+          ...authenticated('getCommunityPost', 'Read a community post.'),
+          tags: ['Community'],
+        },
+        parameters: [pathParameter('postId')],
+      },
+      '/community/posts/{postId}/like': {
+        post: {
+          ...mutation('toggleCommunityLike', 'Toggle a community post like.'),
+          tags: ['Community'],
+        },
+        parameters: [pathParameter('postId')],
+      },
+      '/community/posts/{postId}/comments': {
+        get: {
+          ...authenticated('listCommunityComments', 'List post comments.'),
+          tags: ['Community'],
+        },
+        post: {
+          ...mutation('createCommunityComment', 'Create a post comment.'),
+          tags: ['Community'],
+        },
+        parameters: [pathParameter('postId')],
+      },
+      '/partner/application': {
+        get: {
+          ...authenticated(
+            'getPartnerApplication',
+            'Get the current partner application.',
+          ),
+          tags: ['Partner'],
+        },
+      },
+      '/partner/apply': {
+        post: {
+          ...mutation('applyPartner', 'Submit a partner application.'),
+          tags: ['Partner'],
+        },
+      },
+      '/partner/listings': {
+        get: {
+          ...authenticated(
+            'listPartnerListings',
+            'List the current partner listings.',
+          ),
+          tags: ['Partner'],
+        },
+        post: {
+          ...mutation('createPartnerListing', 'Create a partner listing.'),
+          tags: ['Partner'],
+        },
+      },
+      '/partner/listings/{id}': {
+        patch: {
+          ...mutation('updatePartnerListing', 'Update a partner listing.'),
+          tags: ['Partner'],
+        },
+        delete: {
+          ...mutation('deletePartnerListing', 'Delete a partner listing.'),
+          tags: ['Partner'],
+        },
+        parameters: [pathParameter('id')],
+      },
+      '/billing/orders': {
+        get: {
+          ...authenticated(
+            'listBillingOrders',
+            'List the signed-in user orders.',
+          ),
+          tags: ['Billing'],
+        },
+        post: {
+          ...mutation('createBillingOrder', 'Create a billing order.'),
+          tags: ['Billing'],
+        },
+      },
+      '/billing/orders/{orderId}': {
+        get: {
+          ...authenticated('getBillingOrder', 'Get a signed-in user order.'),
+          tags: ['Billing'],
+        },
+        parameters: [pathParameter('orderId')],
+      },
+      '/billing/webhook': {
+        post: {
+          operationId: 'paymentWebhook',
+          summary: 'Receive a provider-signed payment webhook.',
+          tags: ['Billing'],
+          parameters: [
+            {
+              name: 'X-Payment-Signature',
+              in: 'header',
+              required: true,
+              schema: { type: 'string' },
+            },
+          ],
+          responses: {
+            '200': emptyResponse,
+            '401': errorResponse,
+            '503': errorResponse,
+          },
+        },
+      },
+      '/travel-books/trip/{tripId}': {
+        get: {
+          ...authenticated(
+            'getOrCreateTravelBook',
+            'Get or create a travel-book draft.',
+          ),
+          tags: ['Billing'],
+        },
+        parameters: [tripIdParameter()],
+      },
+      '/travel-books/{id}': {
+        get: {
+          ...authenticated('getTravelBook', 'Get a travel book.'),
+          tags: ['Billing'],
+        },
+        patch: {
+          ...mutation('updateTravelBook', 'Update a travel book.'),
+          tags: ['Billing'],
+        },
+        parameters: [pathParameter('id')],
+      },
     },
     components: {
       securitySchemes: {
@@ -456,6 +696,16 @@ export function createPublicOpenApiDocument(): OpenAPIObject {
             email: { type: 'string', format: 'email' },
             password: { type: 'string', format: 'password', minLength: 8 },
             fullName: { type: 'string', minLength: 2, maxLength: 80 },
+          },
+        },
+        ImportedSessionRequest: {
+          type: 'object',
+          required: ['accessToken', 'refreshToken', 'expiresIn'],
+          additionalProperties: false,
+          properties: {
+            accessToken: { type: 'string' },
+            refreshToken: { type: 'string' },
+            expiresIn: { type: 'integer', minimum: 1 },
           },
         },
         ErrorResponse: {
@@ -519,16 +769,32 @@ export function createPublicOpenApiDocument(): OpenAPIObject {
             },
           },
         }),
-        PublicTripListResponse: successEnvelope({ type: 'array', items: { $ref: '#/components/schemas/PublicTrip' } }),
-        PublicTripResponse: successEnvelope({ $ref: '#/components/schemas/PublicTrip' }),
-        TripResponse: successEnvelope({ type: 'object', required: ['id'], properties: { id: { type: 'string', format: 'uuid' } } }),
+        PublicTripListResponse: successEnvelope({
+          type: 'array',
+          items: { $ref: '#/components/schemas/PublicTrip' },
+        }),
+        PublicTripResponse: successEnvelope({
+          $ref: '#/components/schemas/PublicTrip',
+        }),
+        TripResponse: successEnvelope({
+          type: 'object',
+          required: ['id'],
+          properties: { id: { type: 'string', format: 'uuid' } },
+        }),
         AdminAuditLogListResponse: successEnvelope({
           type: 'array',
           items: { $ref: '#/components/schemas/AdminAuditLog' },
         }),
         AdminAuditLog: {
           type: 'object',
-          required: ['id', 'actorId', 'action', 'entityType', 'entityId', 'createdAt'],
+          required: [
+            'id',
+            'actorId',
+            'action',
+            'entityType',
+            'entityId',
+            'createdAt',
+          ],
           properties: {
             id: { type: 'string', format: 'uuid' },
             actorId: { type: 'string', format: 'uuid' },
@@ -544,8 +810,26 @@ export function createPublicOpenApiDocument(): OpenAPIObject {
           },
         },
         PublicTrip: {
-          type: 'object', required: ['id', 'title', 'startDate', 'endDate', 'budgetAmount', 'currency', 'days'],
-          properties: { id: { type: 'string', format: 'uuid' }, title: { type: 'string' }, description: { type: 'string', nullable: true }, startDate: { type: 'string', format: 'date' }, endDate: { type: 'string', format: 'date' }, budgetAmount: { type: 'number' }, currency: { type: 'string' }, days: { type: 'array', items: { type: 'object' } } },
+          type: 'object',
+          required: [
+            'id',
+            'title',
+            'startDate',
+            'endDate',
+            'budgetAmount',
+            'currency',
+            'days',
+          ],
+          properties: {
+            id: { type: 'string', format: 'uuid' },
+            title: { type: 'string' },
+            description: { type: 'string', nullable: true },
+            startDate: { type: 'string', format: 'date' },
+            endDate: { type: 'string', format: 'date' },
+            budgetAmount: { type: 'number' },
+            currency: { type: 'string' },
+            days: { type: 'array', items: { type: 'object' } },
+          },
         },
       },
     },
@@ -557,6 +841,7 @@ const stableErrorCodes = [
   'AUTH_INVALID',
   'AUTH_RATE_LIMITED',
   'AUTH_UNAVAILABLE',
+  'PAYMENT_UNAVAILABLE',
   'FORBIDDEN',
   'TRIP_NOT_FOUND',
   'TRIP_DATE_RANGE_INVALID',

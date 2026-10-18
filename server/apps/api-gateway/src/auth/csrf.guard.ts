@@ -19,6 +19,12 @@ export class CsrfGuard implements CanActivate {
 
   canActivate(context: ExecutionContext): boolean {
     const request = context.switchToHttp().getRequest<Request>();
+    // Safe methods never alter cookie-authenticated state. This lets the guard
+    // protect a controller which serves both reads and writes without forcing
+    // browsers to send an Origin/CSRF header for ordinary navigation.
+    if (['GET', 'HEAD', 'OPTIONS'].includes(request.method.toUpperCase())) {
+      return true;
+    }
     if (typeof request.headers.authorization === 'string') return true;
     const cookies = readCookies(request.headers.cookie);
     if (

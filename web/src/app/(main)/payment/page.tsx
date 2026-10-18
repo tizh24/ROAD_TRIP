@@ -19,7 +19,6 @@ import {
 import {
   getBillingOrder,
   listBillingOrders,
-  simulatePayment,
   type OrderRecord,
 } from "@/features/billing/api/billing";
 
@@ -33,7 +32,6 @@ function PaymentContent() {
   const [error, setError] = useState<string>();
 
   const [selectedMethod, setSelectedMethod] = useState<"VIETQR" | "MOMO" | "CREDIT_CARD">("VIETQR");
-  const [paying, setPaying] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
 
   const loadData = useCallback(async () => {
@@ -60,20 +58,6 @@ function PaymentContent() {
   useEffect(() => {
     loadData();
   }, [loadData]);
-
-  const handleSimulatePayment = async () => {
-    if (!order) return;
-    try {
-      setPaying(true);
-      const updated = await simulatePayment(order.id, selectedMethod);
-      setOrder(updated);
-      setPaymentSuccess(true);
-    } catch (err) {
-      alert(err instanceof Error ? err.message : "Thanh toán không thành công.");
-    } finally {
-      setPaying(false);
-    }
-  };
 
   if (loading) {
     return (
@@ -359,15 +343,15 @@ function PaymentContent() {
               {/* Submit CTA */}
               <div className="pt-2">
                 <button
-                  onClick={handleSimulatePayment}
-                  disabled={paying}
-                  className="flex w-full items-center justify-center gap-2 rounded-2xl bg-primary py-4 text-sm font-bold text-white shadow-md hover:bg-primary-hover active:scale-95 disabled:opacity-50 transition"
+                  type="button"
+                  disabled
+                  className="flex w-full cursor-not-allowed items-center justify-center gap-2 rounded-2xl bg-slate-400 py-4 text-sm font-bold text-white shadow-md disabled:opacity-70"
                 >
                   <ShieldCheck size={18} />
-                  {paying ? "Đang xác thực thanh toán..." : "Xác nhận đã thanh toán đơn hàng"}
+                  Chờ cổng thanh toán được kết nối
                 </button>
                 <p className="mt-2 text-center text-[11px] text-text-sub">
-                  Giao dịch được bảo mật và xác nhận tự động qua cổng đối soát Tripz.
+                  Đơn chỉ được hoàn tất sau webhook có chữ ký hợp lệ từ nhà cung cấp thanh toán.
                 </p>
               </div>
             </div>
