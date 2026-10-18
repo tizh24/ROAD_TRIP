@@ -402,4 +402,260 @@ export class TripRepository {
       };
     });
   }
+
+  async updateStatus(
+    tripId: string,
+    status: 'PLANNING' | 'ONGOING' | 'COMPLETED' | 'CANCELLED',
+    actorId: string,
+  ): Promise<{ status: string; version: number }> {
+    return this.database.transaction(async (transaction) => {
+      const current = await transaction.query<{ id: string; title: string; description: string | null; visibility: string; version: number }>(
+        `SELECT id, title, description, visibility, version FROM trip_schema.trips WHERE id=$1 AND deleted_at IS NULL FOR UPDATE`,
+        [tripId],
+      );
+      const row = current.rows[0];
+      if (!row) throw new TripVersionConflictError();
+
+      const updated = await transaction.query<{ status: string; version: number }>(
+        `UPDATE trip_schema.trips SET status = $2, version = version + 1 WHERE id = $1 RETURNING status, version`,
+        [tripId, status],
+      );
+
+      if (status === 'COMPLETED') {
+        await transaction.query(
+          `INSERT INTO trip_schema.trip_memories (trip_id, title, summary, visibility)
+           VALUES ($1, $2, $3, $4)
+           ON CONFLICT (trip_id) DO NOTHING`,
+          [tripId, row.title, row.description, row.visibility],
+        );
+      }
+
+      await transaction.query(
+        `INSERT INTO trip_schema.trip_audit_logs (trip_id, actor_id, action, old_values, new_values)
+         VALUES ($1, $2, 'STATUS_CHANGE', $3, $4)`,
+        [tripId, actorId, JSON.stringify({ status: row.version }), JSON.stringify({ status })],
+      );
+
+      const res = updated.rows[0]!;
+      return { status: res.status, version: res.version };
+    });
+  }
+
+  async getMemory(tripId: string) {
+    const memoryRes = await this.database.query<{
+      id: string;
+      trip_id: string;
+      title: string;
+      summary: string | null;
+      cover_photo_url: string | null;
+      visibility: string;
+      created_at: string;
+      updated_at: string;
+    }>(
+      `SELECT id, trip_id, title, summary, cover_photo_url, visibility, created_at, updated_at
+       FROM trip_schema.trip_memories WHERE trip_id = $1`,
+      [tripId],
+    );
+    const row = memoryRes.rows[0];
+    if (!row) return null;
+
+    const photosRes = await this.database.query<{
+      id: string;
+      memory_id: string;
+      photo_url: string;
+      caption: string | null;
+      taken_at: string;
+      created_at: string;
+    }>(
+      `SELECT id, memory_id, photo_url, caption, taken_at, created_at
+       FROM trip_schema.trip_memory_photos WHERE memory_id = $1 ORDER BY created_at ASC`,
+      [row.id],
+    );
+
+    return {
+      id: row.id,
+      tripId: row.trip_id,
+      title: row.title,
+      summary: row.summary,
+      coverPhotoUrl: row.cover_photo_url,
+      visibility: row.visibility,
+      createdAt: row.created_at,
+      updatedAt: row.updated_at,
+      photos: photosRes.rows.map((p) => ({
+        id: p.id,
+        memoryId: p.memory_id,
+        photoUrl: p.photo_url,
+        caption: p.caption,
+        takenAt: p.taken_at,
+        createdAt: p.created_at,
+      })),
+    };
+  }
+
+  async updateMemory(
+    tripId: string,
+    data: { title: string; summary: string | null; visibility: 'PRIVATE' | 'UNLISTED' | 'PUBLISHED'; coverPhotoUrl?: string | null },
+  ) {
+    const res = await this.database.query<{
+      id: string;
+      trip_id: string;
+      title: string;
+      summary: string | null;
+      cover_photo_url: string | null;
+      visibility: string;
+    }>(
+      `INSERT INTO trip_schema.trip_memories (trip_id, title, summary, visibility, cover_photo_url)
+       VALUES ($1, $2, $3, $4, $5)
+       ON CONFLICT (trip_id) DO UPDATE
+         SET title = EXCLUDED.title,
+             summary = EXCLUDED.summary,
+             visibility = EXCLUDED.visibility,
+             cover_photo_url = COALESCE(EXCLUDED.cover_photo_url, trip_schema.trip_memories.cover_photo_url),
+             updated_at = now()
+       RETURNING id, trip_id, title, summary, cover_photo_url, visibility`,
+      [tripId, data.title, data.summary, data.visibility, data.coverPhotoUrl ?? null],
+    );
+    return res.rows[0]!;
+  }
+
+  async addMemoryPhoto(memoryId: string, photo: { photoUrl: string; caption?: string | null }) {
+    const res = await this.database.query<{ id: string; memory_id: string; photo_url: string; caption: string | null; created_at: string }>(
+      `INSERT INTO trip_schema.trip_memory_photos (memory_id, photo_url, caption)
+       VALUES ($1, $2, $3)
+       RETURNING id, memory_id, photo_url, caption, created_at`,
+      [memoryId, photo.photoUrl, photo.caption ?? null],
+    );
+    return res.rows[0]!;
+  }
+
+  async listExpenses(tripId: string) {
+    const res = await this.database.query<{
+      id: string;
+      trip_id: string;
+      payer_id: string;
+      amount: string;
+      currency: string;
+      category: string;
+      description: string;
+      created_at: string;
+    }>(
+      `SELECT id, trip_id, payer_id, amount, currency, category, description, created_at
+       FROM trip_schema.trip_expenses WHERE trip_id = $1 ORDER BY created_at DESC`,
+      [tripId],
+    );
+    return res.rows.map((r) => ({
+      id: r.id,
+      tripId: r.trip_id,
+      payerId: r.payer_id,
+      amount: parseFloat(r.amount),
+      currency: r.currency,
+      category: r.category,
+      description: r.description,
+      createdAt: r.created_at,
+    }));
+  }
+
+  async addExpense(
+    tripId: string,
+    payerId: string,
+    expense: { amount: number; currency?: string; category: string; description: string },
+  ) {
+    const res = await this.database.query<{
+      id: string;
+      trip_id: string;
+      payer_id: string;
+      amount: string;
+      currency: string;
+      category: string;
+      description: string;
+      created_at: string;
+    }>(
+      `INSERT INTO trip_schema.trip_expenses (trip_id, payer_id, amount, currency, category, description)
+       VALUES ($1, $2, $3, $4, $5, $6)
+       RETURNING id, trip_id, payer_id, amount, currency, category, description, created_at`,
+      [tripId, payerId, expense.amount, expense.currency ?? 'VND', expense.category, expense.description],
+    );
+    const r = res.rows[0]!;
+    return {
+      id: r.id,
+      tripId: r.trip_id,
+      payerId: r.payer_id,
+      amount: parseFloat(r.amount),
+      currency: r.currency,
+      category: r.category,
+      description: r.description,
+      createdAt: r.created_at,
+    };
+  }
+
+  async deleteExpense(tripId: string, expenseId: string) {
+    await this.database.query(
+      `DELETE FROM trip_schema.trip_expenses WHERE id = $1 AND trip_id = $2`,
+      [expenseId, tripId],
+    );
+  }
+
+  async updateLiveLocation(
+    tripId: string,
+    userId: string,
+    data: { latitude: number; longitude: number; sharingActive?: boolean; consentGiven?: boolean },
+  ) {
+    const res = await this.database.query<{
+      id: string;
+      trip_id: string;
+      user_id: string;
+      latitude: string;
+      longitude: string;
+      sharing_active: boolean;
+      updated_at: string;
+    }>(
+      `INSERT INTO trip_schema.trip_live_locations (trip_id, user_id, latitude, longitude, sharing_active, consent_given)
+       VALUES ($1, $2, $3, $4, $5, $6)
+       ON CONFLICT (trip_id, user_id) DO UPDATE
+         SET latitude = EXCLUDED.latitude,
+             longitude = EXCLUDED.longitude,
+             sharing_active = EXCLUDED.sharing_active,
+             consent_given = EXCLUDED.consent_given,
+             updated_at = now()
+       RETURNING id, trip_id, user_id, latitude, longitude, sharing_active, updated_at`,
+      [
+        tripId,
+        userId,
+        data.latitude,
+        data.longitude,
+        data.sharingActive ?? true,
+        data.consentGiven ?? true,
+      ],
+    );
+    const r = res.rows[0]!;
+    return {
+      userId: r.user_id,
+      latitude: parseFloat(r.latitude),
+      longitude: parseFloat(r.longitude),
+      sharingActive: r.sharing_active,
+      updatedAt: r.updated_at,
+    };
+  }
+
+  async listActiveLiveLocations(tripId: string) {
+    const res = await this.database.query<{
+      user_id: string;
+      latitude: string;
+      longitude: string;
+      sharing_active: boolean;
+      updated_at: string;
+    }>(
+      `SELECT user_id, latitude, longitude, sharing_active, updated_at
+       FROM trip_schema.trip_live_locations
+       WHERE trip_id = $1 AND sharing_active = true AND updated_at > now() - interval '15 minutes'`,
+      [tripId],
+    );
+    return res.rows.map((r) => ({
+      userId: r.user_id,
+      latitude: parseFloat(r.latitude),
+      longitude: parseFloat(r.longitude),
+      sharingActive: r.sharing_active,
+      updatedAt: r.updated_at,
+    }));
+  }
 }

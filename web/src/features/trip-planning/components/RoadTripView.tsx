@@ -19,7 +19,11 @@ import {
   Smartphone,
 } from "lucide-react";
 import { GatewayApiError } from "@/features/trip-planning/api/gateway-request";
-import { getTrip } from "@/features/trip-planning/api/trips";
+import {
+  getTrip,
+  updateTripLocation,
+  updateTripStatus,
+} from "@/features/trip-planning/api/trips";
 import type { TripDetail } from "@/features/trip-planning/api/trip-model";
 import FeedbackState from "@/components/ui/FeedbackState";
 import { trackAnalytics } from "@/lib/analytics/analytics";
@@ -36,6 +40,8 @@ export default function RoadTripView({ tripId }: { tripId: string }) {
   const [dayIndex, setDayIndex] = useState(0);
   const [checkIns, setCheckIns] = useState<Record<string, boolean>>({});
   const [copiedLink, setCopiedLink] = useState(false);
+  const [completingTrip, setCompletingTrip] = useState(false);
+  const [isSharingLocation, setIsSharingLocation] = useState(false);
 
   // Load check-in records from localStorage on client
   useEffect(() => {
@@ -102,6 +108,58 @@ export default function RoadTripView({ tripId }: { tripId: string }) {
       setTimeout(() => setCopiedLink(false), 2500);
     } catch {
       // clipboard access fallback
+    }
+  };
+
+  const handleCompleteTrip = async () => {
+    if (!confirm("Xác nhận hoàn tất chuyến đi? Hệ thống sẽ tạo kỷ niệm hành trình để cả đoàn lưu giữ hình ảnh và quyết toán chi tiêu.")) return;
+    setCompletingTrip(true);
+    try {
+      await updateTripStatus(tripId, "COMPLETED");
+      window.location.href = `/memory/${tripId}`;
+    } catch (cause) {
+      alert(cause instanceof Error ? cause.message : "Không thể hoàn tất chuyến đi.");
+      setCompletingTrip(false);
+    }
+  };
+
+  const handleToggleLocationSharing = async () => {
+    if (!isSharingLocation) {
+      if (!navigator.geolocation) {
+        alert("Thiết bị không hỗ trợ định vị GPS.");
+        return;
+      }
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          try {
+            await updateTripLocation(tripId, {
+              latitude: pos.coords.latitude,
+              longitude: pos.coords.longitude,
+              sharingActive: true,
+              consentGiven: true,
+            });
+            setIsSharingLocation(true);
+          } catch (cause) {
+            alert(cause instanceof Error ? cause.message : "Không thể chia sẻ vị trí.");
+          }
+        },
+        (err) => {
+          alert(`Không thể lấy tọa độ GPS: ${err.message}`);
+        },
+        { enableHighAccuracy: true },
+      );
+    } else {
+      try {
+        await updateTripLocation(tripId, {
+          latitude: 0,
+          longitude: 0,
+          sharingActive: false,
+          consentGiven: false,
+        });
+        setIsSharingLocation(false);
+      } catch (cause) {
+        alert(cause instanceof Error ? cause.message : "Không thể tắt chia sẻ vị trí.");
+      }
     }
   };
 
@@ -181,7 +239,7 @@ export default function RoadTripView({ tripId }: { tripId: string }) {
                 {trip.title}
               </h1>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <button
                 type="button"
                 onClick={() => void copyMobileLink()}
@@ -190,6 +248,26 @@ export default function RoadTripView({ tripId }: { tripId: string }) {
                 <Smartphone size={16} />
                 <span>{copiedLink ? "Đã sao chép liên kết!" : "Mở trên điện thoại"}</span>
               </button>
+
+              {trip.status === "COMPLETED" ? (
+                <Link
+                  href={`/memory/${trip.id}`}
+                  className="focus-ring inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-3.5 py-2.5 text-xs font-bold text-white shadow-card hover:bg-emerald-700 transition"
+                >
+                  <CheckCircle2 size={16} />
+                  <span>Xem Kỷ niệm chuyến đi</span>
+                </Link>
+              ) : (trip.role === "OWNER" || trip.permission === "EDIT") && (
+                <button
+                  type="button"
+                  onClick={() => void handleCompleteTrip()}
+                  disabled={completingTrip}
+                  className="focus-ring inline-flex items-center gap-1.5 rounded-xl bg-primary px-3.5 py-2.5 text-xs font-bold text-white shadow-card hover:bg-primary-hover transition disabled:opacity-50"
+                >
+                  <CheckCircle2 size={16} />
+                  <span>{completingTrip ? "Đang xử lý…" : "Hoàn tất chuyến đi"}</span>
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -216,11 +294,39 @@ export default function RoadTripView({ tripId }: { tripId: string }) {
               <div className="mt-3 flex items-center gap-2 text-[11px] text-text-sub bg-background-warm p-2.5 rounded-lg">
                 <AlertCircle size={14} className="text-secondary shrink-0" />
                 <span>
-                  <strong>Lưu ý:</strong> Tính năng GPS Live Tracking và định vị thời gian thực đa thành viên sẽ có mặt ở Slice 3. Hiện tại bạn có thể xem các chặng và mở ứng dụng bản đồ chỉ đường.
+                  <strong>Lưu ý:</strong> Tính năng chia sẻ vị trí (Consented Live Tracking) cho phép bạn chủ động bật/tắt để các thành viên trong đoàn có thể biết vị trí của nhau.
                 </span>
               </div>
             </div>
           </div>
+        </section>
+
+        {/* Consented Live Location Sharing Card */}
+        <section className="surface-card mt-6 p-4 sm:p-5 flex flex-wrap items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className={`p-2.5 rounded-xl ${isSharingLocation ? "bg-emerald-500/15 text-emerald-600" : "bg-background-warm text-text-sub"}`}>
+              <Navigation size={20} />
+            </div>
+            <div>
+              <h3 className="text-sm font-extrabold text-text-main">Chia sẻ vị trí với đoàn (Consented Live Tracking)</h3>
+              <p className="text-xs text-text-sub">
+                {isSharingLocation
+                  ? "Vị trí GPS của bạn đang được chia sẻ cho các thành viên trong đoàn."
+                  : "Chỉ chia sẻ khi bạn cho phép và có thể tắt bất cứ lúc nào."}
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => void handleToggleLocationSharing()}
+            className={`focus-ring rounded-xl px-4 py-2.5 text-xs font-bold transition ${
+              isSharingLocation
+                ? "bg-emerald-600 text-white shadow-card hover:bg-emerald-700"
+                : "border border-border-main bg-surface text-text-main hover:bg-background-warm"
+            }`}
+          >
+            {isSharingLocation ? "Đang bật chia sẻ (Nhấn để tắt)" : "Bật chia sẻ vị trí"}
+          </button>
         </section>
 
         {/* Emergency Assistance Quick Bar */}

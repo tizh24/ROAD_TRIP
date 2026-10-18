@@ -82,3 +82,51 @@ export type Invitation = z.infer<typeof invitationSchema>;
 export const createdInvitationSchema = invitationSchema.extend({ token: z.string().min(32) }).strict();
 export const memberSchema = z.object({ userId: z.string().uuid(), role: z.enum(["OWNER", "MEMBER"]), permission: z.enum(["VIEW", "EDIT"]), status: z.enum(["ACTIVE", "LEFT", "REMOVED"]) }).strict();
 export type Member = z.infer<typeof memberSchema>;
+
+export const tripMemoryPhotoSchema = z.object({
+  id: z.string().uuid(),
+  memoryId: z.string().uuid(),
+  photoUrl: z.string(),
+  caption: z.string().nullable().optional(),
+  takenAt: z.string(),
+  createdAt: z.string(),
+});
+
+export const tripMemorySchema = z.object({
+  id: z.string().uuid(),
+  tripId: z.string().uuid(),
+  title: z.string(),
+  summary: z.string().nullable(),
+  coverPhotoUrl: z.string().nullable().optional(),
+  visibility: z.enum(["PRIVATE", "UNLISTED", "PUBLISHED"]),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+  photos: z.array(tripMemoryPhotoSchema).default([]),
+});
+
+export type TripMemory = z.infer<typeof tripMemorySchema>;
+export type TripMemoryPhoto = z.infer<typeof tripMemoryPhotoSchema>;
+
+export const tripExpenseSchema = z.object({
+  id: z.string().uuid(),
+  tripId: z.string().uuid(),
+  payerId: z.string().uuid(),
+  amount: z.number().positive(),
+  currency: z.string(),
+  category: z.enum(["FOOD", "STAY", "FUEL", "ACTIVITY", "OTHER"]),
+  description: z.string(),
+  createdAt: z.string(),
+});
+
+export type TripExpense = z.infer<typeof tripExpenseSchema>;
+
+export const tripLiveLocationSchema = z.object({
+  userId: z.string().uuid(),
+  latitude: z.number(),
+  longitude: z.number(),
+  sharingActive: z.boolean(),
+  updatedAt: z.string(),
+});
+
+export type TripLiveLocation = z.infer<typeof tripLiveLocationSchema>;
+

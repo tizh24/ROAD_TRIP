@@ -358,6 +358,119 @@ export class TripUseCases {
       throw mapTripApplicationError(error);
     }
   }
+
+  async updateStatus(
+    actorId: string,
+    tripId: string,
+    status: 'PLANNING' | 'ONGOING' | 'COMPLETED' | 'CANCELLED',
+  ): Promise<{ status: string; version: number }> {
+    try {
+      await this.authorization.assertCanManageTrip(tripId, actorId);
+      return await this.trips.updateStatus(tripId, status, actorId);
+    } catch (error) {
+      throw mapTripApplicationError(error);
+    }
+  }
+
+  async getMemory(actorId: string, tripId: string) {
+    try {
+      await this.authorization.assertCanRead(tripId, actorId);
+      const memory = await this.trips.getMemory(tripId);
+      if (!memory) {
+        // Auto-initialize if trip exists and user can read
+        const trip = await this.trips.getByIdForUser(tripId, actorId);
+        if (!trip) throw new TripApplicationError('TRIP_NOT_FOUND', 'Trip does not exist.');
+        return await this.trips.updateMemory(tripId, {
+          title: trip.title,
+          summary: trip.description,
+          visibility: 'PRIVATE',
+        });
+      }
+      return memory;
+    } catch (error) {
+      throw mapTripApplicationError(error);
+    }
+  }
+
+  async updateMemory(
+    actorId: string,
+    tripId: string,
+    data: { title: string; summary: string | null; visibility: 'PRIVATE' | 'UNLISTED' | 'PUBLISHED'; coverPhotoUrl?: string | null },
+  ) {
+    try {
+      await this.authorization.assertCanManageTrip(tripId, actorId);
+      return await this.trips.updateMemory(tripId, data);
+    } catch (error) {
+      throw mapTripApplicationError(error);
+    }
+  }
+
+  async addMemoryPhoto(
+    actorId: string,
+    tripId: string,
+    photo: { photoUrl: string; caption?: string | null },
+  ) {
+    try {
+      await this.authorization.assertCanEditItinerary(tripId, actorId);
+      const memory = await this.getMemory(actorId, tripId);
+      return await this.trips.addMemoryPhoto(memory.id, photo);
+    } catch (error) {
+      throw mapTripApplicationError(error);
+    }
+  }
+
+  async listExpenses(actorId: string, tripId: string) {
+    try {
+      await this.authorization.assertCanRead(tripId, actorId);
+      return await this.trips.listExpenses(tripId);
+    } catch (error) {
+      throw mapTripApplicationError(error);
+    }
+  }
+
+  async addExpense(
+    actorId: string,
+    tripId: string,
+    expense: { amount: number; currency?: string; category: string; description: string },
+  ) {
+    try {
+      await this.authorization.assertCanEditItinerary(tripId, actorId);
+      return await this.trips.addExpense(tripId, actorId, expense);
+    } catch (error) {
+      throw mapTripApplicationError(error);
+    }
+  }
+
+  async deleteExpense(actorId: string, tripId: string, expenseId: string) {
+    try {
+      await this.authorization.assertCanEditItinerary(tripId, actorId);
+      await this.trips.deleteExpense(tripId, expenseId);
+    } catch (error) {
+      throw mapTripApplicationError(error);
+    }
+  }
+
+  async updateLiveLocation(
+    actorId: string,
+    tripId: string,
+    data: { latitude: number; longitude: number; sharingActive?: boolean; consentGiven?: boolean },
+  ) {
+    try {
+      await this.authorization.assertCanRead(tripId, actorId);
+      return await this.trips.updateLiveLocation(tripId, actorId, data);
+    } catch (error) {
+      throw mapTripApplicationError(error);
+    }
+  }
+
+  async listActiveLiveLocations(actorId: string, tripId: string) {
+    try {
+      await this.authorization.assertCanRead(tripId, actorId);
+      return await this.trips.listActiveLiveLocations(tripId);
+    } catch (error) {
+      throw mapTripApplicationError(error);
+    }
+  }
 }
 
 function normalizeDescription(value: string | null | undefined): string | null {

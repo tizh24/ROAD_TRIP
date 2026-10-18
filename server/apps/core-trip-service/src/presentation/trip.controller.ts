@@ -425,6 +425,201 @@ export class TripController {
       throw responseError(error);
     }
   }
+
+  @Patch(':tripId/status')
+  async updateStatus(
+    @Param('tripId') tripId: string,
+    @Body() body: unknown,
+    @Headers('x-roadtrip-user-id') actorId: string | undefined,
+  ) {
+    try {
+      const input = object(body);
+      const st = string(input.status, 'status');
+      if (st !== 'PLANNING' && st !== 'ONGOING' && st !== 'COMPLETED' && st !== 'CANCELLED') {
+        throw new TripApplicationError('VALIDATION_FAILED', 'Invalid trip status.');
+      }
+      return success(
+        await this.trips.updateStatus(
+          requiredHeader(actorId, 'x-roadtrip-user-id'),
+          tripId,
+          st,
+        ),
+      );
+    } catch (error) {
+      throw responseError(error);
+    }
+  }
+
+  @Get(':tripId/memory')
+  async getMemory(
+    @Param('tripId') tripId: string,
+    @Headers('x-roadtrip-user-id') actorId: string | undefined,
+  ) {
+    try {
+      return success(
+        await this.trips.getMemory(
+          requiredHeader(actorId, 'x-roadtrip-user-id'),
+          tripId,
+        ),
+      );
+    } catch (error) {
+      throw responseError(error);
+    }
+  }
+
+  @Put(':tripId/memory')
+  async updateMemory(
+    @Param('tripId') tripId: string,
+    @Body() body: unknown,
+    @Headers('x-roadtrip-user-id') actorId: string | undefined,
+  ) {
+    try {
+      const input = object(body);
+      const vis = string(input.visibility, 'visibility');
+      if (vis !== 'PRIVATE' && vis !== 'UNLISTED' && vis !== 'PUBLISHED') {
+        throw new TripApplicationError('VALIDATION_FAILED', 'Invalid memory visibility.');
+      }
+      return success(
+        await this.trips.updateMemory(
+          requiredHeader(actorId, 'x-roadtrip-user-id'),
+          tripId,
+          {
+            title: string(input.title, 'title'),
+            summary: nullableString(input.summary, 'summary'),
+            visibility: vis,
+            coverPhotoUrl: optionalString(input.coverPhotoUrl, 'coverPhotoUrl'),
+          },
+        ),
+      );
+    } catch (error) {
+      throw responseError(error);
+    }
+  }
+
+  @Post(':tripId/memory/photos')
+  async addMemoryPhoto(
+    @Param('tripId') tripId: string,
+    @Body() body: unknown,
+    @Headers('x-roadtrip-user-id') actorId: string | undefined,
+  ) {
+    try {
+      const input = object(body);
+      return success(
+        await this.trips.addMemoryPhoto(
+          requiredHeader(actorId, 'x-roadtrip-user-id'),
+          tripId,
+          {
+            photoUrl: string(input.photoUrl, 'photoUrl'),
+            caption: optionalString(input.caption, 'caption'),
+          },
+        ),
+      );
+    } catch (error) {
+      throw responseError(error);
+    }
+  }
+
+  @Get(':tripId/expenses')
+  async listExpenses(
+    @Param('tripId') tripId: string,
+    @Headers('x-roadtrip-user-id') actorId: string | undefined,
+  ) {
+    try {
+      return success(
+        await this.trips.listExpenses(
+          requiredHeader(actorId, 'x-roadtrip-user-id'),
+          tripId,
+        ),
+      );
+    } catch (error) {
+      throw responseError(error);
+    }
+  }
+
+  @Post(':tripId/expenses')
+  async addExpense(
+    @Param('tripId') tripId: string,
+    @Body() body: unknown,
+    @Headers('x-roadtrip-user-id') actorId: string | undefined,
+  ) {
+    try {
+      const input = object(body);
+      return success(
+        await this.trips.addExpense(
+          requiredHeader(actorId, 'x-roadtrip-user-id'),
+          tripId,
+          {
+            amount: number(input.amount, 'amount'),
+            currency: optionalString(input.currency, 'currency'),
+            category: string(input.category, 'category'),
+            description: string(input.description, 'description'),
+          },
+        ),
+      );
+    } catch (error) {
+      throw responseError(error);
+    }
+  }
+
+  @Delete(':tripId/expenses/:expenseId')
+  async deleteExpense(
+    @Param('tripId') tripId: string,
+    @Param('expenseId') expenseId: string,
+    @Headers('x-roadtrip-user-id') actorId: string | undefined,
+  ) {
+    try {
+      await this.trips.deleteExpense(
+        requiredHeader(actorId, 'x-roadtrip-user-id'),
+        tripId,
+        expenseId,
+      );
+      return success({});
+    } catch (error) {
+      throw responseError(error);
+    }
+  }
+
+  @Post(':tripId/location')
+  async updateLiveLocation(
+    @Param('tripId') tripId: string,
+    @Body() body: unknown,
+    @Headers('x-roadtrip-user-id') actorId: string | undefined,
+  ) {
+    try {
+      const input = object(body);
+      return success(
+        await this.trips.updateLiveLocation(
+          requiredHeader(actorId, 'x-roadtrip-user-id'),
+          tripId,
+          {
+            latitude: number(input.latitude, 'latitude'),
+            longitude: number(input.longitude, 'longitude'),
+            sharingActive: typeof input.sharingActive === 'boolean' ? input.sharingActive : true,
+            consentGiven: typeof input.consentGiven === 'boolean' ? input.consentGiven : true,
+          },
+        ),
+      );
+    } catch (error) {
+      throw responseError(error);
+    }
+  }
+
+  @Get(':tripId/locations')
+  async listActiveLocations(
+    @Param('tripId') tripId: string,
+    @Headers('x-roadtrip-user-id') actorId: string | undefined,
+  ) {
+    try {
+      return success(
+        await this.trips.listActiveLiveLocations(
+          requiredHeader(actorId, 'x-roadtrip-user-id'),
+          tripId,
+        ),
+      );
+    } catch (error) {
+      throw responseError(error);
+    }
+  }
 }
 @Controller('api/v1/trip-invitations')
 @UseGuards(InternalServiceGuard)

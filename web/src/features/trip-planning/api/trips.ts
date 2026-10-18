@@ -78,3 +78,56 @@ export function listMembers(tripId: string) { return gatewayClient.request(`trip
 export function changeMemberPermission(tripId: string, userId: string, permission: "VIEW" | "EDIT") { return gatewayClient.request(`trips/${encodeURIComponent(tripId)}/members/${encodeURIComponent(userId)}`, z.object({}).strict(), { method: "PATCH", body: { permission } }); }
 export function removeMember(tripId: string, userId: string) { return gatewayClient.request(`trips/${encodeURIComponent(tripId)}/members/${encodeURIComponent(userId)}`, z.object({}).strict(), { method: "DELETE" }); }
 export function revokeInvitation(tripId: string, invitationId: string) { return gatewayClient.request(`trips/${encodeURIComponent(tripId)}/invitations/${encodeURIComponent(invitationId)}`, z.object({}).strict(), { method: "DELETE" }); }
+
+export function updateTripStatus(tripId: string, status: "PLANNING" | "ONGOING" | "COMPLETED" | "CANCELLED") {
+  return gatewayClient.request(`trips/${encodeURIComponent(tripId)}/status`, z.object({ status: z.string(), version: z.number() }).strict(), {
+    method: "PATCH",
+    body: { status },
+  });
+}
+
+export function getTripMemory(tripId: string) {
+  return gatewayClient.request(`trips/${encodeURIComponent(tripId)}/memory`, z.any());
+}
+
+export function updateTripMemory(tripId: string, data: { title: string; summary: string | null; visibility: "PRIVATE" | "UNLISTED" | "PUBLISHED"; coverPhotoUrl?: string | null }) {
+  return gatewayClient.request(`trips/${encodeURIComponent(tripId)}/memory`, z.any(), {
+    method: "PUT",
+    body: data,
+  });
+}
+
+export function addTripMemoryPhoto(tripId: string, photo: { photoUrl: string; caption?: string | null }) {
+  return gatewayClient.request(`trips/${encodeURIComponent(tripId)}/memory/photos`, z.any(), {
+    method: "POST",
+    body: photo,
+  });
+}
+
+export function listTripExpenses(tripId: string) {
+  return gatewayClient.request(`trips/${encodeURIComponent(tripId)}/expenses`, z.any());
+}
+
+export function addTripExpense(tripId: string, expense: { amount: number; currency?: string; category: string; description: string }) {
+  return gatewayClient.request(`trips/${encodeURIComponent(tripId)}/expenses`, z.any(), {
+    method: "POST",
+    body: expense,
+  });
+}
+
+export function deleteTripExpense(tripId: string, expenseId: string) {
+  return gatewayClient.request(`trips/${encodeURIComponent(tripId)}/expenses/${encodeURIComponent(expenseId)}`, z.object({}).strict(), {
+    method: "DELETE",
+  });
+}
+
+export function updateTripLocation(tripId: string, location: { latitude: number; longitude: number; sharingActive?: boolean; consentGiven?: boolean }) {
+  return gatewayClient.request(`trips/${encodeURIComponent(tripId)}/location`, z.any(), {
+    method: "POST",
+    body: location,
+  });
+}
+
+export function listTripLocations(tripId: string) {
+  return gatewayClient.request(`trips/${encodeURIComponent(tripId)}/locations`, z.any());
+}
