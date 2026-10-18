@@ -21,6 +21,8 @@ import { InvitationRepository } from './infrastructure/database/invitation.repos
 import { InvitationUseCases } from './application/trip/invitation.use-cases';
 import { CommunityRepository } from './infrastructure/database/community.repository';
 import { CommunityController } from './presentation/community.controller';
+import { PartnerRepository } from './infrastructure/database/partner.repository';
+import { PartnerController } from './presentation/partner.controller';
 
 @Module({
   imports: [
@@ -40,6 +42,7 @@ import { CommunityController } from './presentation/community.controller';
     InvitationController,
     MetricsController,
     CommunityController,
+    PartnerController,
   ],
   providers: [
     InternalServiceGuard,
@@ -102,6 +105,12 @@ import { CommunityController } from './presentation/community.controller';
       inject: [DatabaseService],
       useFactory: (database: DatabaseService) =>
         new CommunityRepository(database),
+    },
+    {
+      provide: PartnerRepository,
+      inject: [DatabaseService],
+      useFactory: (database: DatabaseService) =>
+        new PartnerRepository(database),
     },
   ],
 })

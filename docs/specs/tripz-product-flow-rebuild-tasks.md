@@ -46,7 +46,7 @@
 - [x] Slice 3: consented active-trip tracking, completion, memory, photos and
   expenses.
 - [x] Slice 4: community/profile/follow/collection/report/moderation.
-- [ ] Slice 5: partner application/listings/approval/admin capability console.
+- [x] Slice 5: partner application/listings/approval/admin capability console.
 - [ ] Slice 6: payment/order/webhook/travel-book fulfillment.
 
 ## 5. Quality gate for every slice

@@ -1,63 +1,19 @@
 import { z } from "zod";
-import { requestGateway } from "../../trip-planning/api/gateway-request.ts";
+import { requestGateway } from "@/features/trip-planning/api/gateway-request";
+import {
+  communityCommentSchema,
+  communityPostSchema,
+  userProfileSchema,
+  type CommunityComment,
+  type CommunityPost,
+  type UserProfile,
+} from "./community-model";
+
+export type { CommunityComment, CommunityPost, UserProfile };
 
 function gatewayUrl(): string {
   return process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:4100";
 }
-
-const communityPostSchema = z.object({
-  id: z.string().uuid(),
-  authorId: z.string().uuid(),
-  authorName: z.string(),
-  authorAvatar: z.string().nullable().optional(),
-  tripId: z.string().uuid().nullable().optional(),
-  tripTitle: z.string().nullable().optional(),
-  title: z.string(),
-  content: z.string(),
-  mediaUrls: z.array(z.string()),
-  locationName: z.string().nullable().optional(),
-  likeCount: z.number(),
-  saveCount: z.number(),
-  commentCount: z.number(),
-  hasLiked: z.boolean(),
-  hasSaved: z.boolean(),
-  createdAt: z.string(),
-});
-
-export type CommunityPost = z.infer<typeof communityPostSchema>;
-
-const communityCommentSchema = z.object({
-  id: z.string().uuid(),
-  postId: z.string().uuid(),
-  authorId: z.string().uuid(),
-  authorName: z.string(),
-  authorAvatar: z.string().nullable().optional(),
-  content: z.string(),
-  createdAt: z.string(),
-});
-
-export type CommunityComment = z.infer<typeof communityCommentSchema>;
-
-const userProfileSchema = z.object({
-  userId: z.string().uuid(),
-  fullName: z.string(),
-  avatarUrl: z.string().nullable().optional(),
-  followerCount: z.number(),
-  followingCount: z.number(),
-  isFollowing: z.boolean(),
-  publicTrips: z.array(
-    z.object({
-      id: z.string().uuid(),
-      title: z.string(),
-      startDate: z.string(),
-      endDate: z.string(),
-      budgetAmount: z.number(),
-      currency: z.string(),
-    }),
-  ),
-});
-
-export type UserProfile = z.infer<typeof userProfileSchema>;
 
 export async function fetchCommunityPosts(limit = 20, offset = 0): Promise<readonly CommunityPost[]> {
   return requestGateway(

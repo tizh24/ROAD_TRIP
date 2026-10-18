@@ -35,6 +35,16 @@ export class UpstreamController {
     'trip-invitations/{*path}',
     'community',
     'community/{*path}',
+    'partner',
+    'partner/{*path}',
+    'admin/partners/{*path}',
+    'admin/users',
+    'billing',
+    'billing/{*path}',
+    'payments',
+    'payments/{*path}',
+    'travel-books',
+    'travel-books/{*path}',
   ])
   async proxyCoreTrip(
     @Req() request: Request,
