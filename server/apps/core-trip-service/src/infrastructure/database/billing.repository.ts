@@ -12,7 +12,7 @@ export interface OrderRecord {
   status: 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED' | 'CANCELLED';
   paymentMethod: string | null;
   paymentRef: string | null;
-  metadata: Record<string, any>;
+  metadata: Record<string, unknown>;
   createdAt: string;
 }
 
@@ -33,7 +33,7 @@ export interface TravelBookRecord {
   } | null;
   status: 'DRAFT' | 'ORDERED' | 'PRINTING' | 'SHIPPED' | 'DELIVERED';
   orderId: string | null;
-  previewData: Record<string, any>;
+  previewData: Record<string, unknown>;
   createdAt: string;
 }
 
@@ -48,7 +48,7 @@ export class BillingRepository {
     title: string;
     amount: number;
     currency?: string;
-    metadata?: Record<string, any>;
+    metadata?: Record<string, unknown>;
   }): Promise<OrderRecord> {
     const res = await this.database.query<{
       id: string;
@@ -62,7 +62,7 @@ export class BillingRepository {
       status: string;
       payment_method: string | null;
       payment_ref: string | null;
-      metadata: Record<string, any>;
+      metadata: Record<string, unknown>;
       created_at: string;
     }>(
       `INSERT INTO billing_schema.orders
@@ -99,7 +99,10 @@ export class BillingRepository {
     };
   }
 
-  async getOrder(orderId: string, userId?: string): Promise<OrderRecord | null> {
+  async getOrder(
+    orderId: string,
+    userId?: string,
+  ): Promise<OrderRecord | null> {
     const query = userId
       ? `SELECT id, user_id, trip_id, item_type, item_id, title, amount, currency,
                 status, payment_method, payment_ref, metadata, created_at
@@ -122,7 +125,7 @@ export class BillingRepository {
       status: string;
       payment_method: string | null;
       payment_ref: string | null;
-      metadata: Record<string, any>;
+      metadata: Record<string, unknown>;
       created_at: string;
     }>(query, params);
 
@@ -158,7 +161,7 @@ export class BillingRepository {
       status: string;
       payment_method: string | null;
       payment_ref: string | null;
-      metadata: Record<string, any>;
+      metadata: Record<string, unknown>;
       created_at: string;
     }>(
       `SELECT id, user_id, trip_id, item_type, item_id, title, amount, currency,
@@ -192,7 +195,7 @@ export class BillingRepository {
     status: 'SUCCESS' | 'FAILED';
     signature: string;
     paymentMethod?: string;
-    payload?: Record<string, any>;
+    payload?: Record<string, unknown>;
   }) {
     // 1. Replay defense check
     const existing = await this.database.query<{ id: string }>(
@@ -219,8 +222,12 @@ export class BillingRepository {
     );
 
     // 3. Update order status idempotently
-    const targetOrderStatus = data.status === 'SUCCESS' ? 'COMPLETED' : 'FAILED';
-    const orderRes = await this.database.query<{ item_type: string; item_id: string }>(
+    const targetOrderStatus =
+      data.status === 'SUCCESS' ? 'COMPLETED' : 'FAILED';
+    const orderRes = await this.database.query<{
+      item_type: string;
+      item_id: string;
+    }>(
       `UPDATE billing_schema.orders
        SET status = $2,
            payment_method = COALESCE($3, payment_method),
@@ -228,11 +235,20 @@ export class BillingRepository {
            updated_at = now()
        WHERE id = $1
        RETURNING item_type, item_id`,
-      [data.orderId, targetOrderStatus, data.paymentMethod || 'VIETQR', data.transactionId],
+      [
+        data.orderId,
+        targetOrderStatus,
+        data.paymentMethod || 'VIETQR',
+        data.transactionId,
+      ],
     );
 
     const order = orderRes.rows[0];
-    if (order && data.status === 'SUCCESS' && order.item_type === 'TRAVEL_BOOK') {
+    if (
+      order &&
+      data.status === 'SUCCESS' &&
+      order.item_type === 'TRAVEL_BOOK'
+    ) {
       // Transition travel book to ORDERED
       await this.database.query(
         `UPDATE billing_schema.travel_books
@@ -250,7 +266,10 @@ export class BillingRepository {
     };
   }
 
-  async getOrCreateTravelBook(tripId: string, userId: string): Promise<TravelBookRecord> {
+  async getOrCreateTravelBook(
+    tripId: string,
+    userId: string,
+  ): Promise<TravelBookRecord> {
     const existing = await this.database.query<{
       id: string;
       trip_id: string;
@@ -260,10 +279,10 @@ export class BillingRepository {
       format: string;
       page_count: number;
       cover_photo_url: string | null;
-      shipping_address: any;
+      shipping_address: unknown;
       status: string;
       order_id: string | null;
-      preview_data: any;
+      preview_data: unknown;
       created_at: string;
     }>(
       `SELECT id, trip_id, user_id, title, subtitle, format, page_count,
@@ -284,10 +303,10 @@ export class BillingRepository {
         format: r.format as TravelBookRecord['format'],
         pageCount: r.page_count,
         coverPhotoUrl: r.cover_photo_url,
-        shippingAddress: r.shipping_address,
+        shippingAddress: shippingAddress(r.shipping_address),
         status: r.status as TravelBookRecord['status'],
         orderId: r.order_id,
-        previewData: r.preview_data || {},
+        previewData: recordOrEmpty(r.preview_data),
         createdAt: r.created_at,
       };
     }
@@ -300,7 +319,9 @@ export class BillingRepository {
     const tripTitle = tripRes.rows[0]?.title || 'Nhật Ký Hành Trình';
 
     // Retrieve cover photo from memory or photo table
-    const memRes = await this.database.query<{ cover_photo_url: string | null }>(
+    const memRes = await this.database.query<{
+      cover_photo_url: string | null;
+    }>(
       `SELECT cover_photo_url FROM trip_schema.trip_memories WHERE trip_id = $1`,
       [tripId],
     );
@@ -315,10 +336,10 @@ export class BillingRepository {
       format: string;
       page_count: number;
       cover_photo_url: string | null;
-      shipping_address: any;
+      shipping_address: unknown;
       status: string;
       order_id: string | null;
-      preview_data: any;
+      preview_data: unknown;
       created_at: string;
     }>(
       `INSERT INTO billing_schema.travel_books
@@ -345,10 +366,10 @@ export class BillingRepository {
       format: r.format as TravelBookRecord['format'],
       pageCount: r.page_count,
       coverPhotoUrl: r.cover_photo_url,
-      shippingAddress: r.shipping_address,
+      shippingAddress: shippingAddress(r.shipping_address),
       status: r.status as TravelBookRecord['status'],
       orderId: r.order_id,
-      previewData: r.preview_data || {},
+      previewData: recordOrEmpty(r.preview_data),
       createdAt: r.created_at,
     };
   }
@@ -363,10 +384,10 @@ export class BillingRepository {
       format: string;
       page_count: number;
       cover_photo_url: string | null;
-      shipping_address: any;
+      shipping_address: unknown;
       status: string;
       order_id: string | null;
-      preview_data: any;
+      preview_data: unknown;
       created_at: string;
     }>(
       `SELECT id, trip_id, user_id, title, subtitle, format, page_count,
@@ -386,10 +407,10 @@ export class BillingRepository {
       format: r.format as TravelBookRecord['format'],
       pageCount: r.page_count,
       coverPhotoUrl: r.cover_photo_url,
-      shippingAddress: r.shipping_address,
+      shippingAddress: shippingAddress(r.shipping_address),
       status: r.status as TravelBookRecord['status'],
       orderId: r.order_id,
-      previewData: r.preview_data || {},
+      previewData: recordOrEmpty(r.preview_data),
       createdAt: r.created_at,
     };
   }
@@ -401,11 +422,11 @@ export class BillingRepository {
       subtitle: string | null;
       format: 'DIGITAL_PDF' | 'SOFTCOVER' | 'HARDCOVER';
       coverPhotoUrl: string | null;
-      shippingAddress: any;
+      shippingAddress: unknown;
     }>,
   ) {
     const fields: string[] = [];
-    const values: any[] = [bookId];
+    const values: unknown[] = [bookId];
     let idx = 2;
 
     if (data.title !== undefined) {
@@ -441,4 +462,25 @@ export class BillingRepository {
     );
     return { id: bookId };
   }
+}
+
+function recordOrEmpty(value: unknown): Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : {};
+}
+
+function shippingAddress(value: unknown): TravelBookRecord['shippingAddress'] {
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+    return null;
+  }
+  const input = value as Record<string, unknown>;
+  return {
+    ...(typeof input.recipientName === 'string'
+      ? { recipientName: input.recipientName }
+      : {}),
+    ...(typeof input.phone === 'string' ? { phone: input.phone } : {}),
+    ...(typeof input.address === 'string' ? { address: input.address } : {}),
+    ...(typeof input.city === 'string' ? { city: input.city } : {}),
+  };
 }
