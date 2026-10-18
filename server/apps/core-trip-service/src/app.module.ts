@@ -19,6 +19,8 @@ import { OutboxMetrics } from './infrastructure/observability/outbox-metrics';
 import { MetricsController } from './presentation/metrics.controller';
 import { InvitationRepository } from './infrastructure/database/invitation.repository';
 import { InvitationUseCases } from './application/trip/invitation.use-cases';
+import { CommunityRepository } from './infrastructure/database/community.repository';
+import { CommunityController } from './presentation/community.controller';
 
 @Module({
   imports: [
@@ -33,7 +35,12 @@ import { InvitationUseCases } from './application/trip/invitation.use-cases';
       }),
     }),
   ],
-  controllers: [TripController, InvitationController, MetricsController],
+  controllers: [
+    TripController,
+    InvitationController,
+    MetricsController,
+    CommunityController,
+  ],
   providers: [
     InternalServiceGuard,
     OutboxMetrics,
@@ -89,6 +96,12 @@ import { InvitationUseCases } from './application/trip/invitation.use-cases';
         invitations: InvitationRepository,
         authorization: TripAuthorizationPolicy,
       ) => new InvitationUseCases(invitations, authorization),
+    },
+    {
+      provide: CommunityRepository,
+      inject: [DatabaseService],
+      useFactory: (database: DatabaseService) =>
+        new CommunityRepository(database),
     },
   ],
 })

@@ -29,7 +29,13 @@ export class UpstreamController {
     @Inject(GEO_LOCATION_UPSTREAM) private readonly geoLocation: UpstreamClient,
   ) {}
 
-  @All(['trips', 'trips/{*path}', 'trip-invitations/{*path}'])
+  @All([
+    'trips',
+    'trips/{*path}',
+    'trip-invitations/{*path}',
+    'community',
+    'community/{*path}',
+  ])
   async proxyCoreTrip(
     @Req() request: Request,
     @Res() response: Response,

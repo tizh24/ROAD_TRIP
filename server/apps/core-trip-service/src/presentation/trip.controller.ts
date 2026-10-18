@@ -487,7 +487,7 @@ export class TripController {
             title: string(input.title, 'title'),
             summary: nullableString(input.summary, 'summary'),
             visibility: vis,
-            coverPhotoUrl: optionalString(input.coverPhotoUrl, 'coverPhotoUrl'),
+            coverPhotoUrl: optionalString(input.coverPhotoUrl, 'coverPhotoUrl') ?? null,
           },
         ),
       );
@@ -510,7 +510,7 @@ export class TripController {
           tripId,
           {
             photoUrl: string(input.photoUrl, 'photoUrl'),
-            caption: optionalString(input.caption, 'caption'),
+            caption: optionalString(input.caption, 'caption') ?? null,
           },
         ),
       );
@@ -544,15 +544,16 @@ export class TripController {
   ) {
     try {
       const input = object(body);
+      const currency = optionalString(input.currency, 'currency');
       return success(
         await this.trips.addExpense(
           requiredHeader(actorId, 'x-roadtrip-user-id'),
           tripId,
           {
             amount: number(input.amount, 'amount'),
-            currency: optionalString(input.currency, 'currency'),
             category: string(input.category, 'category'),
             description: string(input.description, 'description'),
+            ...(currency !== undefined ? { currency } : {}),
           },
         ),
       );
