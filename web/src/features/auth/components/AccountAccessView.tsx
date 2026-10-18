@@ -5,12 +5,14 @@ import { useActionState, type ComponentProps } from "react";
 import { useFormStatus } from "react-dom";
 import { ArrowLeft, CheckCircle2, KeyRound, LoaderCircle, UserPlus } from "lucide-react";
 import {
-  initialAuthFormState,
   requestPasswordReset,
   signUp,
   updatePassword,
-  type AuthFormState,
 } from "@/features/auth/actions";
+import {
+  initialAuthFormState,
+  type AuthFormState,
+} from "@/features/auth/form-state";
 
 type AccessMode = "signup" | "forgot-password" | "reset-password";
 

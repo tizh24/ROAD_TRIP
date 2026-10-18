@@ -76,7 +76,14 @@ describe('TripUseCases', () => {
     const trips = { clonePublished: jest.fn().mockResolvedValue(cloned) };
     const useCases = new TripUseCases(trips as never, {} as never, new TripAuthorizationPolicy(new OwnerReader()));
 
-    await expect(useCases.clonePublished(actorId, tripId, 'clone-1')).resolves.toEqual(cloned);
-    expect(trips.clonePublished).toHaveBeenCalledWith(tripId, actorId, expect.any(String));
+    await expect(
+      useCases.clonePublished(actorId, tripId, 'clone-1', 'corr-1'),
+    ).resolves.toEqual(cloned);
+    expect(trips.clonePublished).toHaveBeenCalledWith(
+      tripId,
+      actorId,
+      expect.any(String),
+      'corr-1',
+    );
   });
 });

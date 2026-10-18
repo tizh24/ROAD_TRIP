@@ -182,7 +182,20 @@ export class TripController {
     @Headers('x-roadtrip-user-id') actorId: string | undefined,
     @Headers('idempotency-key') idempotencyKey: string | undefined,
   ) {
-    try { return success(toTripDetailDto(await this.trips.clonePublished(requiredHeader(actorId, 'x-roadtrip-user-id'), tripId, idempotencyKey))); } catch (error) { throw responseError(error); }
+    try {
+      return success(
+        toTripDetailDto(
+          await this.trips.clonePublished(
+            requiredHeader(actorId, 'x-roadtrip-user-id'),
+            tripId,
+            idempotencyKey,
+            correlationId(),
+          ),
+        ),
+      );
+    } catch (error) {
+      throw responseError(error);
+    }
   }
 
   @Get()

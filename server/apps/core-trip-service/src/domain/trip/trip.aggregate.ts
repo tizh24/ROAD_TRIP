@@ -33,6 +33,19 @@ export interface TripCreatedDomainEvent {
   };
 }
 
+export interface TripClonedDomainEvent {
+  readonly type: 'TripCloned';
+  readonly eventId: string;
+  readonly aggregateId: TripId;
+  readonly occurredAt: Date;
+  readonly correlationId: string;
+  readonly payload: {
+    readonly tripId: TripId;
+    readonly sourceTripId: string;
+    readonly ownerId: UserId;
+  };
+}
+
 export interface CreateTripInput {
   readonly id: TripId;
   readonly ownerId: UserId;

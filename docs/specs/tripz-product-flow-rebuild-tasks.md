@@ -17,22 +17,22 @@
 - [ ] Implement capability resolver in Gateway/owning services; remove exact
   role checks where capability checks are required.
 - [ ] Add standard unauthorized, forbidden and concealed-not-found responses.
-- [ ] Publish OpenAPI schemas/error contracts for clone, public trip and planner
+- [x] Publish OpenAPI schemas/error contracts for clone, public trip and planner
   routes before controllers are written.
 
 ## 2. Slice 1 — discovery → clone → planner
 
-- [ ] Specify Core Trip publication, template and clone invariants.
-- [ ] Add trip-schema migration and repository/domain tests.
-- [ ] Implement idempotent clone command and `TripCloned` outbox event.
-- [ ] Create public-trip/read-model query and enforce public/unlisted/private
+- [x] Specify Core Trip publication, template and clone invariants.
+- [x] Add trip-schema migration and repository/domain tests.
+- [x] Implement idempotent clone command and `TripCloned` outbox event.
+- [x] Create public-trip/read-model query and enforce public/unlisted/private
   visibility.
-- [ ] Add Geo-backed explore filters, pagination and marker projection.
-- [ ] Build `/dashboard`, `/planner/new`, canonical `/planner/:id` and legacy
+- [x] Add Geo-backed explore filters, pagination and marker projection.
+- [x] Build `/dashboard`, `/planner/new`, canonical `/planner/:id` and legacy
   redirect compatibility.
-- [ ] Make landing, explore and public trip consume only live/seeded records.
-- [ ] Add accessible login gate with safe return and authenticated clone action.
-- [ ] Run guest/owner/editor/viewer/unrelated-user E2E matrix.
+- [x] Make landing, explore and public trip consume only live/seeded records.
+- [x] Add accessible login gate with safe return and authenticated clone action.
+- [x] Run guest/owner/editor/viewer/unrelated-user E2E matrix.
 
 ## 3. Slice 2 — collaboration
 

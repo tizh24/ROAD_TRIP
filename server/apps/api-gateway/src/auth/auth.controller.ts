@@ -15,7 +15,8 @@ export class AuthController {
     return {
       data: {
         id: user.userId,
-        role: user.role,
+        authRole: user.authRole,
+        platformRole: user.platformRole,
         ...(user.email ? { email: user.email } : {}),
       },
       meta: { correlationId: getCorrelationId() ?? randomUUID() },

@@ -31,7 +31,6 @@ export class GatewayApiError extends Error {
 
 export interface GatewayRequestOptions {
   readonly baseUrl: string;
-  readonly accessToken: string;
   readonly path: string;
   readonly method?: "GET" | "POST" | "PATCH" | "PUT" | "DELETE";
   readonly body?: unknown;
@@ -48,9 +47,14 @@ export async function requestGateway<T extends z.ZodType>(
 ): Promise<z.infer<T>> {
   const correlationId = options.correlationId ?? crypto.randomUUID();
   const headers = new Headers({
-    authorization: `Bearer ${options.accessToken}`,
     "x-correlation-id": correlationId,
   });
+  if (isMutation(options.method)) {
+    const csrf = readCookie(
+      process.env.NEXT_PUBLIC_CSRF_COOKIE_NAME ?? "rt_csrf",
+    );
+    if (csrf) headers.set("x-csrf-token", csrf);
+  }
   if (options.body !== undefined)
     headers.set("content-type", "application/json");
   if (options.idempotencyKey)
@@ -65,6 +69,7 @@ export async function requestGateway<T extends z.ZodType>(
       {
         method: options.method ?? "GET",
         headers,
+        credentials: "include",
         signal: options.signal,
         ...(options.body === undefined
           ? {}
@@ -102,6 +107,17 @@ export async function requestGateway<T extends z.ZodType>(
       correlationId,
     );
   return (parsed.data as { data: z.infer<T> }).data;
+}
+
+function isMutation(method: GatewayRequestOptions["method"]): boolean {
+  return method !== undefined && method !== "GET";
+}
+
+function readCookie(name: string): string | undefined {
+  if (typeof document === "undefined") return undefined;
+  const prefix = `${encodeURIComponent(name)}=`;
+  const entry = document.cookie.split("; ").find((cookie) => cookie.startsWith(prefix));
+  return entry ? decodeURIComponent(entry.slice(prefix.length)) : undefined;
 }
 
 export function normalizeBaseUrl(value: string): string {

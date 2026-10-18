@@ -6,6 +6,7 @@ import type { AddressInfo } from 'node:net';
 import request from 'supertest';
 import { App } from 'supertest/types';
 import { AppModule } from '../src/app.module';
+import { PLATFORM_PROFILE_STORE } from '../src/auth/auth.types';
 import { RATE_LIMIT_STORE } from '../src/security/rate-limit.types';
 import { FakeRateLimitStore } from './fake-rate-limit.store';
 import { setGatewayTestEnv } from './test-env';
@@ -51,6 +52,18 @@ describe('Gateway authentication (e2e)', () => {
     })
       .overrideProvider(RATE_LIMIT_STORE)
       .useValue(rateLimitStore)
+      .overrideProvider(PLATFORM_PROFILE_STORE)
+      .useValue({
+        getRequired: () =>
+          Promise.resolve({
+            id: userId,
+            email: 'traveler@example.com',
+            fullName: 'Traveler',
+            avatarUrl: null,
+            role: 'USER',
+            status: 'ACTIVE',
+          }),
+      })
       .compile();
     app = moduleFixture.createNestApplication();
     app.use(correlationIdMiddleware());
@@ -95,7 +108,8 @@ describe('Gateway authentication (e2e)', () => {
       .expect({
         data: {
           id: userId,
-          role: 'authenticated',
+          authRole: 'authenticated',
+          platformRole: 'USER',
           email: 'traveler@example.com',
         },
         meta: { correlationId: 'auth-e2e-valid' },

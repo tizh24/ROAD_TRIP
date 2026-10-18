@@ -1,5 +1,5 @@
-import { redirect } from "next/navigation";
+import CreateTripForm from "@/features/trip-planning/components/CreateTripForm";
 
 export default function NewPlannerPage() {
-  redirect("/trips/new");
+  return <CreateTripForm />;
 }

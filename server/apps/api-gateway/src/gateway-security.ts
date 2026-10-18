@@ -32,6 +32,7 @@ export function configureGatewaySecurity(
       'Idempotency-Key',
       'If-Match',
       'X-Correlation-ID',
+      'X-CSRF-Token',
     ],
     exposedHeaders: [
       'RateLimit-Limit',

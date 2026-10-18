@@ -94,7 +94,7 @@ describe('SupabaseJwtVerifier', () => {
 
     expect(context).toEqual({
       userId,
-      role: 'authenticated',
+      authRole: 'authenticated',
       email: 'traveler@example.com',
       sessionId: 'c6118a53-c845-4026-9970-d63f332b32ba',
     });
@@ -117,6 +117,31 @@ describe('SupabaseJwtVerifier', () => {
     await expect(verifier.verify(invalid)).rejects.toBeInstanceOf(
       InvalidAuthenticationTokenError,
     );
+  });
+
+  it('verifies a legacy HS256 token only when its server-side secret is configured', async () => {
+    const jose = await import('jose');
+    const secret = 'a-test-only-legacy-supabase-jwt-secret';
+    const token = await new jose.SignJWT({ role: 'authenticated' })
+      .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
+      .setIssuer(issuer)
+      .setAudience(audience)
+      .setSubject(userId)
+      .setIssuedAt()
+      .setExpirationTime('5m')
+      .sign(new TextEncoder().encode(secret));
+
+    await expect(createVerifier().verify(token)).rejects.toBeInstanceOf(
+      InvalidAuthenticationTokenError,
+    );
+    await expect(
+      new SupabaseJwtVerifier({
+        jwksUrl,
+        issuer,
+        audience,
+        jwtSecret: secret,
+      }).verify(token),
+    ).resolves.toMatchObject({ userId, authRole: 'authenticated' });
   });
 
   it('caches JWKS and reloads it when a rotated kid appears', async () => {

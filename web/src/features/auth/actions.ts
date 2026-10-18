@@ -3,17 +3,11 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
-import { headers } from "next/headers";
 import { getSafeInternalPath } from "@/lib/auth/route-protection";
-import { createClient } from "@/lib/supabase/server";
+import { gatewayMutation, gatewayProfileMutation } from "@/lib/api/gateway-server";
+import type { AuthFormState } from "@/features/auth/form-state";
 
 export type LoginState = { error: string | null };
-export type AuthFormState = {
-  error: string | null;
-  message: string | null;
-};
-
-export const initialAuthFormState: AuthFormState = { error: null, message: null };
 
 function getText(formData: FormData, name: string) {
   const value = formData.get(name);
@@ -27,21 +21,6 @@ function getPassword(formData: FormData, name: string) {
 
 function isValidEmail(email: string) {
   return /^\S+@\S+\.\S+$/.test(email);
-}
-
-async function getAuthRedirectUrl(nextPath: string) {
-  const requestHeaders = await headers();
-  const origin = requestHeaders.get("origin") ?? requestHeaders.get("x-forwarded-host");
-  const protocol = requestHeaders.get("x-forwarded-proto") ?? "https";
-
-  if (!origin) return undefined;
-
-  const normalizedOrigin = origin.startsWith("http") ? origin : `${protocol}://${origin}`;
-  try {
-    return new URL(`/auth/callback?next=${encodeURIComponent(nextPath)}`, normalizedOrigin).toString();
-  } catch {
-    return undefined;
-  }
 }
 
 export async function login(
@@ -60,13 +39,11 @@ export async function login(
     return { error: "Email hoặc mật khẩu không hợp lệ." };
   }
 
-  const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithPassword({
+  const result = await gatewayMutation<{ authenticated: boolean }>("/auth/login", {
     email: normalizedEmail,
     password,
   });
-
-  if (error) {
+  if (result.error || !result.data?.authenticated) {
     return { error: "Không thể đăng nhập. Hãy kiểm tra lại email và mật khẩu." };
   }
 
@@ -74,7 +51,7 @@ export async function login(
   (await cookies()).set("rt_login_completed", "password", {
     path: "/", sameSite: "lax", secure: process.env.NODE_ENV === "production", maxAge: 120,
   });
-  redirect(getSafeInternalPath(formData.get("next")) ?? "/profile");
+  redirect(getSafeInternalPath(formData.get("next")) ?? "/dashboard");
 }
 
 export async function signUp(
@@ -99,23 +76,12 @@ export async function signUp(
     return { error: "Xác nhận mật khẩu chưa khớp.", message: null };
   }
 
-  const supabase = await createClient();
-  const { data, error } = await supabase.auth.signUp({
+  const result = await gatewayMutation<{ confirmationRequired: boolean }>("/auth/register", {
     email,
     password,
-    options: {
-      data: { full_name: fullName },
-      emailRedirectTo: await getAuthRedirectUrl(
-        getSafeInternalPath(formData.get("next")) ?? "/profile",
-      ),
-    },
+    fullName,
   });
-
-  if (error) {
-    return { error: "Không thể tạo tài khoản lúc này. Vui lòng thử lại sau.", message: null };
-  }
-
-  if (data.session) {
+  if (result.data && !result.data.confirmationRequired) {
     revalidatePath("/", "layout");
     redirect(getSafeInternalPath(formData.get("next")) ?? "/profile");
   }
@@ -136,14 +102,7 @@ export async function requestPasswordReset(
     return { error: "Vui lòng nhập một địa chỉ email hợp lệ.", message: null };
   }
 
-  const supabase = await createClient();
-  const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: await getAuthRedirectUrl("/reset-password"),
-  });
-
-  if (error) {
-    return { error: "Không thể gửi hướng dẫn lúc này. Vui lòng thử lại sau.", message: null };
-  }
+  await gatewayMutation<{ accepted: boolean }>("/auth/password/reset", { email });
 
   return {
     error: null,
@@ -165,14 +124,8 @@ export async function updatePassword(
     return { error: "Xác nhận mật khẩu chưa khớp.", message: null };
   }
 
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) {
-    return { error: "Liên kết đặt lại mật khẩu đã hết hạn. Vui lòng yêu cầu liên kết mới.", message: null };
-  }
-
-  const { error } = await supabase.auth.updateUser({ password });
-  if (error) {
+  const result = await gatewayMutation<{ changed: boolean }>("/auth/password/change", { password });
+  if (result.error || !result.data?.changed) {
     return { error: "Không thể cập nhật mật khẩu. Vui lòng yêu cầu một liên kết mới.", message: null };
   }
 
@@ -188,18 +141,8 @@ export async function updateProfileName(
     return { error: "Tên hiển thị cần có từ 2 đến 80 ký tự.", message: null };
   }
 
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) {
-    return { error: "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.", message: null };
-  }
-
-  const { error } = await supabase
-    .from("user_profiles")
-    .update({ full_name: fullName, updated_at: new Date().toISOString() })
-    .eq("id", user.id);
-
-  if (error) {
+  const result = await gatewayProfileMutation({ fullName });
+  if (result.error) {
     return { error: "Không thể lưu tên hiển thị lúc này. Vui lòng thử lại.", message: null };
   }
 

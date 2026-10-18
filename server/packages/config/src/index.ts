@@ -6,6 +6,9 @@ const url = z.url();
 const positiveInteger = z.coerce.number().int().positive();
 const nonNegativeInteger = z.coerce.number().int().nonnegative();
 const requestBodyLimit = positiveInteger.max(10_485_760);
+const boolean = z
+  .enum(['true', 'false'])
+  .transform((value) => value === 'true');
 const corsAllowedOrigins = z
   .string()
   .min(1)
@@ -39,6 +42,11 @@ const authShape = {
   SUPABASE_JWKS_URL: url,
   SUPABASE_JWT_ISSUER: url,
   SUPABASE_JWT_AUDIENCE: z.string().min(1).default('authenticated'),
+  // Required only by Supabase projects that still issue legacy HS256 access tokens.
+  // Keep it server-only; modern asymmetric signing uses the JWKS endpoint instead.
+  SUPABASE_JWT_SECRET: z.string().min(32).optional(),
+  SUPABASE_PUBLISHABLE_KEY: z.string().min(1),
+  SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
 };
 
 const redisShape = {
@@ -77,6 +85,13 @@ export const gatewayConfigSchema = z.object({
   RATE_LIMIT_WINDOW_MS: positiveInteger.default(60_000),
   RATE_LIMIT_MAX: positiveInteger.default(100),
   RATE_LIMIT_AUTHENTICATED_MAX: positiveInteger.default(300),
+  AUTH_COOKIE_DOMAIN: z.string().min(1).optional(),
+  AUTH_COOKIE_SECURE: boolean.default(true),
+  AUTH_ACCESS_COOKIE_NAME: z.string().min(1).default('__Secure-rt_access'),
+  AUTH_REFRESH_COOKIE_NAME: z.string().min(1).default('__Secure-rt_refresh'),
+  CSRF_COOKIE_NAME: z.string().min(1).default('__Secure-rt_csrf'),
+  AUTH_ACCESS_COOKIE_MAX_AGE_SECONDS: positiveInteger.default(900),
+  AUTH_REFRESH_COOKIE_MAX_AGE_SECONDS: positiveInteger.default(2_592_000),
 });
 
 export const coreTripConfigSchema = z.object({

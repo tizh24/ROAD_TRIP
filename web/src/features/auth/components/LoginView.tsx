@@ -11,6 +11,7 @@ const initialState: LoginState = { error: null };
 const errorMessages = {
   callback: "Liên kết đăng nhập không hợp lệ hoặc đã hết hạn. Vui lòng thử lại.",
   session_expired: "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại để tiếp tục.",
+  auth_unavailable: "Không thể xác minh tài khoản lúc này. Vui lòng kiểm tra cấu hình máy chủ rồi thử lại.",
 } as const;
 
 function SubmitButton() {
@@ -38,7 +39,7 @@ function SubmitButton() {
 }
 
 interface LoginViewProps {
-  authError?: "callback" | "session_expired";
+  authError?: "callback" | "session_expired" | "auth_unavailable";
   nextPath?: string;
 }
 

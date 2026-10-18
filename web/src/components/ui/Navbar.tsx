@@ -4,9 +4,14 @@ import CTAButton from "./CTAButton";
 import SearchBar from "./SearchBar";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Compass, Map, Users, Plus, Menu, X, LogIn } from "lucide-react";
+import { Compass, Map, Users, Plus, Menu, X, LogIn, LogOut, UserRound } from "lucide-react";
 
-export default function Navbar() {
+type NavbarUser = {
+  email?: string;
+  platformRole?: "USER" | "PARTNER" | "ADMIN";
+};
+
+export default function Navbar({ user }: { user?: NavbarUser }) {
   const pathname = usePathname() || "";
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -54,7 +59,7 @@ export default function Navbar() {
 
         {/* Right Side: CTA Button */}
         <div className="flex items-center gap-4">
-          <Link href="/trips/new">
+          <Link href="/planner/new">
             <CTAButton 
               variant="primary" 
               size="sm" 
@@ -64,9 +69,22 @@ export default function Navbar() {
             </CTAButton>
           </Link>
           
-          <Link href="/login" className="focus-ring hidden shrink-0 items-center gap-2 rounded-lg border border-border-main bg-surface px-3 py-2 text-sm font-bold text-text-main hover:bg-background-warm sm:inline-flex" title="Đăng nhập">
-            <LogIn size={16} aria-hidden="true" /> Đăng nhập
-          </Link>
+          {user ? (
+            <>
+              <Link href="/profile" className="focus-ring hidden shrink-0 items-center gap-2 rounded-lg border border-border-main bg-surface px-3 py-2 text-sm font-bold text-text-main hover:bg-background-warm sm:inline-flex" title="Hồ sơ cá nhân">
+                <UserRound size={16} aria-hidden="true" /> Hồ sơ
+              </Link>
+              <form action="/auth/signout" method="post" className="hidden sm:block">
+                <button type="submit" className="focus-ring inline-flex shrink-0 items-center gap-2 rounded-lg px-2 py-2 text-sm font-bold text-text-sub hover:bg-background-warm hover:text-text-main" title="Đăng xuất">
+                  <LogOut size={16} aria-hidden="true" /> <span className="sr-only">Đăng xuất</span>
+                </button>
+              </form>
+            </>
+          ) : (
+            <Link href="/login" className="focus-ring hidden shrink-0 items-center gap-2 rounded-lg border border-border-main bg-surface px-3 py-2 text-sm font-bold text-text-main hover:bg-background-warm sm:inline-flex" title="Đăng nhập">
+              <LogIn size={16} aria-hidden="true" /> Đăng nhập
+            </Link>
+          )}
           <button
             type="button"
             className="focus-ring inline-flex h-11 w-11 items-center justify-center rounded-xl text-text-main hover:bg-background-warm lg:hidden"
@@ -92,7 +110,16 @@ export default function Navbar() {
               );
             })}
             <Link href="/trips/new" onClick={() => setMobileOpen(false)} className="focus-ring mt-2 flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-3 text-sm font-bold text-white"><Plus size={17} aria-hidden="true" />Tạo chuyến đi</Link>
-            <Link href="/login" onClick={() => setMobileOpen(false)} className="focus-ring mt-1 flex items-center justify-center gap-2 rounded-lg border border-border-main px-4 py-3 text-sm font-bold text-text-main hover:bg-background-warm"><LogIn size={17} aria-hidden="true" />Đăng nhập</Link>
+            {user ? (
+              <>
+                <Link href="/profile" onClick={() => setMobileOpen(false)} className="focus-ring mt-1 flex items-center justify-center gap-2 rounded-lg border border-border-main px-4 py-3 text-sm font-bold text-text-main hover:bg-background-warm"><UserRound size={17} aria-hidden="true" />Hồ sơ</Link>
+                <form action="/auth/signout" method="post" onSubmit={() => setMobileOpen(false)}>
+                  <button type="submit" className="focus-ring mt-1 flex w-full items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-bold text-text-sub hover:bg-background-warm hover:text-text-main"><LogOut size={17} aria-hidden="true" />Đăng xuất</button>
+                </form>
+              </>
+            ) : (
+              <Link href="/login" onClick={() => setMobileOpen(false)} className="focus-ring mt-1 flex items-center justify-center gap-2 rounded-lg border border-border-main px-4 py-3 text-sm font-bold text-text-main hover:bg-background-warm"><LogIn size={17} aria-hidden="true" />Đăng nhập</Link>
+            )}
           </nav>
         </div>
       ) : null}

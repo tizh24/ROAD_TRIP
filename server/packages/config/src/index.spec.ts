@@ -4,6 +4,8 @@ const validGatewayEnv = {
   SUPABASE_URL: 'http://127.0.0.1:54321',
   SUPABASE_JWKS_URL: 'http://127.0.0.1:54321/auth/v1/.well-known/jwks.json',
   SUPABASE_JWT_ISSUER: 'http://127.0.0.1:54321/auth/v1',
+  SUPABASE_PUBLISHABLE_KEY: 'test-publishable-key',
+  SUPABASE_SERVICE_ROLE_KEY: 'test-server-only-service-role-key',
   REDIS_URL: 'redis://127.0.0.1:6379',
   CORE_TRIP_SERVICE_URL: 'http://core-trip-service:4101',
   GEO_LOCATION_SERVICE_URL: 'http://geo-location-service:4102',

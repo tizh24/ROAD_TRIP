@@ -3,12 +3,11 @@ import test from "node:test";
 import { z } from "zod";
 import { GatewayApiError, requestGateway } from "./gateway-request.ts";
 
-test("adds authenticated mutation headers and validates the envelope", async () => {
+test("uses cookie credentials for mutations and validates the envelope", async () => {
   let captured;
   const result = await requestGateway(
     {
       baseUrl: "https://gateway.example/api/v1",
-      accessToken: "access-token",
       path: "trips",
       method: "POST",
       body: { title: "North loop" },
@@ -29,7 +28,8 @@ test("adds authenticated mutation headers and validates the envelope", async () 
     z.object({ id: z.string() }).strict(),
   );
   assert.deepEqual(result, { id: "trip-1" });
-  assert.equal(captured.headers.get("authorization"), "Bearer access-token");
+  assert.equal(captured.headers.get("authorization"), null);
+  assert.equal(captured.credentials, "include");
   assert.equal(captured.headers.get("idempotency-key"), "create-1");
   assert.equal(captured.headers.get("if-match"), "2");
 });
@@ -39,7 +39,6 @@ test("maps stable Gateway error envelopes", async () => {
     requestGateway(
       {
         baseUrl: "https://gateway.example/api/v1",
-        accessToken: "token",
         path: "trips",
         correlationId: "request-2",
         fetch: async () =>

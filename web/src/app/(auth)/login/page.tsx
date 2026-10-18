@@ -13,7 +13,8 @@ export default async function Page({ searchParams }: LoginPageProps) {
     <LoginView
       authError={
         params.authError === "callback" ||
-        params.authError === "session_expired"
+        params.authError === "session_expired" ||
+        params.authError === "auth_unavailable"
           ? params.authError
           : undefined
       }

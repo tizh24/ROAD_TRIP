@@ -1,8 +1,11 @@
 import { expect, test } from '@playwright/test';
 
 const protectedPaths = [
+  '/dashboard',
   '/trips',
+  '/planner/new',
   '/trips/new',
+  '/planner/00000000-0000-4000-8000-000000000001',
   '/trips/00000000-0000-4000-8000-000000000001?day=2',
   '/trip-invitations/example-token',
 ] as const;

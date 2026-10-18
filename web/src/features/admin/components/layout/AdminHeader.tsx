@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import { usePathname } from "next/navigation";
+import { LogOut } from "lucide-react";
 
 export default function AdminHeader() {
   const pathname = usePathname();
@@ -25,6 +26,11 @@ export default function AdminHeader() {
         <span className="rounded-full border border-border-main bg-background-warm px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-text-sub">
           Super Admin
         </span>
+        <form action="/auth/signout" method="post">
+          <button type="submit" className="focus-ring inline-flex h-10 w-10 items-center justify-center rounded-lg text-text-sub hover:bg-background-warm hover:text-text-main" title="Đăng xuất" aria-label="Đăng xuất">
+            <LogOut size={17} aria-hidden="true" />
+          </button>
+        </form>
       </div>
     </header>
   );

@@ -4,7 +4,8 @@ import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
 import Link from "next/link";
 import { CheckCircle2, LoaderCircle } from "lucide-react";
-import { initialAuthFormState, updateProfileName } from "@/features/auth/actions";
+import { updateProfileName } from "@/features/auth/actions";
+import { initialAuthFormState } from "@/features/auth/form-state";
 
 function SaveButton() {
   const { pending } = useFormStatus();

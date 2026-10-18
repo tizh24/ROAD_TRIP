@@ -70,7 +70,7 @@ export class UpstreamController {
         headers: {
           'x-correlation-id': getCorrelationId() ?? '',
           'x-roadtrip-user-id': user.userId,
-          'x-roadtrip-user-role': user.role,
+          'x-roadtrip-user-role': user.platformRole ?? user.authRole,
           ...(user.email ? { 'x-roadtrip-user-email': user.email } : {}),
           ...copyRequestHeaders(request),
         },

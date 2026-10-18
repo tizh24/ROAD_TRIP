@@ -1,5 +1,22 @@
 # Local platform infrastructure
 
+## Hosted dependencies without Docker
+
+When Docker Desktop is unavailable or disk space is limited, run the backend as
+native processes while using Supabase Cloud and hosted Redis. Copy
+`.env.hosted.example` to the ignored `.env.hosted.local`, populate its hosted
+credentials, then run:
+
+```powershell
+pnpm dev:hosted
+```
+
+This starts Gateway, Core Trip, Geo and Notification Worker directly on the
+host. Gateway Swagger is available at <http://127.0.0.1:4100/api/docs>. Set the
+web's `NEXT_PUBLIC_API_URL` to `http://127.0.0.1:4100/api/v1`. See
+`../../docs/specs/hosted-native-development/` for the contract and acceptance
+criteria.
+
 ## Active stack
 
 The default Compose project starts only the active web walking skeleton:

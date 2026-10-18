@@ -160,14 +160,31 @@ export class TripUseCases {
     return trip;
   }
 
-  async clonePublished(actorId: string, sourceTripId: string, idempotencyKey?: string) {
+  async clonePublished(
+    actorId: string,
+    sourceTripId: string,
+    idempotencyKey?: string,
+    correlationId?: string,
+  ) {
     try {
       const ownerId = UserId.from(actorId).value;
-      const id = TripId.create(idempotencyKey ? idempotentUuid(ownerId, `clone:${sourceTripId}`, idempotencyKey) : undefined).value;
-      const trip = await this.trips.clonePublished(sourceTripId, ownerId, id);
-      if (!trip) throw new TripApplicationError('TRIP_NOT_FOUND', 'Trip does not exist.');
+      const id = TripId.create(
+        idempotencyKey
+          ? idempotentUuid(ownerId, `clone:${sourceTripId}`, idempotencyKey)
+          : undefined,
+      ).value;
+      const trip = await this.trips.clonePublished(
+        sourceTripId,
+        ownerId,
+        id,
+        correlationId,
+      );
+      if (!trip)
+        throw new TripApplicationError('TRIP_NOT_FOUND', 'Trip does not exist.');
       return trip;
-    } catch (error) { throw mapTripApplicationError(error); }
+    } catch (error) {
+      throw mapTripApplicationError(error);
+    }
   }
 
   async get(actorId: string, tripId: string): Promise<TripDetailRow> {

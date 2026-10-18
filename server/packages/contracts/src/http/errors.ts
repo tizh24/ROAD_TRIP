@@ -3,6 +3,8 @@ import { z } from 'zod';
 export const errorCodeSchema = z.enum([
   'AUTH_REQUIRED',
   'AUTH_INVALID',
+  'AUTH_UNAVAILABLE',
+  'ACCOUNT_INACTIVE',
   'FORBIDDEN',
   'TRIP_NOT_FOUND',
   'TRIP_DATE_RANGE_INVALID',

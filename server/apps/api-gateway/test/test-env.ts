@@ -8,6 +8,8 @@ export function setGatewayTestEnv(
     SUPABASE_JWKS_URL: 'http://127.0.0.1:1/jwks',
     SUPABASE_JWT_ISSUER: 'https://issuer.test/auth/v1',
     SUPABASE_JWT_AUDIENCE: 'authenticated',
+    SUPABASE_PUBLISHABLE_KEY: 'test-publishable-key',
+    SUPABASE_SERVICE_ROLE_KEY: 'test-service-role-key',
     REDIS_URL: 'redis://127.0.0.1:6379',
     CORE_TRIP_SERVICE_URL: 'http://127.0.0.1:4101',
     GEO_LOCATION_SERVICE_URL: 'http://127.0.0.1:4102',
@@ -18,6 +20,7 @@ export function setGatewayTestEnv(
     RATE_LIMIT_WINDOW_MS: '60000',
     RATE_LIMIT_MAX: '100',
     RATE_LIMIT_AUTHENTICATED_MAX: '300',
+    AUTH_COOKIE_SECURE: 'false',
     ...overrides,
   });
 }

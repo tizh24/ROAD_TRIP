@@ -14,6 +14,7 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
+    "dev:hosted": "pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/start-hosted-dev.ps1",
     "lint": "turbo run lint --filter=api-gateway --filter=core-trip-service --filter=geo-location-service --filter=notification-worker --filter=@roadtrip/config --filter=@roadtrip/contracts --filter=@roadtrip/health --filter=@roadtrip/observability --filter=@roadtrip/db-client --filter=@roadtrip/shared-types",
     "lint:fix": "turbo run lint:fix --filter=api-gateway --filter=core-trip-service --filter=geo-location-service --filter=notification-worker",
     "typecheck": "turbo run typecheck --filter=api-gateway --filter=core-trip-service --filter=geo-location-service --filter=notification-worker --filter=@roadtrip/config --filter=@roadtrip/contracts --filter=@roadtrip/health --filter=@roadtrip/observability --filter=@roadtrip/db-client --filter=@roadtrip/shared-types",

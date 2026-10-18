@@ -17,6 +17,10 @@ import {
 class FakeDatabase {
   readonly queries: Array<{ query: unknown; values: unknown[] | undefined }> =
     [];
+  queryHandler?: (
+    query: string,
+    values?: unknown[],
+  ) => Array<Record<string, unknown>>;
   nextRows: Array<Record<string, unknown>> = [];
   async transaction<Result>(
     work: (transaction: FakeDatabase) => Promise<Result>,
@@ -25,6 +29,11 @@ class FakeDatabase {
   }
   query(query: unknown, values?: unknown[]): Promise<unknown> {
     this.queries.push({ query, values });
+    if (this.queryHandler) {
+      return Promise.resolve({
+        rows: this.queryHandler(String(query), values),
+      });
+    }
     return Promise.resolve({ rows: this.nextRows });
   }
 }
@@ -52,6 +61,98 @@ describe('TripRepository', () => {
         expect.stringContaining('trip_schema.outbox_events'),
       ]),
     );
+  });
+
+  it('clones a published trip and records TripCloned outbox event', async () => {
+    const database = new FakeDatabase();
+    database.queryHandler = (query) => {
+      if (
+        query.includes('SELECT id FROM trip_schema.trips WHERE id=$1 AND visibility=\'PUBLISHED\'')
+      ) {
+        return [{ id: 'source-1' }];
+      }
+      if (
+        query.includes('INSERT INTO trip_schema.trips') &&
+        query.includes('RETURNING id')
+      ) {
+        return [{ id: 'cloned-1' }];
+      }
+      if (
+        query.includes(
+          'FROM trip_schema.trips t JOIN trip_schema.trip_members m',
+        )
+      ) {
+        return [
+          {
+            id: 'cloned-1',
+            ownerId: 'owner-1',
+            title: 'Cloned Trip',
+            startDate: '2026-08-01',
+            endDate: '2026-08-03',
+            status: 'PLANNING',
+            role: 'OWNER',
+            permission: 'EDIT',
+            version: 1,
+            budgetAmount: 0,
+            currency: 'VND',
+            deletedAt: null,
+            description: null,
+          },
+        ];
+      }
+      return [];
+    };
+
+    const repository = new TripRepository(
+      database as unknown as TransactionalDatabase,
+    );
+    const result = await repository.clonePublished(
+      'source-1',
+      'owner-1',
+      'cloned-1',
+      'corr-clone-1',
+    );
+
+    expect(result).toBeDefined();
+    expect(result?.id).toBe('cloned-1');
+    expect(database.queries.map((entry) => String(entry.query))).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining("visibility='PUBLISHED'"),
+        expect.stringContaining('trip_schema.trips'),
+        expect.stringContaining('trip_schema.trip_members'),
+        expect.stringContaining('trip_schema.trip_days'),
+        expect.stringContaining('trip_schema.trip_stops'),
+        expect.stringContaining('trip_schema.outbox_events'),
+      ]),
+    );
+
+    const outboxQuery = database.queries.find((entry) =>
+      String(entry.query).includes('trip_schema.outbox_events'),
+    );
+    expect(outboxQuery?.values).toEqual(
+      expect.arrayContaining([
+        'TRIP',
+        'cloned-1',
+        'TripCloned',
+        expect.stringContaining('"sourceTripId":"source-1"'),
+        'corr-clone-1',
+      ]),
+    );
+  });
+
+  it('skips clone when source trip is not published or missing', async () => {
+    const database = new FakeDatabase();
+    database.queryHandler = () => [];
+    const repository = new TripRepository(
+      database as unknown as TransactionalDatabase,
+    );
+    const result = await repository.clonePublished(
+      'source-missing',
+      'owner-1',
+      'cloned-1',
+    );
+    expect(result).toBeUndefined();
+    expect(database.queries).toHaveLength(2); // SELECT source check + getByIdForUser query
   });
 
   it('uses expected version for update and surfaces a conflict', async () => {

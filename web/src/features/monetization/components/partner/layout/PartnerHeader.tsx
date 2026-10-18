@@ -125,10 +125,12 @@ export default function PartnerHeader() {
                 <span className="text-sm font-medium text-text-sub group-hover:text-text-main">Cài đặt thanh toán</span>
               </button>
               <div className="my-2 h-px bg-border-light" />
-              <button className="focus-ring group flex min-h-11 w-full items-center gap-3 px-4 py-2.5 text-left transition-colors hover:bg-red-50">
-                <LogOut size={16} className="text-red-400 group-hover:text-red-600 transition-colors" />
-                <span className="text-sm font-medium text-red-500 group-hover:text-red-700">Đăng xuất</span>
-              </button>
+              <form action="/auth/signout" method="post">
+                <button type="submit" className="focus-ring group flex min-h-11 w-full items-center gap-3 px-4 py-2.5 text-left transition-colors hover:bg-red-50">
+                  <LogOut size={16} className="text-red-400 group-hover:text-red-600 transition-colors" />
+                  <span className="text-sm font-medium text-red-500 group-hover:text-red-700">Đăng xuất</span>
+                </button>
+              </form>
             </div>
           )}
         </div>

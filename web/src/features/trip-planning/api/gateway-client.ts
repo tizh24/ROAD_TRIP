@@ -1,7 +1,6 @@
 "use client";
 
 import { z } from "zod";
-import { createClient } from "@/lib/supabase/client";
 import {
   GatewayApiError,
   requestGateway,
@@ -20,19 +19,13 @@ export class GatewayClient {
     schema: T,
     options: Omit<
       GatewayRequestOptions,
-      "baseUrl" | "accessToken" | "path"
+      "baseUrl" | "path"
     > = {},
   ): Promise<z.infer<T>> {
-    const {
-      data: { session },
-    } = await createClient().auth.getSession();
-    if (!session?.access_token)
-      throw new GatewayApiError("AUTH_REQUIRED", "Please sign in to continue.");
     return requestGateway(
       {
         ...options,
         baseUrl: gatewayBaseUrl(),
-        accessToken: session.access_token,
         path,
       },
       schema,

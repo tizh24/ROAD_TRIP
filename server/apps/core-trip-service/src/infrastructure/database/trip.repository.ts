@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import type { QueryExecutor, TransactionWork } from '@roadtrip/db-client';
 import type { Trip } from '../../domain/trip';
 import { Version } from '../../domain/value-objects';
@@ -168,20 +169,28 @@ export class TripRepository {
     return { ...row, days: detail };
   }
 
-  async clonePublished(sourceTripId: string, ownerId: string, id: string): Promise<TripDetailRow | undefined> {
+  async clonePublished(
+    sourceTripId: string,
+    ownerId: string,
+    id: string,
+    correlationId?: string,
+  ): Promise<TripDetailRow | undefined> {
     await this.database.transaction(async (transaction) => {
       const source = await transaction.query<{ id: string }>(
         `SELECT id FROM trip_schema.trips WHERE id=$1 AND visibility='PUBLISHED' AND deleted_at IS NULL FOR SHARE`,
         [sourceTripId],
       );
       if (!source.rows[0]) return;
-      await transaction.query(
+      const inserted = await transaction.query<{ id: string }>(
         `INSERT INTO trip_schema.trips (id, owner_id, title, description, start_date, end_date, status, budget_amount, currency, version, visibility, source_trip_id)
          SELECT $2, $3, title, description, start_date, end_date, 'PLANNING', budget_amount, currency, 1, 'PRIVATE', id
            FROM trip_schema.trips WHERE id=$1
-         ON CONFLICT (id) DO NOTHING`,
+         ON CONFLICT (id) DO NOTHING
+         RETURNING id`,
         [sourceTripId, id, ownerId],
       );
+      if (!inserted.rows[0]) return;
+
       await transaction.query(
         `INSERT INTO trip_schema.trip_members (trip_id,user_id,role,permission,status) VALUES ($1,$2,'OWNER','EDIT','ACTIVE') ON CONFLICT DO NOTHING`,
         [id, ownerId],
@@ -201,6 +210,23 @@ export class TripRepository {
           WHERE stop.trip_id=$1 AND stop.status='ACTIVE'
          ON CONFLICT (day_id, stop_index) DO NOTHING`,
         [sourceTripId, id],
+      );
+      await transaction.query(
+        `INSERT INTO trip_schema.outbox_events
+          (id, aggregate_type, aggregate_id, event_type, payload, correlation_id, occurred_at)
+         VALUES ($1, $2, $3, $4, $5, $6, now())`,
+        [
+          randomUUID(),
+          'TRIP',
+          id,
+          'TripCloned',
+          JSON.stringify({
+            tripId: id,
+            sourceTripId,
+            ownerId,
+          }),
+          correlationId ?? id,
+        ],
       );
     });
     return this.getByIdForUser(id, ownerId);
