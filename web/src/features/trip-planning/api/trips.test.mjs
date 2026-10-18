@@ -3,6 +3,7 @@ import test from "node:test";
 import {
   createdInvitationSchema,
   invitationSchema,
+  tripDetailSchema,
   tripListSchema,
 } from "./trip-model.ts";
 
@@ -42,4 +43,28 @@ test("keeps raw invitation tokens exclusive to create responses", () => {
     createdInvitationSchema.parse({ ...invitation, token: "a".repeat(43) }).token,
     "a".repeat(43),
   );
+});
+
+test("validates tripDetailSchema with visibility and sourceTripId", () => {
+  const detail = {
+    id: "e1a3dbb3-0e10-4e17-83a7-2813c7b4c813",
+    title: "Ha Giang Loop",
+    startDate: "2026-09-10",
+    endDate: "2026-09-14",
+    status: "PLANNING",
+    role: "OWNER",
+    permission: "EDIT",
+    version: 1,
+    ownerId: "f52179a7-4cc9-4ea9-bafd-fbaee6282934",
+    description: "Great loop",
+    budgetAmount: 5000000,
+    currency: "VND",
+    visibility: "PUBLISHED",
+    sourceTripId: null,
+    days: [],
+  };
+
+  const parsed = tripDetailSchema.parse(detail);
+  assert.equal(parsed.visibility, "PUBLISHED");
+  assert.equal(parsed.sourceTripId, null);
 });

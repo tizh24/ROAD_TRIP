@@ -23,6 +23,8 @@ export interface TripDetailRow extends TripListRow {
   readonly description: string | null;
   readonly budgetAmount: number;
   readonly currency: string;
+  readonly visibility?: string;
+  readonly sourceTripId?: string | null;
   readonly deletedAt: Date | null;
   readonly days: readonly TripDayRow[];
 }
@@ -71,6 +73,13 @@ export class TripVersionConflictError extends Error {
   constructor() {
     super('Trip version does not match the expected version.');
     this.name = 'TripVersionConflictError';
+  }
+}
+
+export class TripIncompleteForPublicationError extends Error {
+  constructor(message = 'Trip must have at least one stop before it can be published.') {
+    super(message);
+    this.name = 'TripIncompleteForPublicationError';
   }
 }
 
@@ -248,6 +257,7 @@ export class TripRepository {
       `SELECT t.id, t.owner_id AS "ownerId", t.title, t.description,
               t.start_date::text AS "startDate", t.end_date::text AS "endDate", t.status,
               t.budget_amount::float8 AS "budgetAmount", t.currency, t.version,
+              t.visibility, t.source_trip_id AS "sourceTripId",
               t.deleted_at AS "deletedAt", m.role, m.permission
          FROM trip_schema.trips t JOIN trip_schema.trip_members m ON m.trip_id = t.id
         WHERE t.id = $1 AND m.user_id = $2 AND m.status = 'ACTIVE'`,
@@ -326,5 +336,70 @@ export class TripRepository {
     const row = result.rows[0];
     if (!row) throw new TripVersionConflictError();
     return Version.from(row.version);
+  }
+
+  async updateVisibility(
+    tripId: string,
+    actorId: string,
+    visibility: 'PRIVATE' | 'UNLISTED' | 'PUBLISHED',
+    correlationId?: string,
+  ): Promise<{ visibility: string; publishedAt: string | null; version: number }> {
+    return this.database.transaction(async (transaction) => {
+      const current = await transaction.query<{
+        id: string;
+        visibility: string;
+        version: number;
+      }>(
+        `SELECT id, visibility, version FROM trip_schema.trips WHERE id=$1 AND deleted_at IS NULL FOR UPDATE`,
+        [tripId],
+      );
+      const row = current.rows[0];
+      if (!row) throw new TripVersionConflictError();
+
+      if (visibility === 'PUBLISHED') {
+        const stopCount = await transaction.query<{ count: string }>(
+          `SELECT COUNT(*) AS count FROM trip_schema.trip_stops WHERE trip_id=$1 AND status='ACTIVE'`,
+          [tripId],
+        );
+        if (parseInt(stopCount.rows[0]?.count || '0', 10) === 0) {
+          throw new TripIncompleteForPublicationError(
+            'Chuyến đi cần có ít nhất một điểm dừng trước khi có thể công khai.',
+          );
+        }
+      }
+
+      const updated = await transaction.query<{
+        visibility: string;
+        published_at: string | null;
+        version: number;
+      }>(
+        `UPDATE trip_schema.trips
+            SET visibility = $2,
+                published_at = CASE WHEN $2 = 'PUBLISHED' THEN now() ELSE NULL END,
+                version = version + 1
+          WHERE id = $1
+          RETURNING visibility, published_at::text AS "published_at", version`,
+        [tripId, visibility],
+      );
+
+      await transaction.query(
+        `INSERT INTO trip_schema.trip_audit_logs (trip_id, actor_id, action, old_values, new_values, correlation_id)
+         VALUES ($1, $2, 'VISIBILITY_CHANGE', $3, $4, $5)`,
+        [
+          tripId,
+          actorId,
+          JSON.stringify({ visibility: row.visibility }),
+          JSON.stringify({ visibility }),
+          correlationId || null,
+        ],
+      );
+
+      const res = updated.rows[0]!;
+      return {
+        visibility: res.visibility,
+        publishedAt: res.published_at,
+        version: res.version,
+      };
+    });
   }
 }

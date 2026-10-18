@@ -17,6 +17,7 @@ import {
   type UpdateStopRecord,
 } from '../../infrastructure/database/stop.repository';
 import {
+  TripIncompleteForPublicationError,
   TripRepository,
   TripVersionConflictError,
   type TripDetailRow,
@@ -33,6 +34,7 @@ export type TripApplicationErrorCode =
   | 'TRIP_DATE_RANGE_INVALID'
   | 'TRIP_DATE_RANGE_TOO_LONG'
   | 'TRIP_VERSION_CONFLICT'
+  | 'TRIP_INCOMPLETE_FOR_PUBLICATION'
   | 'DAY_NOT_FOUND'
   | 'STOP_NOT_FOUND'
   | 'STOP_ORDER_INVALID'
@@ -306,10 +308,11 @@ export class TripUseCases {
     tripId: string,
     dayId: string,
     orderedStopIds: readonly string[],
+    expectedVersion?: number,
   ): Promise<void> {
     try {
       await this.authorization.assertCanEditItinerary(tripId, actorId);
-      await this.stops.reorder(tripId, dayId, orderedStopIds);
+      await this.stops.reorder(tripId, dayId, orderedStopIds, expectedVersion);
     } catch (error) {
       throw mapTripApplicationError(error);
     }
@@ -321,10 +324,36 @@ export class TripUseCases {
     stopId: string,
     targetDayId: string,
     targetIndex: number,
+    expectedVersion?: number,
   ): Promise<void> {
     try {
       await this.authorization.assertCanEditItinerary(tripId, actorId);
-      await this.stops.move(tripId, stopId, targetDayId, targetIndex);
+      await this.stops.move(
+        tripId,
+        stopId,
+        targetDayId,
+        targetIndex,
+        expectedVersion,
+      );
+    } catch (error) {
+      throw mapTripApplicationError(error);
+    }
+  }
+
+  async updateVisibility(
+    actorId: string,
+    tripId: string,
+    visibility: 'PRIVATE' | 'UNLISTED' | 'PUBLISHED',
+    correlationId?: string,
+  ): Promise<{ visibility: string; publishedAt: string | null; version: number }> {
+    try {
+      await this.authorization.assertCanManageTrip(tripId, actorId);
+      return await this.trips.updateVisibility(
+        tripId,
+        actorId,
+        visibility,
+        correlationId,
+      );
     } catch (error) {
       throw mapTripApplicationError(error);
     }
@@ -362,6 +391,11 @@ export function mapTripApplicationError(error: unknown): TripApplicationError {
     return new TripApplicationError(error.code, error.message);
   if (error instanceof TripVersionConflictError)
     return new TripApplicationError('TRIP_VERSION_CONFLICT', error.message);
+  if (error instanceof TripIncompleteForPublicationError)
+    return new TripApplicationError(
+      'TRIP_INCOMPLETE_FOR_PUBLICATION',
+      error.message,
+    );
   if (error instanceof StopRepositoryError) {
     const code: TripApplicationErrorCode =
       error.code === 'STOP_DAY_MISMATCH'

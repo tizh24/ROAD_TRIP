@@ -4,9 +4,31 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useState, type ReactNode } from "react";
-import { CalendarDays, ChevronDown, ChevronUp, Compass, MapPinned, Pencil, Trash2, Wallet } from "lucide-react";
+import {
+  CalendarDays,
+  Check,
+  ChevronDown,
+  ChevronUp,
+  Compass,
+  Copy,
+  Globe,
+  Lock,
+  MapPinned,
+  Navigation,
+  Pencil,
+  Share2,
+  Trash2,
+  Wallet,
+} from "lucide-react";
 import { GatewayApiError } from "@/features/trip-planning/api/gateway-request";
-import { getTrip, moveStop, removeStop, reorderStops, updateStop } from "@/features/trip-planning/api/trips";
+import {
+  getTrip,
+  moveStop,
+  removeStop,
+  reorderStops,
+  updateStop,
+  updateTripVisibility,
+} from "@/features/trip-planning/api/trips";
 import type { TripDetail } from "@/features/trip-planning/api/trip-model";
 import PlaceSearch from "./PlaceSearch";
 import CollaborationPanel from "./CollaborationPanel";
@@ -20,6 +42,11 @@ export default function TripEditorView({ tripId }: { tripId: string }) {
   const [state, setState] = useState<State>({ kind: "loading" });
   const [dayIndex, setDayIndex] = useState(0);
   const [mutationError, setMutationError] = useState<string>();
+  const [conflictNotice, setConflictNotice] = useState<string>();
+  const [visibilitySaving, setVisibilitySaving] = useState(false);
+  const [visibilityError, setVisibilityError] = useState<string>();
+  const [copiedLink, setCopiedLink] = useState(false);
+
   const load = useCallback(async () => {
     setState({ kind: "loading" });
     try { setState({ kind: "ready", trip: await getTrip(tripId) }); }
@@ -33,22 +60,314 @@ export default function TripEditorView({ tripId }: { tripId: string }) {
   useEffect(() => { if (state.kind === "ready") trackAnalytics("trip_edit_resumed", { role: state.trip.role, permission: state.trip.permission }, { dedupeKey: state.trip.id }); }, [state]);
 
   if (state.kind === "loading") return <main className="page-shell w-full py-12" aria-busy="true"><div className="h-10 w-72 animate-pulse rounded bg-border-main" /><div className="surface-card mt-8 h-80 animate-pulse" /></main>;
-  if (state.kind === "missing" || state.kind === "forbidden") return <main className="page-shell py-16"><FeedbackState kind={state.kind === "missing" ? "empty" : "permission"} title={state.kind === "missing" ? "Không tìm thấy chuyến đi" : "Bạn không có quyền truy cập"} description={state.kind === "missing" ? "Chuyến đi có thể đã bị xóa hoặc không còn tồn tại." : "Bạn cần lời mời hợp lệ để xem lịch trình này."}><Link href="/trips" className="focus-ring text-sm font-bold text-primary hover:underline">Về danh sách chuyến đi</Link></FeedbackState></main>;
+  if (state.kind === "missing" || state.kind === "forbidden") return <main className="page-shell py-16"><FeedbackState kind={state.kind === "missing" ? "empty" : "permission"} title={state.kind === "missing" ? "Không tìm thấy chuyến đi" : "Bạn không có quyền truy cập"} description={state.kind === "missing" ? "Chuyến đi có thể đã bị xóa hoặc không còn tồn tại." : "Bạn cần lời mời hợp lệ để xem lịch trình này."}><Link href="/dashboard" className="focus-ring text-sm font-bold text-primary hover:underline">Về danh sách chuyến đi</Link></FeedbackState></main>;
   if (state.kind === "error") return <main className="page-shell py-16"><FeedbackState kind="error" title="Không thể tải lịch trình" description={state.message} actionLabel="Thử lại" onAction={() => void load()} /></main>;
   const { trip } = state;
   const activeDay = trip.days[dayIndex]!;
   const canEdit = trip.role === "OWNER" || trip.permission === "EDIT";
   const totalStops = trip.days.reduce((total, day) => total + day.stops.length, 0);
   const completion = trip.days.length ? Math.round((trip.days.filter((day) => day.stops.length > 0).length / trip.days.length) * 100) : 0;
-  async function remove(stopId: string) { setMutationError(undefined); try { await removeStop(trip.id, stopId); await load(); } catch (error) { setMutationError(error instanceof Error ? error.message : "Không thể xóa điểm dừng."); } }
-  async function reorder(stopId: string, direction: -1 | 1) { const stops = [...activeDay.stops]; const from = stops.findIndex((stop) => stop.id === stopId); const to = from + direction; if (from < 0 || to < 0 || to >= stops.length) return; [stops[from], stops[to]] = [stops[to]!, stops[from]!]; setMutationError(undefined); try { await reorderStops(trip.id, activeDay.id, stops.map((stop) => stop.id)); await load(); } catch (error) { setMutationError(error instanceof Error ? error.message : "Không thể đổi thứ tự điểm dừng."); } }
-  async function move(stopId: string, targetDayId: string) { setMutationError(undefined); try { await moveStop(trip.id, stopId, targetDayId, 1); await load(); } catch (error) { setMutationError(error instanceof Error ? error.message : "Không thể chuyển ngày cho điểm dừng."); } }
+
+  async function remove(stopId: string) {
+    setMutationError(undefined);
+    try { await removeStop(trip.id, stopId); await load(); }
+    catch (error) { setMutationError(error instanceof Error ? error.message : "Không thể xóa điểm dừng."); }
+  }
+
+  async function reorder(stopId: string, direction: -1 | 1) {
+    const stops = [...activeDay.stops];
+    const from = stops.findIndex((stop) => stop.id === stopId);
+    const to = from + direction;
+    if (from < 0 || to < 0 || to >= stops.length) return;
+    [stops[from], stops[to]] = [stops[to]!, stops[from]!];
+    setMutationError(undefined);
+    setConflictNotice(undefined);
+    try {
+      await reorderStops(trip.id, activeDay.id, stops.map((stop) => stop.id), trip.version);
+      await load();
+    } catch (error) {
+      if (error instanceof GatewayApiError && (error.code === "TRIP_VERSION_CONFLICT" || error.message.includes("version"))) {
+        setConflictNotice("Hành trình vừa được cập nhật bởi thành viên khác. Đang tự động làm mới để lấy dữ liệu mới nhất...");
+        await load();
+      } else {
+        setMutationError(error instanceof Error ? error.message : "Không thể đổi thứ tự điểm dừng.");
+      }
+    }
+  }
+
+  async function move(stopId: string, targetDayId: string) {
+    setMutationError(undefined);
+    setConflictNotice(undefined);
+    try {
+      await moveStop(trip.id, stopId, targetDayId, 1, trip.version);
+      await load();
+    } catch (error) {
+      if (error instanceof GatewayApiError && (error.code === "TRIP_VERSION_CONFLICT" || error.message.includes("version"))) {
+        setConflictNotice("Hành trình vừa được cập nhật bởi thành viên khác. Đang tự động làm mới để lấy dữ liệu mới nhất...");
+        await load();
+      } else {
+        setMutationError(error instanceof Error ? error.message : "Không thể chuyển ngày cho điểm dừng.");
+      }
+    }
+  }
+
+  async function handleVisibilityChange(newVisibility: "PRIVATE" | "UNLISTED" | "PUBLISHED") {
+    if (newVisibility === trip.visibility) return;
+    setVisibilitySaving(true);
+    setVisibilityError(undefined);
+    try {
+      await updateTripVisibility(trip.id, newVisibility);
+      trackAnalytics("trip_visibility_updated", { visibility: newVisibility }, { dedupeKey: trip.id });
+      await load();
+    } catch (err) {
+      if (err instanceof GatewayApiError && err.code === "TRIP_INCOMPLETE_FOR_PUBLICATION") {
+        setVisibilityError("Chuyến đi cần có ít nhất một điểm dừng trước khi có thể công khai.");
+      } else {
+        setVisibilityError(err instanceof Error ? err.message : "Không thể cập nhật quyền hiển thị.");
+      }
+    } finally {
+      setVisibilitySaving(false);
+    }
+  }
+
+  async function copyShareLink() {
+    const url = `${window.location.origin}/planner/${trip.id}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopiedLink(true);
+      setTimeout(() => setCopiedLink(false), 2500);
+    } catch {
+      // clipboard access fallback
+    }
+  }
 
   return <main className="min-h-screen bg-background-warm pb-16">
-    <section className="relative isolate overflow-hidden bg-secondary px-4 py-8 text-white sm:px-6 lg:py-12"><div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_8%_10%,rgba(239,177,91,.32),transparent_28%),radial-gradient(circle_at_86%_80%,rgba(217,101,50,.35),transparent_30%)]" /><div className="page-shell px-0"><Link href="/trips" className="focus-ring inline-flex rounded-full bg-white/10 px-3 py-2 text-sm font-bold text-white/90 hover:bg-white/20">← Chuyến đi của bạn</Link><div className="mt-8 flex flex-col justify-between gap-6 lg:flex-row lg:items-end"><div className="max-w-3xl"><p className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 text-xs font-bold"><Compass size={14} /> {trip.role === "OWNER" ? "Chủ chuyến đi" : canEdit ? "Thành viên có thể chỉnh sửa" : "Thành viên chỉ xem"}</p><h1 className="mt-4 text-3xl font-extrabold tracking-tight sm:text-5xl">{trip.title}</h1><p className="mt-3 max-w-2xl text-sm leading-6 text-white/75 sm:text-base">{trip.description || "Thêm các điểm dừng để biến ý tưởng thành một hành trình rõ ràng."}</p></div><div className="grid grid-cols-3 gap-3 sm:min-w-[27rem]"><Fact icon={<CalendarDays size={16} />} label="Thời gian" value={`${trip.days.length} ngày`} /><Fact icon={<MapPinned size={16} />} label="Điểm dừng" value={`${totalStops} nơi`} /><Fact icon={<Wallet size={16} />} label="Ngân sách" value={`${trip.budgetAmount.toLocaleString("vi-VN")} ${trip.currency}`} /></div></div></div></section>
-    <div className="page-shell px-4 sm:px-6"><section className="surface-card -mt-5 grid gap-4 p-4 sm:-mt-7 sm:grid-cols-[1fr_auto] sm:items-center sm:p-5"><div><div className="flex items-center justify-between gap-4"><p className="text-sm font-extrabold text-text-main">Mức độ hoàn thiện hành trình</p><span className="text-sm font-extrabold text-primary">{completion}%</span></div><div className="mt-3 h-2 overflow-hidden rounded-full bg-background-warm"><div className="h-full rounded-full bg-primary transition-all" style={{ width: `${completion}%` }} /></div><p className="mt-2 text-xs text-text-sub">{trip.days.filter((day) => day.stops.length > 0).length}/{trip.days.length} ngày đã có điểm dừng</p></div>{canEdit && <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-2 text-xs font-bold text-primary"><Pencil size={14} /> Chế độ chỉnh sửa</span>}</section>
-      <div className="mt-8 grid gap-6 xl:grid-cols-[17rem_minmax(0,1fr)]"><nav aria-label="Các ngày trong chuyến đi" className="surface-card h-fit p-3 xl:sticky xl:top-5"><p className="px-2 pb-3 text-xs font-extrabold uppercase tracking-[.14em] text-text-sub">Lịch trình</p><div className="flex gap-2 overflow-x-auto xl:block xl:space-y-2">{trip.days.map((day, index) => <button type="button" key={day.id} aria-pressed={index === dayIndex} onClick={() => setDayIndex(index)} className={`focus-ring min-w-36 rounded-2xl px-4 py-3 text-left transition xl:block xl:w-full ${index === dayIndex ? "bg-secondary text-white shadow-card" : "bg-background-warm text-text-main hover:bg-primary/10"}`}><span className="block text-sm font-extrabold">Ngày {day.dayIndex}</span><span className="mt-1 block text-xs opacity-75">{day.date}</span><span className="mt-2 inline-block rounded-full bg-current/10 text-[11px] font-bold opacity-85">{day.stops.length} điểm dừng</span></button>)}</div></nav>
-        <section className="min-w-0 space-y-6"><div className="surface-card overflow-hidden"><div className="flex flex-wrap items-start justify-between gap-3 border-b border-border-main p-5 sm:p-6"><div><p className="text-xs font-extrabold uppercase tracking-[.14em] text-primary">Ngày {activeDay.dayIndex}</p><h2 className="mt-1 text-2xl font-extrabold text-text-main">{activeDay.date}</h2></div>{canEdit && <span className="rounded-full bg-secondary/10 px-3 py-2 text-xs font-bold text-secondary">Có thể thêm và sắp xếp điểm dừng</span>}</div><div className="p-4 sm:p-6">{mutationError && <p role="alert" className="mb-4 rounded-xl bg-danger/10 p-3 text-sm text-danger">{mutationError} <button type="button" onClick={() => void load()} className="font-bold underline">Tải lại</button></p>}{activeDay.stops.length === 0 ? <div className="rounded-2xl border border-dashed border-primary/40 bg-primary/5 p-6 text-center"><MapPinned className="mx-auto text-primary" /><h3 className="mt-3 font-extrabold text-text-main">Ngày này chưa có điểm dừng</h3><p className="mt-1 text-sm text-text-sub">{canEdit ? "Tìm địa điểm bên dưới để bắt đầu xây hành trình." : "Chủ chuyến đi chưa thêm địa điểm nào."}</p></div> : <ol className="space-y-3">{activeDay.stops.map((stop, index) => <StopCard key={stop.id} stop={stop} editable={canEdit} onRefresh={load} controls={<><button type="button" aria-label={`Đưa ${stop.name} lên`} disabled={index === 0} onClick={() => void reorder(stop.id, -1)} className="focus-ring inline-flex items-center gap-1 rounded-lg border border-border-main px-2.5 py-2 text-xs font-bold hover:bg-background-warm disabled:opacity-40"><ChevronUp size={14} /> Lên</button><button type="button" aria-label={`Đưa ${stop.name} xuống`} disabled={index === activeDay.stops.length - 1} onClick={() => void reorder(stop.id, 1)} className="focus-ring inline-flex items-center gap-1 rounded-lg border border-border-main px-2.5 py-2 text-xs font-bold hover:bg-background-warm disabled:opacity-40"><ChevronDown size={14} /> Xuống</button>{trip.days.filter((day) => day.id !== activeDay.id).map((day) => <button type="button" aria-label={`Chuyển ${stop.name} sang ngày ${day.dayIndex}`} key={day.id} onClick={() => void move(stop.id, day.id)} className="focus-ring rounded-lg border border-border-main px-2.5 py-2 text-xs font-bold hover:bg-background-warm">Sang ngày {day.dayIndex}</button>)}<button type="button" aria-label={`Xóa ${stop.name}`} onClick={() => void remove(stop.id)} className="focus-ring inline-flex items-center gap-1 rounded-lg border border-danger/30 px-2.5 py-2 text-xs font-bold text-danger hover:bg-danger/10"><Trash2 size={14} /> Xóa</button></>} />)}</ol>}{canEdit && <PlaceSearch tripId={trip.id} dayId={activeDay.id} stopCount={activeDay.stops.length} onAdded={() => void load()} />}</div></div><section className="surface-card overflow-hidden p-3 sm:p-4"><div className="mb-3 flex items-center justify-between px-2"><div><p className="text-xs font-extrabold uppercase tracking-[.14em] text-primary">Tuyến đường</p><h2 className="mt-1 font-extrabold text-text-main">Bản đồ ngày {activeDay.dayIndex}</h2></div><span className="rounded-full bg-background-warm px-3 py-1.5 text-xs font-bold text-text-sub">{activeDay.stops.length} điểm</span></div><RouteMap stops={activeDay.stops} /></section></section></div>{trip.role === "OWNER" && <div className="mt-8"><CollaborationPanel tripId={trip.id} /></div>}</div>
+    <section className="relative isolate overflow-hidden bg-secondary px-4 py-8 text-white sm:px-6 lg:py-12">
+      <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_8%_10%,rgba(239,177,91,.32),transparent_28%),radial-gradient(circle_at_86%_80%,rgba(217,101,50,.35),transparent_30%)]" />
+      <div className="page-shell px-0">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <Link href="/dashboard" className="focus-ring inline-flex rounded-full bg-white/10 px-3 py-2 text-sm font-bold text-white/90 hover:bg-white/20">
+            ← Chuyến đi của bạn
+          </Link>
+          <Link
+            href={`/road/${trip.id}`}
+            className="focus-ring inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-extrabold text-white shadow-card hover:bg-primary-hover transition"
+          >
+            <Navigation size={16} />
+            <span>Bắt đầu chuyến đi</span>
+          </Link>
+        </div>
+
+        <div className="mt-8 flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
+          <div className="max-w-3xl">
+            <div className="flex flex-wrap items-center gap-2">
+              <p className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 text-xs font-bold">
+                <Compass size={14} /> {trip.role === "OWNER" ? "Chủ chuyến đi" : canEdit ? "Thành viên có thể chỉnh sửa" : "Thành viên chỉ xem"}
+              </p>
+              <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold ${
+                trip.visibility === "PUBLISHED" ? "bg-emerald-500/25 text-emerald-200" :
+                trip.visibility === "UNLISTED" ? "bg-amber-500/25 text-amber-200" :
+                "bg-white/10 text-white/80"
+              }`}>
+                {trip.visibility === "PUBLISHED" ? <Globe size={13} /> : trip.visibility === "UNLISTED" ? <Share2 size={13} /> : <Lock size={13} />}
+                {trip.visibility === "PUBLISHED" ? "Công khai" : trip.visibility === "UNLISTED" ? "Có liên kết" : "Riêng tư"}
+              </span>
+            </div>
+            <h1 className="mt-4 text-3xl font-extrabold tracking-tight sm:text-5xl">{trip.title}</h1>
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-white/75 sm:text-base">{trip.description || "Thêm các điểm dừng để biến ý tưởng thành một hành trình rõ ràng."}</p>
+          </div>
+          <div className="grid grid-cols-3 gap-3 sm:min-w-[27rem]">
+            <Fact icon={<CalendarDays size={16} />} label="Thời gian" value={`${trip.days.length} ngày`} />
+            <Fact icon={<MapPinned size={16} />} label="Điểm dừng" value={`${totalStops} nơi`} />
+            <Fact icon={<Wallet size={16} />} label="Ngân sách" value={`${trip.budgetAmount.toLocaleString("vi-VN")} ${trip.currency}`} />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div className="page-shell px-4 sm:px-6">
+      {conflictNotice && (
+        <div role="alert" className="mt-4 flex items-center justify-between rounded-2xl border border-amber-300 bg-amber-50 p-4 text-sm font-semibold text-amber-900 shadow-sm">
+          <span>{conflictNotice}</span>
+          <button type="button" onClick={() => setConflictNotice(undefined)} className="ml-3 text-xs underline font-bold">Đóng</button>
+        </div>
+      )}
+
+      <section className="surface-card -mt-5 grid gap-4 p-4 sm:-mt-7 sm:grid-cols-[1fr_auto] sm:items-center sm:p-5">
+        <div>
+          <div className="flex items-center justify-between gap-4">
+            <p className="text-sm font-extrabold text-text-main">Mức độ hoàn thiện hành trình</p>
+            <span className="text-sm font-extrabold text-primary">{completion}%</span>
+          </div>
+          <div className="mt-3 h-2 overflow-hidden rounded-full bg-background-warm">
+            <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${completion}%` }} />
+          </div>
+          <p className="mt-2 text-xs text-text-sub">{trip.days.filter((day) => day.stops.length > 0).length}/{trip.days.length} ngày đã có điểm dừng</p>
+        </div>
+        {canEdit && <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-2 text-xs font-bold text-primary"><Pencil size={14} /> Chế độ chỉnh sửa</span>}
+      </section>
+
+      {trip.role === "OWNER" && (
+        <section className="surface-card mt-6 p-5 sm:p-6" aria-labelledby="visibility-controls-title">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-secondary">Quyền hiển thị chuyến đi</p>
+              <h2 id="visibility-controls-title" className="mt-1 text-xl font-extrabold text-text-main">Chế độ chia sẻ</h2>
+              <p className="mt-1 text-sm text-text-sub">
+                {trip.visibility === "PUBLISHED" ? "Chuyến đi đang hiển thị công khai trên Khám phá cộng đồng. Bất kỳ ai cũng có thể xem và nhân bản." :
+                 trip.visibility === "UNLISTED" ? "Chuyến đi không xuất hiện công khai nhưng bất kỳ ai có đường liên kết đều xem được." :
+                 "Chuyến đi hoàn toàn riêng tư. Chỉ bạn và thành viên được mời mới có quyền truy cập."}
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <select
+                aria-label="Chọn chế độ hiển thị"
+                disabled={visibilitySaving}
+                value={trip.visibility ?? "PRIVATE"}
+                onChange={(e) => void handleVisibilityChange(e.target.value as "PRIVATE" | "UNLISTED" | "PUBLISHED")}
+                className="field min-w-44 bg-surface font-semibold"
+              >
+                <option value="PRIVATE">🔒 Riêng tư</option>
+                <option value="UNLISTED">🔗 Có liên kết</option>
+                <option value="PUBLISHED">🌐 Công khai cộng đồng</option>
+              </select>
+              {(trip.visibility === "UNLISTED" || trip.visibility === "PUBLISHED") && (
+                <button
+                  type="button"
+                  onClick={() => void copyShareLink()}
+                  className="focus-ring inline-flex items-center gap-1.5 rounded-xl border border-border-main bg-surface px-3 py-2 text-xs font-bold text-text-main hover:bg-background-warm"
+                >
+                  {copiedLink ? <Check size={14} className="text-emerald-600" /> : <Copy size={14} />}
+                  <span>{copiedLink ? "Đã sao chép!" : "Sao chép liên kết"}</span>
+                </button>
+              )}
+            </div>
+          </div>
+          {visibilityError && (
+            <p role="alert" className="mt-3 rounded-xl bg-danger/10 p-3 text-sm font-semibold text-danger">
+              {visibilityError}
+            </p>
+          )}
+        </section>
+      )}
+
+      <div className="mt-8 grid gap-6 xl:grid-cols-[17rem_minmax(0,1fr)]">
+        <nav aria-label="Các ngày trong chuyến đi" className="surface-card h-fit p-3 xl:sticky xl:top-5">
+          <p className="px-2 pb-3 text-xs font-extrabold uppercase tracking-[.14em] text-text-sub">Lịch trình</p>
+          <div className="flex gap-2 overflow-x-auto xl:block xl:space-y-2">
+            {trip.days.map((day, index) => (
+              <button
+                type="button"
+                key={day.id}
+                aria-pressed={index === dayIndex}
+                onClick={() => setDayIndex(index)}
+                className={`focus-ring min-w-36 rounded-2xl px-4 py-3 text-left transition xl:block xl:w-full ${index === dayIndex ? "bg-secondary text-white shadow-card" : "bg-background-warm text-text-main hover:bg-primary/10"}`}
+              >
+                <span className="block text-sm font-extrabold">Ngày {day.dayIndex}</span>
+                <span className="mt-1 block text-xs opacity-75">{day.date}</span>
+                <span className="mt-2 inline-block rounded-full bg-current/10 text-[11px] font-bold opacity-85">{day.stops.length} điểm dừng</span>
+              </button>
+            ))}
+          </div>
+        </nav>
+
+        <section className="min-w-0 space-y-6">
+          <div className="surface-card overflow-hidden">
+            <div className="flex flex-wrap items-start justify-between gap-3 border-b border-border-main p-5 sm:p-6">
+              <div>
+                <p className="text-xs font-extrabold uppercase tracking-[.14em] text-primary">Ngày {activeDay.dayIndex}</p>
+                <h2 className="mt-1 text-2xl font-extrabold text-text-main">{activeDay.date}</h2>
+              </div>
+              {canEdit && <span className="rounded-full bg-secondary/10 px-3 py-2 text-xs font-bold text-secondary">Có thể thêm và sắp xếp điểm dừng</span>}
+            </div>
+            <div className="p-4 sm:p-6">
+              {mutationError && (
+                <p role="alert" className="mb-4 rounded-xl bg-danger/10 p-3 text-sm text-danger">
+                  {mutationError} <button type="button" onClick={() => void load()} className="font-bold underline">Tải lại</button>
+                </p>
+              )}
+              {activeDay.stops.length === 0 ? (
+                <div className="rounded-2xl border border-dashed border-primary/40 bg-primary/5 p-6 text-center">
+                  <MapPinned className="mx-auto text-primary" />
+                  <h3 className="mt-3 font-extrabold text-text-main">Ngày này chưa có điểm dừng</h3>
+                  <p className="mt-1 text-sm text-text-sub">{canEdit ? "Tìm địa điểm bên dưới để bắt đầu xây hành trình." : "Chủ chuyến đi chưa thêm địa điểm nào."}</p>
+                </div>
+              ) : (
+                <ol className="space-y-3">
+                  {activeDay.stops.map((stop, index) => (
+                    <StopCard
+                      key={stop.id}
+                      stop={stop}
+                      editable={canEdit}
+                      onRefresh={load}
+                      controls={
+                        <>
+                          <button
+                            type="button"
+                            aria-label={`Đưa ${stop.name} lên`}
+                            disabled={index === 0}
+                            onClick={() => void reorder(stop.id, -1)}
+                            className="focus-ring inline-flex items-center gap-1 rounded-lg border border-border-main px-2.5 py-2 text-xs font-bold hover:bg-background-warm disabled:opacity-40"
+                          >
+                            <ChevronUp size={14} /> Lên
+                          </button>
+                          <button
+                            type="button"
+                            aria-label={`Đưa ${stop.name} xuống`}
+                            disabled={index === activeDay.stops.length - 1}
+                            onClick={() => void reorder(stop.id, 1)}
+                            className="focus-ring inline-flex items-center gap-1 rounded-lg border border-border-main px-2.5 py-2 text-xs font-bold hover:bg-background-warm disabled:opacity-40"
+                          >
+                            <ChevronDown size={14} /> Xuống
+                          </button>
+                          {trip.days.filter((day) => day.id !== activeDay.id).map((day) => (
+                            <button
+                              type="button"
+                              aria-label={`Chuyển ${stop.name} sang ngày ${day.dayIndex}`}
+                              key={day.id}
+                              onClick={() => void move(stop.id, day.id)}
+                              className="focus-ring rounded-lg border border-border-main px-2.5 py-2 text-xs font-bold hover:bg-background-warm"
+                            >
+                              Sang ngày {day.dayIndex}
+                            </button>
+                          ))}
+                          <button
+                            type="button"
+                            aria-label={`Xóa ${stop.name}`}
+                            onClick={() => void remove(stop.id)}
+                            className="focus-ring inline-flex items-center gap-1 rounded-lg border border-danger/30 px-2.5 py-2 text-xs font-bold text-danger hover:bg-danger/10"
+                          >
+                            <Trash2 size={14} /> Xóa
+                          </button>
+                        </>
+                      }
+                    />
+                  ))}
+                </ol>
+              )}
+              {canEdit && <PlaceSearch tripId={trip.id} dayId={activeDay.id} stopCount={activeDay.stops.length} onAdded={() => void load()} />}
+            </div>
+          </div>
+
+          <section className="surface-card overflow-hidden p-3 sm:p-4">
+            <div className="mb-3 flex items-center justify-between px-2">
+              <div>
+                <p className="text-xs font-extrabold uppercase tracking-[.14em] text-primary">Tuyến đường</p>
+                <h2 className="mt-1 font-extrabold text-text-main">Bản đồ ngày {activeDay.dayIndex}</h2>
+              </div>
+              <span className="rounded-full bg-background-warm px-3 py-1.5 text-xs font-bold text-text-sub">{activeDay.stops.length} điểm</span>
+            </div>
+            <RouteMap stops={activeDay.stops} />
+          </section>
+        </section>
+      </div>
+
+      {trip.role === "OWNER" && (
+        <div className="mt-8">
+          <CollaborationPanel tripId={trip.id} />
+        </div>
+      )}
+    </div>
   </main>;
 }
 

@@ -23,6 +23,8 @@ export const tripDetailSchema = tripListItemSchema
     description: z.string().nullable(),
     budgetAmount: z.number().nonnegative(),
     currency: z.string().length(3),
+    visibility: z.enum(["PRIVATE", "UNLISTED", "PUBLISHED"]).default("PRIVATE"),
+    sourceTripId: z.string().uuid().nullable().optional(),
     days: z.array(z.object({
       id: z.string().uuid(), date: z.string().date(), dayIndex: z.number().int().positive(),
       stops: z.array(z.object({

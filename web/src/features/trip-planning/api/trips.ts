@@ -33,12 +33,31 @@ export function removeStop(tripId: string, stopId: string) {
   return gatewayClient.request(`trips/${encodeURIComponent(tripId)}/stops/${encodeURIComponent(stopId)}`, z.object({}).strict(), { method: "DELETE" });
 }
 
-export function reorderStops(tripId: string, dayId: string, orderedStopIds: readonly string[]) {
-  return gatewayClient.request(`trips/${encodeURIComponent(tripId)}/days/${encodeURIComponent(dayId)}/stops/order`, z.object({}).strict(), { method: "PUT", body: { orderedStopIds } });
+export function reorderStops(tripId: string, dayId: string, orderedStopIds: readonly string[], expectedVersion?: number) {
+  return gatewayClient.request(`trips/${encodeURIComponent(tripId)}/days/${encodeURIComponent(dayId)}/stops/order`, z.object({}).strict(), {
+    method: "PUT",
+    body: { orderedStopIds },
+    expectedVersion,
+  });
 }
 
-export function moveStop(tripId: string, stopId: string, targetDayId: string, targetIndex: number) {
-  return gatewayClient.request(`trips/${encodeURIComponent(tripId)}/stops/${encodeURIComponent(stopId)}/day`, z.object({}).strict(), { method: "PUT", body: { targetDayId, targetIndex } });
+export function moveStop(tripId: string, stopId: string, targetDayId: string, targetIndex: number, expectedVersion?: number) {
+  return gatewayClient.request(`trips/${encodeURIComponent(tripId)}/stops/${encodeURIComponent(stopId)}/day`, z.object({}).strict(), {
+    method: "PUT",
+    body: { targetDayId, targetIndex },
+    expectedVersion,
+  });
+}
+
+export function updateTripVisibility(tripId: string, visibility: "PRIVATE" | "UNLISTED" | "PUBLISHED") {
+  return gatewayClient.request(`trips/${encodeURIComponent(tripId)}/visibility`, z.object({
+    visibility: z.string(),
+    publishedAt: z.string().nullable(),
+    version: z.number(),
+  }).strict(), {
+    method: "PATCH",
+    body: { visibility },
+  });
 }
 
 export function updateStop(tripId: string, stop: { id: string; name: string; address: string; latitude: number; longitude: number; notes: string | null; version: number }) {

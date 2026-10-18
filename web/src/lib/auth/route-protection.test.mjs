@@ -15,6 +15,8 @@ test("protects every authenticated application route tree", () => {
   assert.equal(isProtectedRoute("/trip-invitations/invitation-token"), true);
   assert.equal(isProtectedRoute("/planner"), true);
   assert.equal(isProtectedRoute("/planner/trip-123"), true);
+  assert.equal(isProtectedRoute("/road"), true);
+  assert.equal(isProtectedRoute("/road/trip-123"), true);
   assert.equal(isProtectedRoute("/profile/settings"), true);
   assert.equal(isProtectedRoute("/memory/journey-123"), true);
   assert.equal(isProtectedRoute("/feed"), true);

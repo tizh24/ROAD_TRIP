@@ -1,4 +1,4 @@
-const protectedPath = /^\/(?:dashboard|trips|trip-invitations|planner|profile|memory|feed|partner|admin)(?:\/|$)/;
+const protectedPath = /^\/(?:dashboard|trips|trip-invitations|planner|road|profile|memory|feed|partner|admin)(?:\/|$)/;
 
 type CookieWithName = { name: string };
 

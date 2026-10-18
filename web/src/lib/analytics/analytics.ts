@@ -9,6 +9,8 @@ const eventProperties = {
   member_invited: z.object({ permission: z.enum(["VIEW", "EDIT"]) }).strict(),
   member_invitation_accepted: z.object({ permission: z.enum(["VIEW", "EDIT"]) }).strict(),
   trip_edit_resumed: z.object({ role: z.enum(["OWNER", "MEMBER"]), permission: z.enum(["VIEW", "EDIT"]) }).strict(),
+  trip_visibility_updated: z.object({ visibility: z.enum(["PRIVATE", "UNLISTED", "PUBLISHED"]) }).strict(),
+  road_trip_viewed: z.object({ role: z.enum(["OWNER", "MEMBER"]), permission: z.enum(["VIEW", "EDIT"]) }).strict(),
 } as const;
 
 export type AnalyticsEventName = keyof typeof eventProperties;

@@ -36,10 +36,10 @@
 
 ## 3. Slice 2 — collaboration
 
-- [ ] Finish stop order/move conflict handling and UI recovery.
-- [ ] Implement invitation lifecycle/outbox/delivery retry and revoke policy.
-- [ ] Add share visibility controls and audit log.
-- [ ] Implement `/road/:id` desktop handoff and mobile route contract.
+- [x] Finish stop order/move conflict handling and UI recovery.
+- [x] Implement invitation lifecycle/outbox/delivery retry and revoke policy.
+- [x] Add share visibility controls and audit log.
+- [x] Implement `/road/:id` desktop handoff and mobile route contract.
 
 ## 4. Later slices
 

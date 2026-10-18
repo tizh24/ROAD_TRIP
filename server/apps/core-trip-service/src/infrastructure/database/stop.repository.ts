@@ -129,15 +129,33 @@ export class StopRepository {
     tripId: string,
     dayId: string,
     orderedIds: readonly string[],
-  ): Promise<void> {
+    expectedVersion?: number,
+  ): Promise<number> {
     return this.database.transaction(async (transaction) => {
       await assertOwnedDay(transaction, tripId, dayId);
+      if (expectedVersion !== undefined) {
+        const trip = await transaction.query<{ version: number }>(
+          'SELECT version FROM trip_schema.trips WHERE id=$1 AND deleted_at IS NULL',
+          [tripId],
+        );
+        if (!trip.rows[0] || trip.rows[0].version !== expectedVersion) {
+          throw new StopRepositoryError(
+            'STOP_VERSION_CONFLICT',
+            'Trip version does not match expected version.',
+          );
+        }
+      }
       const current = await lockDayStops(transaction, dayId);
       assertExactOrder(
         current.map((row) => row.id),
         orderedIds,
       );
       await applyOrder(transaction, dayId, orderedIds);
+      const updatedTrip = await transaction.query<{ version: number }>(
+        'UPDATE trip_schema.trips SET version = version + 1 WHERE id=$1 RETURNING version',
+        [tripId],
+      );
+      return updatedTrip.rows[0]?.version ?? 1;
     });
   }
 
@@ -146,8 +164,21 @@ export class StopRepository {
     stopId: string,
     targetDayId: string,
     targetIndex: number,
-  ): Promise<void> {
+    expectedVersion?: number,
+  ): Promise<number> {
     return this.database.transaction(async (transaction) => {
+      if (expectedVersion !== undefined) {
+        const trip = await transaction.query<{ version: number }>(
+          'SELECT version FROM trip_schema.trips WHERE id=$1 AND deleted_at IS NULL',
+          [tripId],
+        );
+        if (!trip.rows[0] || trip.rows[0].version !== expectedVersion) {
+          throw new StopRepositoryError(
+            'STOP_VERSION_CONFLICT',
+            'Trip version does not match expected version.',
+          );
+        }
+      }
       const stop = await lockStop(transaction, tripId, stopId);
       await assertOwnedDay(transaction, tripId, targetDayId);
       const dayIds = [...new Set([stop.dayId, targetDayId])].sort();
@@ -181,6 +212,11 @@ export class StopRepository {
       if (stop.dayId !== targetDayId)
         await writeIndexes(transaction, sourceIds);
       await writeIndexes(transaction, targetIds);
+      const updatedTrip = await transaction.query<{ version: number }>(
+        'UPDATE trip_schema.trips SET version = version + 1 WHERE id=$1 RETURNING version',
+        [tripId],
+      );
+      return updatedTrip.rows[0]?.version ?? 1;
     });
   }
 }

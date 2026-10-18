@@ -358,6 +358,7 @@ export class TripController {
     @Param('dayId') dayId: string,
     @Body() body: unknown,
     @Headers('x-roadtrip-user-id') actorId: string | undefined,
+    @Headers('if-match') ifMatch: string | undefined,
   ) {
     try {
       const input = object(body);
@@ -366,6 +367,7 @@ export class TripController {
         tripId,
         dayId,
         strings(input.orderedStopIds, 'orderedStopIds'),
+        ifMatch ? expectedVersion(ifMatch) : undefined,
       );
       return success({});
     } catch (error) {
@@ -379,6 +381,7 @@ export class TripController {
     @Param('stopId') stopId: string,
     @Body() body: unknown,
     @Headers('x-roadtrip-user-id') actorId: string | undefined,
+    @Headers('if-match') ifMatch: string | undefined,
   ) {
     try {
       const input = object(body);
@@ -388,8 +391,36 @@ export class TripController {
         stopId,
         string(input.targetDayId, 'targetDayId'),
         number(input.targetIndex, 'targetIndex'),
+        ifMatch ? expectedVersion(ifMatch) : undefined,
       );
       return success({});
+    } catch (error) {
+      throw responseError(error);
+    }
+  }
+
+  @Patch(':tripId/visibility')
+  async updateVisibility(
+    @Param('tripId') tripId: string,
+    @Body() body: unknown,
+    @Headers('x-roadtrip-user-id') actorId: string | undefined,
+  ) {
+    try {
+      const input = object(body);
+      const vis = string(input.visibility, 'visibility');
+      if (vis !== 'PRIVATE' && vis !== 'UNLISTED' && vis !== 'PUBLISHED') {
+        throw new TripApplicationError(
+          'VALIDATION_FAILED',
+          'visibility must be PRIVATE, UNLISTED, or PUBLISHED.',
+        );
+      }
+      const res = await this.trips.updateVisibility(
+        requiredHeader(actorId, 'x-roadtrip-user-id'),
+        tripId,
+        vis,
+        correlationId(),
+      );
+      return success(res);
     } catch (error) {
       throw responseError(error);
     }
@@ -603,6 +634,8 @@ function toTripDetailDto(
     description: row.description,
     budgetAmount: row.budgetAmount,
     currency: row.currency,
+    visibility: row.visibility ?? 'PRIVATE',
+    sourceTripId: row.sourceTripId ?? null,
     days: row.days,
   };
 }

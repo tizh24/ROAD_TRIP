@@ -58,7 +58,7 @@ describe('TripUseCases', () => {
     expect(trips.create).toHaveBeenCalledTimes(1);
   });
 
-  it('maps optimistic-lock and stop errors to stable application errors', () => {
+  it('maps optimistic-lock, incomplete publication, and stop errors to stable application errors', () => {
     expect(
       mapTripApplicationError(new TripVersionConflictError()),
     ).toMatchObject({
@@ -69,6 +69,45 @@ describe('TripUseCases', () => {
         new StopRepositoryError('STOP_NOT_FOUND', 'missing'),
       ),
     ).toMatchObject({ code: 'STOP_NOT_FOUND' });
+    const { TripIncompleteForPublicationError } = require('../../infrastructure/database/trip.repository');
+    expect(
+      mapTripApplicationError(
+        new TripIncompleteForPublicationError('Needs stops'),
+      ),
+    ).toMatchObject({ code: 'TRIP_INCOMPLETE_FOR_PUBLICATION' });
+  });
+
+  it('updates visibility for trip owner', async () => {
+    const trips = {
+      updateVisibility: jest.fn().mockResolvedValue({
+        visibility: 'PUBLISHED',
+        publishedAt: '2026-10-18T10:00:00Z',
+        version: 2,
+      }),
+    };
+    const useCases = new TripUseCases(
+      trips as never,
+      {} as never,
+      new TripAuthorizationPolicy(new OwnerReader()),
+    );
+
+    const result = await useCases.updateVisibility(
+      actorId,
+      tripId,
+      'PUBLISHED',
+      'corr-visibility',
+    );
+    expect(result).toEqual({
+      visibility: 'PUBLISHED',
+      publishedAt: '2026-10-18T10:00:00Z',
+      version: 2,
+    });
+    expect(trips.updateVisibility).toHaveBeenCalledWith(
+      tripId,
+      actorId,
+      'PUBLISHED',
+      'corr-visibility',
+    );
   });
 
   it('clones only a published source through the repository and is idempotent per caller', async () => {
