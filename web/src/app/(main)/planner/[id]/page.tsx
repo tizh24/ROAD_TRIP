@@ -1,6 +1,6 @@
-import { redirect } from "next/navigation";
+import TripEditorView from "@/features/trip-planning/components/TripEditorView";
 
 export default async function PlannerTripPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  redirect(`/trips/${encodeURIComponent(id)}`);
+  return <TripEditorView tripId={id} />;
 }

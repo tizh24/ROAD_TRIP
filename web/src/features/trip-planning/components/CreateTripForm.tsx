@@ -58,7 +58,7 @@ export default function CreateTripForm() {
       const trip = await createTrip(parsed.data, mutationKey);
       const dayCount = Math.round((Date.parse(`${parsed.data.endDate}T00:00:00Z`) - Date.parse(`${parsed.data.startDate}T00:00:00Z`)) / 86_400_000) + 1;
       trackAnalytics("trip_created", { dayCount }, { dedupeKey: mutationKey });
-      router.replace(`/trips/${trip.id}`);
+      router.replace(`/planner/${trip.id}`);
     } catch (error) {
       setSubmitError(error instanceof GatewayApiError ? error.message : "Không thể tạo chuyến đi. Vui lòng thử lại.");
       setIsSubmitting(false);

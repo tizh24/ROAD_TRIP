@@ -1,4 +1,4 @@
-const protectedPath = /^\/(?:trips|trip-invitations|planner|profile|memory|feed|partner|admin)(?:\/|$)/;
+const protectedPath = /^\/(?:dashboard|trips|trip-invitations|planner|profile|memory|feed|partner|admin)(?:\/|$)/;
 
 type CookieWithName = { name: string };
 
@@ -6,10 +6,9 @@ export function isProtectedRoute(pathname: string) {
   return protectedPath.test(pathname);
 }
 
-export function hasSupabaseAuthCookie(cookies: readonly CookieWithName[]) {
-  return cookies.some(
-    ({ name }) => name.startsWith("sb-") && name.includes("-auth-token"),
-  );
+export function hasGatewayAuthCookie(cookies: readonly CookieWithName[]) {
+  const name = process.env.NEXT_PUBLIC_AUTH_ACCESS_COOKIE_NAME ?? "rt_access";
+  return cookies.some((cookie) => cookie.name === name);
 }
 
 export function getSafeInternalPath(value: unknown) {

@@ -3,11 +3,12 @@ import test from "node:test";
 import {
   buildLoginUrl,
   getSafeInternalPath,
-  hasSupabaseAuthCookie,
+  hasGatewayAuthCookie,
   isProtectedRoute,
 } from "./route-protection.ts";
 
 test("protects every authenticated application route tree", () => {
+  assert.equal(isProtectedRoute("/dashboard"), true);
   assert.equal(isProtectedRoute("/trips"), true);
   assert.equal(isProtectedRoute("/trips/new"), true);
   assert.equal(isProtectedRoute("/trips/trip-123"), true);
@@ -45,12 +46,12 @@ test("marks an invalid existing session as expired", () => {
   assert.equal(loginUrl.searchParams.get("authError"), "session_expired");
 });
 
-test("recognizes Supabase auth cookies including chunked cookies", () => {
+test("recognizes the Gateway access cookie", () => {
   assert.equal(
-    hasSupabaseAuthCookie([{ name: "sb-project-ref-auth-token.0" }]),
+    hasGatewayAuthCookie([{ name: "rt_access" }]),
     true,
   );
-  assert.equal(hasSupabaseAuthCookie([{ name: "theme" }]), false);
+  assert.equal(hasGatewayAuthCookie([{ name: "theme" }]), false);
 });
 
 test("accepts internal return paths and rejects redirect injection", () => {
