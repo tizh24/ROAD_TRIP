@@ -23,6 +23,8 @@ import { CommunityRepository } from './infrastructure/database/community.reposit
 import { CommunityController } from './presentation/community.controller';
 import { PartnerRepository } from './infrastructure/database/partner.repository';
 import { PartnerController } from './presentation/partner.controller';
+import { BillingRepository } from './infrastructure/database/billing.repository';
+import { BillingController } from './presentation/billing.controller';
 
 @Module({
   imports: [
@@ -43,6 +45,7 @@ import { PartnerController } from './presentation/partner.controller';
     MetricsController,
     CommunityController,
     PartnerController,
+    BillingController,
   ],
   providers: [
     InternalServiceGuard,
@@ -111,6 +114,12 @@ import { PartnerController } from './presentation/partner.controller';
       inject: [DatabaseService],
       useFactory: (database: DatabaseService) =>
         new PartnerRepository(database),
+    },
+    {
+      provide: BillingRepository,
+      inject: [DatabaseService],
+      useFactory: (database: DatabaseService) =>
+        new BillingRepository(database),
     },
   ],
 })

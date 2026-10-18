@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import {
   ArrowLeft,
+  BookOpen,
   Camera,
   Check,
   DollarSign,
@@ -196,6 +197,13 @@ export default function TripMemoryView({ tripId }: { tripId: string }) {
               <span>Về danh sách chuyến đi</span>
             </Link>
             <div className="flex items-center gap-2">
+              <Link
+                href={`/travel-book/${trip.id}`}
+                className="focus-ring inline-flex items-center gap-1.5 rounded-full bg-primary px-3.5 py-2 text-xs font-bold text-white shadow-sm hover:bg-primary-hover transition"
+              >
+                <BookOpen size={14} />
+                <span>In Travel Book</span>
+              </Link>
               <Link
                 href={`/road/${trip.id}`}
                 className="focus-ring inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3.5 py-2 text-xs font-bold text-white/90 hover:bg-white/20"

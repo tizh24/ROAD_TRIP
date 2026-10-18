@@ -47,7 +47,7 @@
   expenses.
 - [x] Slice 4: community/profile/follow/collection/report/moderation.
 - [x] Slice 5: partner application/listings/approval/admin capability console.
-- [ ] Slice 6: payment/order/webhook/travel-book fulfillment.
+- [x] Slice 6: payment/order/webhook/travel-book fulfillment.
 
 ## 5. Quality gate for every slice
 

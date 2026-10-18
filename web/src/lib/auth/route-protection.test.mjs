@@ -22,6 +22,8 @@ test("protects every authenticated application route tree", () => {
   assert.equal(isProtectedRoute("/feed"), true);
   assert.equal(isProtectedRoute("/partner/analytics"), true);
   assert.equal(isProtectedRoute("/admin/finance"), true);
+  assert.equal(isProtectedRoute("/travel-book/book-123"), true);
+  assert.equal(isProtectedRoute("/payment"), true);
   assert.equal(isProtectedRoute("/trip/trip-123"), false);
   assert.equal(isProtectedRoute("/signup"), false);
   assert.equal(isProtectedRoute("/trips-archive"), false);

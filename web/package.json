@@ -8,11 +8,12 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "test": "npm run test:auth && npm run test:api && npm run test:community && npm run test:partner && npm run test:analytics",
+    "test": "npm run test:auth && npm run test:api && npm run test:community && npm run test:partner && npm run test:billing && npm run test:analytics",
     "test:auth": "node --experimental-strip-types --test src/lib/auth/*.test.mjs",
     "test:api": "node --experimental-strip-types --test src/features/trip-planning/api/*.test.mjs",
     "test:community": "node --experimental-strip-types --test src/features/community/api/*.test.mjs",
     "test:partner": "node --experimental-strip-types --test src/features/partner/api/*.test.mjs",
+    "test:billing": "node --experimental-strip-types --test src/features/billing/api/*.test.mjs",
     "test:analytics": "node --experimental-strip-types --test src/lib/analytics/*.test.mjs",
     "test:e2e": "playwright test",
     "test:staging:public": "node scripts/verify-staging.mjs"
