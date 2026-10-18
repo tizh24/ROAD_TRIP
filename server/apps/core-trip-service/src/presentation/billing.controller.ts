@@ -25,15 +25,16 @@ export class BillingController {
 
   @Post('billing/orders')
   async createOrder(
-    @Body() body: any,
+    @Body() body: unknown,
     @Headers('x-roadtrip-user-id') actorId?: string,
   ) {
     try {
       const userId = requiredHeader(actorId, 'x-roadtrip-user-id');
-      const itemType = string(body?.itemType, 'itemType');
-      const itemId = string(body?.itemId, 'itemId');
-      const title = string(body?.title, 'title');
-      const amount = Number(body?.amount);
+      const input = record(body);
+      const itemType = string(input.itemType, 'itemType');
+      const itemId = string(input.itemId, 'itemId');
+      const title = string(input.title, 'title');
+      const amount = Number(input.amount);
       if (isNaN(amount) || amount <= 0) {
         throw new HttpException(
           {
@@ -46,7 +47,7 @@ export class BillingController {
           400,
         );
       }
-      const tripId = body?.tripId ? string(body.tripId, 'tripId') : null;
+      const tripId = optionalString(input.tripId, 'tripId');
 
       const order = await this.billing.createOrder({
         userId,
@@ -55,8 +56,8 @@ export class BillingController {
         itemId,
         title,
         amount,
-        currency: body?.currency || 'VND',
-        metadata: body?.metadata || {},
+        currency: optionalString(input.currency, 'currency') ?? 'VND',
+        metadata: objectOrEmpty(input.metadata),
       });
       return success(order);
     } catch (error) {
@@ -102,19 +103,19 @@ export class BillingController {
   }
 
   @Post('billing/webhook')
-  async handleWebhook(@Body() body: any) {
+  async handleWebhook(@Body() body: unknown) {
     try {
       // The public Gateway validates the provider HMAC before forwarding this
       // command over the internal-service channel. Core never accepts a
       // browser-originated webhook directly.
-      const transactionId = string(body?.transactionId, 'transactionId');
-      const orderId = string(body?.orderId, 'orderId');
-      const amount = Number(body?.amount);
-      const status = body?.status === 'SUCCESS' ? 'SUCCESS' : 'FAILED';
-      const signature = string(body?.signature, 'signature');
-      const paymentMethod = body?.paymentMethod
-        ? String(body.paymentMethod)
-        : 'VIETQR';
+      const input = record(body);
+      const transactionId = string(input.transactionId, 'transactionId');
+      const orderId = string(input.orderId, 'orderId');
+      const amount = Number(input.amount);
+      const status = input.status === 'SUCCESS' ? 'SUCCESS' : 'FAILED';
+      const signature = string(input.signature, 'signature');
+      const paymentMethod =
+        optionalString(input.paymentMethod, 'paymentMethod') ?? 'VIETQR';
 
       const result = await this.billing.processWebhook({
         transactionId,
@@ -123,7 +124,7 @@ export class BillingController {
         status,
         signature,
         paymentMethod,
-        payload: body?.payload || {},
+        payload: objectOrEmpty(input.payload),
       });
       return success(result);
     } catch (error) {
@@ -176,7 +177,7 @@ export class BillingController {
   @Patch('travel-books/:id')
   async updateTravelBook(
     @Param('id') bookId: string,
-    @Body() body: any,
+    @Body() body: unknown,
     @Headers('x-roadtrip-user-id') actorId?: string,
   ) {
     try {
@@ -195,7 +196,7 @@ export class BillingController {
         );
       }
       await this.authorization.assertCanManageTrip(book.tripId, userId);
-      const res = await this.billing.updateTravelBook(bookId, body);
+      const res = await this.billing.updateTravelBook(bookId, record(body));
       return success(res);
     } catch (error) {
       throw responseError(error);
@@ -241,6 +242,33 @@ function string(value: unknown, field: string): string {
     );
   }
   return value.trim();
+}
+
+function record(value: unknown): Record<string, unknown> {
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+    throw new HttpException(
+      {
+        error: {
+          code: 'VALIDATION_FAILED',
+          message: 'Request body must be an object.',
+        },
+        meta: { correlationId: correlationId() },
+      },
+      400,
+    );
+  }
+  return value as Record<string, unknown>;
+}
+
+function optionalString(value: unknown, field: string): string | null {
+  if (value === undefined || value === null || value === '') return null;
+  return string(value, field);
+}
+
+function objectOrEmpty(value: unknown): Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : {};
 }
 
 function responseError(error: unknown): HttpException {
