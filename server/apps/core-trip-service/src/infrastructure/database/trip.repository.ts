@@ -77,7 +77,9 @@ export class TripVersionConflictError extends Error {
 }
 
 export class TripIncompleteForPublicationError extends Error {
-  constructor(message = 'Trip must have at least one stop before it can be published.') {
+  constructor(
+    message = 'Trip must have at least one stop before it can be published.',
+  ) {
     super(message);
     this.name = 'TripIncompleteForPublicationError';
   }
@@ -154,8 +156,30 @@ export class TripRepository {
     return result.rows;
   }
 
-  async listPublished(): Promise<readonly Pick<PublicTripRow, 'id' | 'title' | 'description' | 'startDate' | 'endDate' | 'budgetAmount' | 'currency'>[]> {
-    const result = await this.database.query<Pick<PublicTripRow, 'id' | 'title' | 'description' | 'startDate' | 'endDate' | 'budgetAmount' | 'currency'>>(
+  async listPublished(): Promise<
+    readonly Pick<
+      PublicTripRow,
+      | 'id'
+      | 'title'
+      | 'description'
+      | 'startDate'
+      | 'endDate'
+      | 'budgetAmount'
+      | 'currency'
+    >[]
+  > {
+    const result = await this.database.query<
+      Pick<
+        PublicTripRow,
+        | 'id'
+        | 'title'
+        | 'description'
+        | 'startDate'
+        | 'endDate'
+        | 'budgetAmount'
+        | 'currency'
+      >
+    >(
       `SELECT id, title, description, start_date::text AS "startDate", end_date::text AS "endDate", budget_amount::float8 AS "budgetAmount", currency
          FROM trip_schema.trips
         WHERE visibility = 'PUBLISHED' AND deleted_at IS NULL
@@ -242,11 +266,28 @@ export class TripRepository {
   }
 
   private async getPublicDays(id: string): Promise<readonly TripDayRow[]> {
-    const days = await this.database.query<{ id: string; date: string; dayIndex: number }>(
-      `SELECT id, date::text AS date, day_index AS "dayIndex" FROM trip_schema.trip_days WHERE trip_id=$1 AND status='ACTIVE' ORDER BY day_index`, [id]);
+    const days = await this.database.query<{
+      id: string;
+      date: string;
+      dayIndex: number;
+    }>(
+      `SELECT id, date::text AS date, day_index AS "dayIndex" FROM trip_schema.trip_days WHERE trip_id=$1 AND status='ACTIVE' ORDER BY day_index`,
+      [id],
+    );
     const stops = await this.database.query<TripStopRow & { dayId: string }>(
-      `SELECT id, day_id AS "dayId", place_id AS "placeId", name, address, latitude::float8 AS latitude, longitude::float8 AS longitude, notes, stop_index AS "stopIndex", version FROM trip_schema.trip_stops WHERE trip_id=$1 AND status='ACTIVE' ORDER BY stop_index`, [id]);
-    return days.rows.map((day) => ({ ...day, stops: stops.rows.filter((stop) => stop.dayId === day.id).map(({ dayId: _dayId, ...stop }) => stop) }));
+      `SELECT id, day_id AS "dayId", place_id AS "placeId", name, address, latitude::float8 AS latitude, longitude::float8 AS longitude, notes, stop_index AS "stopIndex", version FROM trip_schema.trip_stops WHERE trip_id=$1 AND status='ACTIVE' ORDER BY stop_index`,
+      [id],
+    );
+    return days.rows.map((day) => ({
+      ...day,
+      stops: stops.rows
+        .filter((stop) => stop.dayId === day.id)
+        .map((stop) => {
+          const { dayId, ...withoutDayId } = stop;
+          void dayId;
+          return withoutDayId;
+        }),
+    }));
   }
 
   async getByIdForUser(
@@ -343,7 +384,11 @@ export class TripRepository {
     actorId: string,
     visibility: 'PRIVATE' | 'UNLISTED' | 'PUBLISHED',
     correlationId?: string,
-  ): Promise<{ visibility: string; publishedAt: string | null; version: number }> {
+  ): Promise<{
+    visibility: string;
+    publishedAt: string | null;
+    version: number;
+  }> {
     return this.database.transaction(async (transaction) => {
       const current = await transaction.query<{
         id: string;
@@ -409,14 +454,23 @@ export class TripRepository {
     actorId: string,
   ): Promise<{ status: string; version: number }> {
     return this.database.transaction(async (transaction) => {
-      const current = await transaction.query<{ id: string; title: string; description: string | null; visibility: string; version: number }>(
+      const current = await transaction.query<{
+        id: string;
+        title: string;
+        description: string | null;
+        visibility: string;
+        version: number;
+      }>(
         `SELECT id, title, description, visibility, version FROM trip_schema.trips WHERE id=$1 AND deleted_at IS NULL FOR UPDATE`,
         [tripId],
       );
       const row = current.rows[0];
       if (!row) throw new TripVersionConflictError();
 
-      const updated = await transaction.query<{ status: string; version: number }>(
+      const updated = await transaction.query<{
+        status: string;
+        version: number;
+      }>(
         `UPDATE trip_schema.trips SET status = $2, version = version + 1 WHERE id = $1 RETURNING status, version`,
         [tripId, status],
       );
@@ -433,7 +487,12 @@ export class TripRepository {
       await transaction.query(
         `INSERT INTO trip_schema.trip_audit_logs (trip_id, actor_id, action, old_values, new_values)
          VALUES ($1, $2, 'STATUS_CHANGE', $3, $4)`,
-        [tripId, actorId, JSON.stringify({ status: row.version }), JSON.stringify({ status })],
+        [
+          tripId,
+          actorId,
+          JSON.stringify({ status: row.version }),
+          JSON.stringify({ status }),
+        ],
       );
 
       const res = updated.rows[0]!;
@@ -494,7 +553,12 @@ export class TripRepository {
 
   async updateMemory(
     tripId: string,
-    data: { title: string; summary: string | null; visibility: 'PRIVATE' | 'UNLISTED' | 'PUBLISHED'; coverPhotoUrl?: string | null },
+    data: {
+      title: string;
+      summary: string | null;
+      visibility: 'PRIVATE' | 'UNLISTED' | 'PUBLISHED';
+      coverPhotoUrl?: string | null;
+    },
   ) {
     const res = await this.database.query<{
       id: string;
@@ -513,13 +577,28 @@ export class TripRepository {
              cover_photo_url = COALESCE(EXCLUDED.cover_photo_url, trip_schema.trip_memories.cover_photo_url),
              updated_at = now()
        RETURNING id, trip_id, title, summary, cover_photo_url, visibility`,
-      [tripId, data.title, data.summary, data.visibility, data.coverPhotoUrl ?? null],
+      [
+        tripId,
+        data.title,
+        data.summary,
+        data.visibility,
+        data.coverPhotoUrl ?? null,
+      ],
     );
     return res.rows[0]!;
   }
 
-  async addMemoryPhoto(memoryId: string, photo: { photoUrl: string; caption?: string | null }) {
-    const res = await this.database.query<{ id: string; memory_id: string; photo_url: string; caption: string | null; created_at: string }>(
+  async addMemoryPhoto(
+    memoryId: string,
+    photo: { photoUrl: string; caption?: string | null },
+  ) {
+    const res = await this.database.query<{
+      id: string;
+      memory_id: string;
+      photo_url: string;
+      caption: string | null;
+      created_at: string;
+    }>(
       `INSERT INTO trip_schema.trip_memory_photos (memory_id, photo_url, caption)
        VALUES ($1, $2, $3)
        RETURNING id, memory_id, photo_url, caption, created_at`,
@@ -558,7 +637,12 @@ export class TripRepository {
   async addExpense(
     tripId: string,
     payerId: string,
-    expense: { amount: number; currency?: string; category: string; description: string },
+    expense: {
+      amount: number;
+      currency?: string;
+      category: string;
+      description: string;
+    },
   ) {
     const res = await this.database.query<{
       id: string;
@@ -573,7 +657,14 @@ export class TripRepository {
       `INSERT INTO trip_schema.trip_expenses (trip_id, payer_id, amount, currency, category, description)
        VALUES ($1, $2, $3, $4, $5, $6)
        RETURNING id, trip_id, payer_id, amount, currency, category, description, created_at`,
-      [tripId, payerId, expense.amount, expense.currency ?? 'VND', expense.category, expense.description],
+      [
+        tripId,
+        payerId,
+        expense.amount,
+        expense.currency ?? 'VND',
+        expense.category,
+        expense.description,
+      ],
     );
     const r = res.rows[0]!;
     return {
@@ -598,7 +689,12 @@ export class TripRepository {
   async updateLiveLocation(
     tripId: string,
     userId: string,
-    data: { latitude: number; longitude: number; sharingActive?: boolean; consentGiven?: boolean },
+    data: {
+      latitude: number;
+      longitude: number;
+      sharingActive?: boolean;
+      consentGiven?: boolean;
+    },
   ) {
     const res = await this.database.query<{
       id: string;

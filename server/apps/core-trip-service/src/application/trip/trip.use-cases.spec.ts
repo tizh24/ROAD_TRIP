@@ -1,5 +1,8 @@
 import { StopRepositoryError } from '../../infrastructure/database/stop.repository';
-import { TripVersionConflictError } from '../../infrastructure/database/trip.repository';
+import {
+  TripIncompleteForPublicationError,
+  TripVersionConflictError,
+} from '../../infrastructure/database/trip.repository';
 import {
   TripAuthorizationPolicy,
   type TripAccessReader,
@@ -69,7 +72,6 @@ describe('TripUseCases', () => {
         new StopRepositoryError('STOP_NOT_FOUND', 'missing'),
       ),
     ).toMatchObject({ code: 'STOP_NOT_FOUND' });
-    const { TripIncompleteForPublicationError } = require('../../infrastructure/database/trip.repository');
     expect(
       mapTripApplicationError(
         new TripIncompleteForPublicationError('Needs stops'),
@@ -113,7 +115,11 @@ describe('TripUseCases', () => {
   it('clones only a published source through the repository and is idempotent per caller', async () => {
     const cloned = { id: tripId, title: 'North loop' };
     const trips = { clonePublished: jest.fn().mockResolvedValue(cloned) };
-    const useCases = new TripUseCases(trips as never, {} as never, new TripAuthorizationPolicy(new OwnerReader()));
+    const useCases = new TripUseCases(
+      trips as never,
+      {} as never,
+      new TripAuthorizationPolicy(new OwnerReader()),
+    );
 
     await expect(
       useCases.clonePublished(actorId, tripId, 'clone-1', 'corr-1'),

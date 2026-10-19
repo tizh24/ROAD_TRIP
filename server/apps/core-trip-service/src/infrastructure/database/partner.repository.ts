@@ -34,7 +34,9 @@ export interface PartnerListingRecord {
 export class PartnerRepository {
   constructor(private readonly database: QueryExecutor) {}
 
-  async getApplication(userId: string): Promise<PartnerApplicationRecord | null> {
+  async getApplication(
+    userId: string,
+  ): Promise<PartnerApplicationRecord | null> {
     const res = await this.database.query<{
       id: string;
       user_id: string;
@@ -202,7 +204,10 @@ export class PartnerRepository {
     notes?: string,
   ) {
     const targetStatus = action === 'APPROVE' ? 'APPROVED' : 'REJECTED';
-    const appRes = await this.database.query<{ user_id: string; business_name: string }>(
+    const appRes = await this.database.query<{
+      user_id: string;
+      business_name: string;
+    }>(
       `UPDATE partner_schema.applications
        SET status = $2, review_notes = $3, reviewed_by = $4, reviewed_at = now(), updated_at = now()
        WHERE id = $1
@@ -229,7 +234,12 @@ export class PartnerRepository {
       await this.database.query(
         `INSERT INTO audit_schema.role_audit_logs (actor_id, target_user_id, previous_role, new_role, reason)
          VALUES ($1, $2, $3, 'PARTNER', $4)`,
-        [reviewerId, app.user_id, prevRole, `Phê duyệt đối tác kinh doanh: ${app.business_name}`],
+        [
+          reviewerId,
+          app.user_id,
+          prevRole,
+          `Phê duyệt đối tác kinh doanh: ${app.business_name}`,
+        ],
       );
     }
 
@@ -346,7 +356,7 @@ export class PartnerRepository {
     }>,
   ) {
     const fields: string[] = [];
-    const values: any[] = [partnerId, listingId];
+    const values: unknown[] = [partnerId, listingId];
     let idx = 3;
 
     if (data.title !== undefined) {
