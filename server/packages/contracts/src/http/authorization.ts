@@ -15,8 +15,11 @@ export const partnerApplicationStatuses = [
   'REJECTED',
   'SUSPENDED',
 ] as const;
-export type PartnerApplicationStatus = (typeof partnerApplicationStatuses)[number];
-export const partnerApplicationStatusSchema = z.enum(partnerApplicationStatuses);
+export type PartnerApplicationStatus =
+  (typeof partnerApplicationStatuses)[number];
+export const partnerApplicationStatusSchema = z.enum(
+  partnerApplicationStatuses,
+);
 
 export const tripMemberRoles = ['OWNER', 'EDIT', 'VIEW'] as const;
 export type TripMemberRole = (typeof tripMemberRoles)[number];
@@ -87,7 +90,10 @@ export const ROLE_CAPABILITIES: Record<
   ADMIN: ADMIN_CAPABILITIES,
 };
 
-const capabilitySetCache = new Map<PlatformRole, ReadonlySet<PlatformCapability>>();
+const capabilitySetCache = new Map<
+  PlatformRole,
+  ReadonlySet<PlatformCapability>
+>();
 for (const role of platformRoles) {
   capabilitySetCache.set(role, new Set(ROLE_CAPABILITIES[role]));
 }

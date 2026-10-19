@@ -239,7 +239,11 @@ export class CommunityRepository {
     }));
   }
 
-  async createComment(data: { postId: string; authorId: string; content: string }) {
+  async createComment(data: {
+    postId: string;
+    authorId: string;
+    content: string;
+  }) {
     const res = await this.database.query<{
       id: string;
       post_id: string;
@@ -266,17 +270,28 @@ export class CommunityRepository {
     reason: string;
     details?: string | null;
   }) {
-    const res = await this.database.query<{ id: string; status: string; created_at: string }>(
+    const res = await this.database.query<{
+      id: string;
+      status: string;
+      created_at: string;
+    }>(
       `INSERT INTO community_schema.reports (reporter_id, target_type, target_id, reason, details)
        VALUES ($1, $2, $3, $4, $5)
        RETURNING id, status, created_at`,
-      [data.reporterId, data.targetType, data.targetId, data.reason, data.details || null],
+      [
+        data.reporterId,
+        data.targetType,
+        data.targetId,
+        data.reason,
+        data.details || null,
+      ],
     );
     return res.rows[0]!;
   }
 
   async toggleFollow(followerId: string, followingId: string) {
-    if (followerId === followingId) throw new Error('Không thể theo dõi chính mình.');
+    if (followerId === followingId)
+      throw new Error('Không thể theo dõi chính mình.');
     const existing = await this.database.query(
       `SELECT 1 FROM users_schema.follows WHERE follower_id = $1 AND following_id = $2`,
       [followerId, followingId],
@@ -309,27 +324,37 @@ export class CommunityRepository {
     const p = profileRes.rows[0];
     if (!p) return null;
 
-    const [followersRes, followingRes, tripsRes, isFollowingRes] = await Promise.all([
-      this.database.query<{ count: string }>(`SELECT COUNT(*) AS count FROM users_schema.follows WHERE following_id = $1`, [targetUserId]),
-      this.database.query<{ count: string }>(`SELECT COUNT(*) AS count FROM users_schema.follows WHERE follower_id = $1`, [targetUserId]),
-      this.database.query<{
-        id: string;
-        title: string;
-        start_date: string;
-        end_date: string;
-        budget_amount: string;
-        currency: string;
-      }>(
-        `SELECT id, title, start_date, end_date, budget_amount, currency
+    const [followersRes, followingRes, tripsRes, isFollowingRes] =
+      await Promise.all([
+        this.database.query<{ count: string }>(
+          `SELECT COUNT(*) AS count FROM users_schema.follows WHERE following_id = $1`,
+          [targetUserId],
+        ),
+        this.database.query<{ count: string }>(
+          `SELECT COUNT(*) AS count FROM users_schema.follows WHERE follower_id = $1`,
+          [targetUserId],
+        ),
+        this.database.query<{
+          id: string;
+          title: string;
+          start_date: string;
+          end_date: string;
+          budget_amount: string;
+          currency: string;
+        }>(
+          `SELECT id, title, start_date, end_date, budget_amount, currency
          FROM trip_schema.trips
          WHERE owner_id = $1 AND visibility = 'PUBLISHED' AND deleted_at IS NULL
          ORDER BY created_at DESC`,
-        [targetUserId],
-      ),
-      currentUserId
-        ? this.database.query(`SELECT 1 FROM users_schema.follows WHERE follower_id = $1 AND following_id = $2`, [currentUserId, targetUserId])
-        : Promise.resolve({ rows: [] }),
-    ]);
+          [targetUserId],
+        ),
+        currentUserId
+          ? this.database.query(
+              `SELECT 1 FROM users_schema.follows WHERE follower_id = $1 AND following_id = $2`,
+              [currentUserId, targetUserId],
+            )
+          : Promise.resolve({ rows: [] }),
+      ]);
 
     return {
       userId: p.id,
@@ -366,7 +391,12 @@ export class CommunityRepository {
     return res.rows;
   }
 
-  async resolveReport(reportId: string, reviewerId: string, status: 'RESOLVED' | 'DISMISSED', notes?: string) {
+  async resolveReport(
+    reportId: string,
+    reviewerId: string,
+    status: 'RESOLVED' | 'DISMISSED',
+    notes?: string,
+  ) {
     const res = await this.database.query<{ id: string; status: string }>(
       `UPDATE community_schema.reports
        SET status = $2, resolution_notes = $3, reviewed_by = $4, reviewed_at = now()
@@ -377,7 +407,10 @@ export class CommunityRepository {
     return res.rows[0];
   }
 
-  async updatePostStatus(postId: string, status: 'PUBLISHED' | 'HIDDEN' | 'FLAGGED' | 'DELETED') {
+  async updatePostStatus(
+    postId: string,
+    status: 'PUBLISHED' | 'HIDDEN' | 'FLAGGED' | 'DELETED',
+  ) {
     await this.database.query(
       `UPDATE community_schema.posts SET status = $2, updated_at = now() WHERE id = $1`,
       [postId, status],

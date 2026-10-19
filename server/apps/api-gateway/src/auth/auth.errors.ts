@@ -44,5 +44,5 @@ export function authError(
     ? new ForbiddenException(body)
     : code === 'AUTH_UNAVAILABLE'
       ? new ServiceUnavailableException(body)
-    : new UnauthorizedException(body);
+      : new UnauthorizedException(body);
 }

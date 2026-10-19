@@ -40,9 +40,10 @@ export class SupabaseJwtVerifier {
         clockTolerance: 5,
       } satisfies JWTVerifyOptions;
       try {
-        const { payload } = protectedHeader.alg === 'HS256'
-          ? await this.verifyLegacyHs256(token, jose, verificationOptions)
-          : await this.verifyWithJwks(token, jose, verificationOptions);
+        const { payload } =
+          protectedHeader.alg === 'HS256'
+            ? await this.verifyLegacyHs256(token, jose, verificationOptions)
+            : await this.verifyWithJwks(token, jose, verificationOptions);
         return userContextFromPayload(payload);
       } catch (error) {
         // Legacy shared secrets may be unavailable in newer Supabase projects.
@@ -125,7 +126,9 @@ export class SupabaseJwtVerifier {
   }
 }
 
-function userContextFromPayload(payload: Record<string, unknown>): AuthenticatedUserContext {
+function userContextFromPayload(
+  payload: Record<string, unknown>,
+): AuthenticatedUserContext {
   if (
     typeof payload.sub !== 'string' ||
     !uuidPattern.test(payload.sub) ||

@@ -168,12 +168,20 @@ export class TripController {
 
   @Get('public')
   async listPublished() {
-    try { return success(await this.trips.listPublished()); } catch (error) { throw responseError(error); }
+    try {
+      return success(await this.trips.listPublished());
+    } catch (error) {
+      throw responseError(error);
+    }
   }
 
   @Get('public/:tripId')
   async getPublished(@Param('tripId') tripId: string) {
-    try { return success(await this.trips.getPublished(tripId)); } catch (error) { throw responseError(error); }
+    try {
+      return success(await this.trips.getPublished(tripId));
+    } catch (error) {
+      throw responseError(error);
+    }
   }
 
   @Post('public/:tripId/clone')
@@ -435,8 +443,16 @@ export class TripController {
     try {
       const input = object(body);
       const st = string(input.status, 'status');
-      if (st !== 'PLANNING' && st !== 'ONGOING' && st !== 'COMPLETED' && st !== 'CANCELLED') {
-        throw new TripApplicationError('VALIDATION_FAILED', 'Invalid trip status.');
+      if (
+        st !== 'PLANNING' &&
+        st !== 'ONGOING' &&
+        st !== 'COMPLETED' &&
+        st !== 'CANCELLED'
+      ) {
+        throw new TripApplicationError(
+          'VALIDATION_FAILED',
+          'Invalid trip status.',
+        );
       }
       return success(
         await this.trips.updateStatus(
@@ -477,7 +493,10 @@ export class TripController {
       const input = object(body);
       const vis = string(input.visibility, 'visibility');
       if (vis !== 'PRIVATE' && vis !== 'UNLISTED' && vis !== 'PUBLISHED') {
-        throw new TripApplicationError('VALIDATION_FAILED', 'Invalid memory visibility.');
+        throw new TripApplicationError(
+          'VALIDATION_FAILED',
+          'Invalid memory visibility.',
+        );
       }
       return success(
         await this.trips.updateMemory(
@@ -487,7 +506,8 @@ export class TripController {
             title: string(input.title, 'title'),
             summary: nullableString(input.summary, 'summary'),
             visibility: vis,
-            coverPhotoUrl: optionalString(input.coverPhotoUrl, 'coverPhotoUrl') ?? null,
+            coverPhotoUrl:
+              optionalString(input.coverPhotoUrl, 'coverPhotoUrl') ?? null,
           },
         ),
       );
@@ -595,8 +615,14 @@ export class TripController {
           {
             latitude: number(input.latitude, 'latitude'),
             longitude: number(input.longitude, 'longitude'),
-            sharingActive: typeof input.sharingActive === 'boolean' ? input.sharingActive : true,
-            consentGiven: typeof input.consentGiven === 'boolean' ? input.consentGiven : true,
+            sharingActive:
+              typeof input.sharingActive === 'boolean'
+                ? input.sharingActive
+                : true,
+            consentGiven:
+              typeof input.consentGiven === 'boolean'
+                ? input.consentGiven
+                : true,
           },
         ),
       );

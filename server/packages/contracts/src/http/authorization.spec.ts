@@ -5,7 +5,6 @@ import {
   platformCapabilities,
   platformRoles,
   resolveCapabilities,
-  type PlatformCapability,
   type PlatformRole,
 } from './authorization';
 
@@ -43,7 +42,9 @@ describe('Platform Authorization and Capability Resolver', () => {
     expect(hasCapability(partnerRole, 'partner.listing.write')).toBe(true);
     expect(hasCapability(partnerRole, 'partner.analytics.read')).toBe(true);
 
-    expect(hasCapability(partnerRole, 'content.moderation.execute')).toBe(false);
+    expect(hasCapability(partnerRole, 'content.moderation.execute')).toBe(
+      false,
+    );
     expect(hasCapability(partnerRole, 'admin.access')).toBe(false);
     expect(hasCapability(partnerRole, 'admin.role.grant')).toBe(false);
 
@@ -55,7 +56,9 @@ describe('Platform Authorization and Capability Resolver', () => {
   it('grants MODERATOR content moderation but strictly denies admin and partner operations', () => {
     const moderatorRole: PlatformRole = 'MODERATOR';
     expect(hasCapability(moderatorRole, 'content.moderation.read')).toBe(true);
-    expect(hasCapability(moderatorRole, 'content.moderation.execute')).toBe(true);
+    expect(hasCapability(moderatorRole, 'content.moderation.execute')).toBe(
+      true,
+    );
 
     // Explicit invariant: Moderator cannot grant roles, manage finance, or access partner listings
     expect(hasCapability(moderatorRole, 'admin.access')).toBe(false);

@@ -158,7 +158,8 @@ export class TripUseCases {
 
   async getPublished(tripId: string) {
     const trip = await this.trips.getPublished(tripId);
-    if (!trip) throw new TripApplicationError('TRIP_NOT_FOUND', 'Trip does not exist.');
+    if (!trip)
+      throw new TripApplicationError('TRIP_NOT_FOUND', 'Trip does not exist.');
     return trip;
   }
 
@@ -182,7 +183,10 @@ export class TripUseCases {
         correlationId,
       );
       if (!trip)
-        throw new TripApplicationError('TRIP_NOT_FOUND', 'Trip does not exist.');
+        throw new TripApplicationError(
+          'TRIP_NOT_FOUND',
+          'Trip does not exist.',
+        );
       return trip;
     } catch (error) {
       throw mapTripApplicationError(error);
@@ -345,7 +349,11 @@ export class TripUseCases {
     tripId: string,
     visibility: 'PRIVATE' | 'UNLISTED' | 'PUBLISHED',
     correlationId?: string,
-  ): Promise<{ visibility: string; publishedAt: string | null; version: number }> {
+  ): Promise<{
+    visibility: string;
+    publishedAt: string | null;
+    version: number;
+  }> {
     try {
       await this.authorization.assertCanManageTrip(tripId, actorId);
       return await this.trips.updateVisibility(
@@ -379,7 +387,11 @@ export class TripUseCases {
       if (!memory) {
         // Auto-initialize if trip exists and user can read
         const trip = await this.trips.getByIdForUser(tripId, actorId);
-        if (!trip) throw new TripApplicationError('TRIP_NOT_FOUND', 'Trip does not exist.');
+        if (!trip)
+          throw new TripApplicationError(
+            'TRIP_NOT_FOUND',
+            'Trip does not exist.',
+          );
         return await this.trips.updateMemory(tripId, {
           title: trip.title,
           summary: trip.description,
@@ -395,7 +407,12 @@ export class TripUseCases {
   async updateMemory(
     actorId: string,
     tripId: string,
-    data: { title: string; summary: string | null; visibility: 'PRIVATE' | 'UNLISTED' | 'PUBLISHED'; coverPhotoUrl?: string | null },
+    data: {
+      title: string;
+      summary: string | null;
+      visibility: 'PRIVATE' | 'UNLISTED' | 'PUBLISHED';
+      coverPhotoUrl?: string | null;
+    },
   ) {
     try {
       await this.authorization.assertCanManageTrip(tripId, actorId);
@@ -431,7 +448,12 @@ export class TripUseCases {
   async addExpense(
     actorId: string,
     tripId: string,
-    expense: { amount: number; currency?: string; category: string; description: string },
+    expense: {
+      amount: number;
+      currency?: string;
+      category: string;
+      description: string;
+    },
   ) {
     try {
       await this.authorization.assertCanEditItinerary(tripId, actorId);
@@ -453,7 +475,12 @@ export class TripUseCases {
   async updateLiveLocation(
     actorId: string,
     tripId: string,
-    data: { latitude: number; longitude: number; sharingActive?: boolean; consentGiven?: boolean },
+    data: {
+      latitude: number;
+      longitude: number;
+      sharingActive?: boolean;
+      consentGiven?: boolean;
+    },
   ) {
     try {
       await this.authorization.assertCanRead(tripId, actorId);

@@ -46,11 +46,15 @@ describe('AdminController', () => {
       ]),
     };
 
-    controller = new AdminController(mockAuthService as PlatformAuthorizationService);
+    controller = new AdminController(
+      mockAuthService as PlatformAuthorizationService,
+    );
   });
 
   it('updates user role when valid role is provided', async () => {
-    const res = await controller.updateRole(adminUser, 'target-1', { role: 'MODERATOR' });
+    const res = await controller.updateRole(adminUser, 'target-1', {
+      role: 'MODERATOR',
+    });
     expect(res.data).toBeDefined();
     expect((res.data as { role: string }).role).toBe('MODERATOR');
     expect(mockAuthService.updateRole).toHaveBeenCalledWith(
@@ -68,7 +72,9 @@ describe('AdminController', () => {
   });
 
   it('updates user status when valid status is provided', async () => {
-    const res = await controller.updateStatus(adminUser, 'target-1', { status: 'BANNED' });
+    const res = await controller.updateStatus(adminUser, 'target-1', {
+      status: 'BANNED',
+    });
     expect(res.data).toBeDefined();
     expect((res.data as { status: string }).status).toBe('BANNED');
     expect(mockAuthService.updateStatus).toHaveBeenCalledWith(
@@ -88,6 +94,9 @@ describe('AdminController', () => {
   it('lists platform audit logs', async () => {
     const res = await controller.listAuditLogs('10', '0');
     expect(res.data).toHaveLength(1);
-    expect(mockAuthService.listAuditLogs).toHaveBeenCalledWith({ limit: 10, offset: 0 });
+    expect(mockAuthService.listAuditLogs).toHaveBeenCalledWith({
+      limit: 10,
+      offset: 0,
+    });
   });
 });

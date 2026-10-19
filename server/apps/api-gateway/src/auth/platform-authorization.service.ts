@@ -59,7 +59,12 @@ export class PlatformAuthorizationService {
     status: AccountStatus,
     correlationId?: string,
   ) {
-    return this.profiles.updateStatus(actorId, targetUserId, status, correlationId);
+    return this.profiles.updateStatus(
+      actorId,
+      targetUserId,
+      status,
+      correlationId,
+    );
   }
 
   async listAuditLogs(query?: { limit?: number; offset?: number }) {
@@ -67,7 +72,4 @@ export class PlatformAuthorizationService {
   }
 }
 
-export {
-  PlatformProfileNotFoundError,
-  PlatformProfileUnavailableError,
-};
+export { PlatformProfileNotFoundError, PlatformProfileUnavailableError };

@@ -45,7 +45,7 @@ describe('SupabaseJwtVerifier', () => {
     );
     const address = server.address() as AddressInfo;
     jwksUrl = `http://127.0.0.1:${address.port}/jwks`;
-  });
+  }, 20_000);
 
   beforeEach(() => {
     requestCount = 0;
@@ -53,6 +53,7 @@ describe('SupabaseJwtVerifier', () => {
   });
 
   afterAll(async () => {
+    if (!server) return;
     await new Promise<void>((resolve, reject) =>
       server.close((error) => (error ? reject(error) : resolve())),
     );

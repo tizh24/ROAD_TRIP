@@ -92,7 +92,9 @@ describe('NotificationEventHandler', () => {
 
     const query = jest.fn((sql: string) => {
       if (sql.includes('processed_events')) {
-        return Promise.resolve({ rows: [{ eventId: invitationEvent.eventId }] });
+        return Promise.resolve({
+          rows: [{ eventId: invitationEvent.eventId }],
+        });
       }
       if (sql.includes('trip_invitations')) {
         return Promise.resolve({ rows: [{ status: 'REVOKED' }] });
@@ -105,8 +107,9 @@ describe('NotificationEventHandler', () => {
 
     const database = {
       query,
-      transaction: <Result>(work: (tx: QueryExecutor) => Promise<Result>): Promise<Result> =>
-        work({ query } as never),
+      transaction: <Result>(
+        work: (tx: QueryExecutor) => Promise<Result>,
+      ): Promise<Result> => work({ query } as never),
     };
 
     const sender = { send: jest.fn() };
@@ -131,14 +134,18 @@ describe('NotificationEventHandler', () => {
 
     const database = {
       query,
-      transaction: <Result>(work: (tx: QueryExecutor) => Promise<Result>): Promise<Result> =>
-        work({ query } as never),
+      transaction: <Result>(
+        work: (tx: QueryExecutor) => Promise<Result>,
+      ): Promise<Result> => work({ query } as never),
     };
 
     const failingSender = {
       send: jest.fn().mockRejectedValue(new Error('SMTP timeout')),
     };
-    const handler = new NotificationEventHandler(database as never, failingSender);
+    const handler = new NotificationEventHandler(
+      database as never,
+      failingSender,
+    );
 
     await handler.handle(event);
 

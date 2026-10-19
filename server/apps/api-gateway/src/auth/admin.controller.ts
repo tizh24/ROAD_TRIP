@@ -71,7 +71,9 @@ export class AdminController {
     @Query('limit') limitStr?: string,
     @Query('offset') offsetStr?: string,
   ) {
-    const limit = limitStr ? Math.min(Math.max(parseInt(limitStr, 10) || 50, 1), 100) : 50;
+    const limit = limitStr
+      ? Math.min(Math.max(parseInt(limitStr, 10) || 50, 1), 100)
+      : 50;
     const offset = offsetStr ? Math.max(parseInt(offsetStr, 10) || 0, 0) : 0;
     const logs = await this.authorization.listAuditLogs({ limit, offset });
     return response(logs);
@@ -79,18 +81,25 @@ export class AdminController {
 }
 
 function parseRole(body: unknown): PlatformRole {
-  if (typeof body !== 'object' || body === null) invalid('Role body is invalid.');
+  if (typeof body !== 'object' || body === null)
+    invalid('Role body is invalid.');
   const val = (body as Record<string, unknown>).role;
   if (typeof val !== 'string' || !platformRoles.includes(val as PlatformRole)) {
-    invalid('A valid platform role is required (USER, PARTNER, MODERATOR, ADMIN).');
+    invalid(
+      'A valid platform role is required (USER, PARTNER, MODERATOR, ADMIN).',
+    );
   }
   return val as PlatformRole;
 }
 
 function parseStatus(body: unknown): AccountStatus {
-  if (typeof body !== 'object' || body === null) invalid('Status body is invalid.');
+  if (typeof body !== 'object' || body === null)
+    invalid('Status body is invalid.');
   const val = (body as Record<string, unknown>).status;
-  if (typeof val !== 'string' || !accountStatuses.includes(val as AccountStatus)) {
+  if (
+    typeof val !== 'string' ||
+    !accountStatuses.includes(val as AccountStatus)
+  ) {
     invalid('A valid account status is required (ACTIVE, BANNED, DELETED).');
   }
   return val as AccountStatus;

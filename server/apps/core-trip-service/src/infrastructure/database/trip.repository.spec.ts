@@ -67,7 +67,9 @@ describe('TripRepository', () => {
     const database = new FakeDatabase();
     database.queryHandler = (query) => {
       if (
-        query.includes('SELECT id FROM trip_schema.trips WHERE id=$1 AND visibility=\'PUBLISHED\'')
+        query.includes(
+          "SELECT id FROM trip_schema.trips WHERE id=$1 AND visibility='PUBLISHED'",
+        )
       ) {
         return [{ id: 'source-1' }];
       }

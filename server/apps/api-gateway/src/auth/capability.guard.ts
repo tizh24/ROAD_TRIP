@@ -5,10 +5,7 @@ import {
   SetMetadata,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import {
-  hasCapability,
-  type PlatformCapability,
-} from '@roadtrip/contracts';
+import { hasCapability, type PlatformCapability } from '@roadtrip/contracts';
 import { authError } from './auth.errors';
 import type { AuthenticatedRequest } from './supabase-auth.guard';
 
