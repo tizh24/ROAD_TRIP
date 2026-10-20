@@ -313,6 +313,7 @@ export default function TripMemoryView({ tripId }: { tripId: string }) {
               {memory.photos.map((photo) => (
                 <div key={photo.id} className="group relative overflow-hidden rounded-2xl border border-border-main bg-surface shadow-sm">
                   <div className="aspect-[4/3] w-full overflow-hidden bg-background-warm">
+                    {/* eslint-disable-next-line @next/next/no-img-element -- trip-memory photos are user-uploaded URLs from configurable storage hosts. */}
                     <img
                       src={photo.photoUrl}
                       alt={photo.caption || "Ảnh chuyến đi"}

@@ -210,6 +210,7 @@ export default function PartnerOverviewPanel() {
                 >
                   <div>
                     {item.mediaUrls[0] ? (
+                      // eslint-disable-next-line @next/next/no-img-element -- partner media is uploaded to configurable storage hosts.
                       <img
                         src={item.mediaUrls[0]}
                         alt={item.title}

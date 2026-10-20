@@ -101,6 +101,7 @@ export default function PublicProfilePage({
         <section className="overflow-hidden rounded-3xl border border-border-main bg-white p-6 shadow-sm sm:p-8">
           <div className="flex flex-col items-center gap-6 text-center sm:flex-row sm:text-left">
             {profile.avatarUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element -- profile avatars are user-supplied URLs with no fixed host allowlist.
               <img
                 src={profile.avatarUrl}
                 alt={profile.fullName}

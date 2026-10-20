@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -78,9 +79,12 @@ export default function LandingPage({
         {/* Hero Background Immersive Card */}
         <div className="relative w-full h-[60vh] sm:h-[64vh] lg:h-[68vh] min-h-[460px] max-h-[600px] rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl group">
           {/* Background Image */}
-          <img
+          <Image
             src="https://images.unsplash.com/photo-1528127269322-539801943592?q=80&w=2000&auto=format&fit=crop"
             alt="Mù Căng Chải - Việt Nam"
+            fill
+            priority
+            sizes="(max-width: 1280px) 100vw, 1280px"
             className="absolute inset-0 w-full h-full object-cover object-center transform scale-105 transition-transform duration-1000 ease-out group-hover:scale-100"
           />
 
@@ -271,11 +275,13 @@ export default function LandingPage({
 
           {/* Right Asymmetric Image Composition */}
           <div className="lg:col-span-5 relative">
-            <div className="relative z-10 rounded-2xl overflow-hidden shadow-2xl img-zoom-container">
-              <img
+            <div className="relative z-10 h-[480px] overflow-hidden rounded-2xl shadow-2xl img-zoom-container">
+              <Image
                 src="https://images.unsplash.com/photo-1509030450996-93f2e3d8ed05?q=80&w=1000&auto=format&fit=crop"
                 alt="Góc nhìn lữ khách"
-                className="w-full h-[480px] object-cover"
+                fill
+                sizes="(max-width: 1024px) 100vw, 42vw"
+                className="object-cover"
               />
             </div>
             {/* Offset Accent Card */}
@@ -317,10 +323,12 @@ export default function LandingPage({
               href="/explore?q=Sapa"
               className="md:col-span-7 group relative h-[420px] rounded-2xl overflow-hidden shadow-md cursor-pointer img-zoom-container block"
             >
-              <img
+              <Image
                 src="https://images.unsplash.com/photo-1540611025311-01df3cef54b5?q=80&w=1200&auto=format&fit=crop"
                 alt="Sa Pa"
-                className="w-full h-full object-cover"
+                fill
+                sizes="(max-width: 768px) 100vw, 58vw"
+                className="object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
               <div className="absolute top-4 right-4 bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-white text-xs font-mono">
@@ -344,10 +352,12 @@ export default function LandingPage({
               href="/explore?q=Hội+An"
               className="md:col-span-5 group relative h-[420px] rounded-2xl overflow-hidden shadow-md cursor-pointer img-zoom-container block"
             >
-              <img
+              <Image
                 src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=1000&auto=format&fit=crop"
                 alt="Hội An"
-                className="w-full h-full object-cover"
+                fill
+                sizes="(max-width: 768px) 100vw, 42vw"
+                className="object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
               <div className="absolute top-4 right-4 bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-white text-xs font-mono">
@@ -371,10 +381,12 @@ export default function LandingPage({
               href="/explore?q=Ninh+Bình"
               className="md:col-span-4 group relative h-[360px] rounded-2xl overflow-hidden shadow-md cursor-pointer img-zoom-container block"
             >
-              <img
+              <Image
                 src="https://images.unsplash.com/photo-1528127269322-539801943592?q=80&w=800&auto=format&fit=crop"
                 alt="Ninh Bình"
-                className="w-full h-full object-cover"
+                fill
+                sizes="(max-width: 768px) 100vw, 33vw"
+                className="object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
               <div className="absolute bottom-6 left-6 right-6 text-white">
@@ -392,10 +404,12 @@ export default function LandingPage({
               href="/explore?q=Nha+Trang"
               className="md:col-span-4 group relative h-[360px] rounded-2xl overflow-hidden shadow-md cursor-pointer img-zoom-container block"
             >
-              <img
+              <Image
                 src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=800&auto=format&fit=crop"
                 alt="Nha Trang"
-                className="w-full h-full object-cover"
+                fill
+                sizes="(max-width: 768px) 100vw, 33vw"
+                className="object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
               <div className="absolute bottom-6 left-6 right-6 text-white">
@@ -413,10 +427,12 @@ export default function LandingPage({
               href="/explore?q=Phú+Quốc"
               className="md:col-span-4 group relative h-[360px] rounded-2xl overflow-hidden shadow-md cursor-pointer img-zoom-container block"
             >
-              <img
+              <Image
                 src="https://images.unsplash.com/photo-1512100356356-de1b84283e18?q=80&w=800&auto=format&fit=crop"
                 alt="Phú Quốc"
-                className="w-full h-full object-cover"
+                fill
+                sizes="(max-width: 768px) 100vw, 33vw"
+                className="object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
               <div className="absolute bottom-6 left-6 right-6 text-white">
@@ -575,9 +591,12 @@ export default function LandingPage({
                 &ldquo;Tripz tiết kiệm cho tôi hàng tuần liền tìm kiếm thông tin lẻ tẻ trên mạng. Lịch trình AI đề xuất cực kỳ chính xác về thời gian di chuyển, lại có những quán cà phê ẩn mình vô cùng gu.&rdquo;
               </p>
               <div className="flex items-center gap-4">
-                <img
+                <Image
                   src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop"
                   alt="Linh Hải"
+                  width={48}
+                  height={48}
+                  sizes="48px"
                   className="w-12 h-12 rounded-full object-cover border border-brand-orange"
                 />
                 <div>
@@ -593,9 +612,12 @@ export default function LandingPage({
                 &ldquo;Cảm giác cầm một lịch trình thiết kế đẹp như tạp chí Kinfolk khiến mỗi bước chân du lịch trở nên thư thái hơn hẳn. Tôi đặc biệt thích tính năng ước tính ngân sách thông minh.&rdquo;
               </p>
               <div className="flex items-center gap-4">
-                <img
+                <Image
                   src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop"
                   alt="Trần Đạt"
+                  width={48}
+                  height={48}
+                  sizes="48px"
                   className="w-12 h-12 rounded-full object-cover border border-brand-orange"
                 />
                 <div>

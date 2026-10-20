@@ -203,6 +203,7 @@ export default function TravelBookPage({
                 {/* Hardcover book visual */}
                 <div className="mt-4 flex aspect-[3/4] w-full flex-col justify-between rounded-2xl bg-gradient-to-br from-[#1d2a23] to-[#0f1712] p-6 text-white shadow-xl relative overflow-hidden">
                   {coverPhotoUrl && (
+                    // eslint-disable-next-line @next/next/no-img-element -- a travel-book cover can reference user-uploaded media from variable hosts.
                     <img
                       src={coverPhotoUrl}
                       alt="Cover"

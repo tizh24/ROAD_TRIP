@@ -301,6 +301,7 @@ export default function CommunityFeedView() {
                       className="group flex items-center gap-3"
                     >
                       {post.authorAvatar ? (
+                        // eslint-disable-next-line @next/next/no-img-element -- community avatars are user-supplied URLs with no fixed host allowlist.
                         <img
                           src={post.authorAvatar}
                           alt={post.authorName}
@@ -376,6 +377,7 @@ export default function CommunityFeedView() {
                       }`}
                     >
                       {post.mediaUrls.map((url, index) => (
+                        // eslint-disable-next-line @next/next/no-img-element -- post media is user-supplied and can use approved storage hosts added at runtime.
                         <img
                           key={index}
                           src={url}
@@ -449,6 +451,7 @@ export default function CommunityFeedView() {
                         comments.map((c) => (
                           <div key={c.id} className="flex items-start gap-2.5 text-xs">
                             {c.authorAvatar ? (
+                              // eslint-disable-next-line @next/next/no-img-element -- comment avatars are user-supplied URLs with no fixed host allowlist.
                               <img
                                 src={c.authorAvatar}
                                 alt={c.authorName}
