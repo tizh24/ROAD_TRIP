@@ -1,7 +1,22 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { z } from "zod";
-import { GatewayApiError, requestGateway } from "./gateway-request.ts";
+import {
+  GatewayApiError,
+  gatewayApiUrl,
+  requestGateway,
+} from "./gateway-request.ts";
+
+test("does not duplicate the API version when the base URL already has it", () => {
+  assert.equal(
+    gatewayApiUrl("https://gateway.example/api/v1", "api/v1/partner/listings").toString(),
+    "https://gateway.example/api/v1/partner/listings",
+  );
+  assert.equal(
+    gatewayApiUrl("https://gateway.example/api/v1", "trips").toString(),
+    "https://gateway.example/api/v1/trips",
+  );
+});
 
 test("uses cookie credentials for mutations and validates the envelope", async () => {
   let captured;

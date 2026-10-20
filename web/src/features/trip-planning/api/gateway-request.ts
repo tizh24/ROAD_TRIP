@@ -48,6 +48,14 @@ export function gatewayApiPath(path: string): string {
     : `api/v1/${normalizedPath}`;
 }
 
+export function gatewayApiUrl(baseUrl: string, path: string): URL {
+  const normalizedPath = path.replace(/^\/+/, "");
+  if (normalizedPath.startsWith("api/v1/")) {
+    return new URL(`/${normalizedPath}`, baseUrl);
+  }
+  return new URL(normalizedPath, normalizeBaseUrl(baseUrl));
+}
+
 export async function requestGateway<T extends z.ZodType>(
   options: GatewayRequestOptions,
   schema: T,
@@ -72,7 +80,7 @@ export async function requestGateway<T extends z.ZodType>(
   let response: Response;
   try {
     response = await (options.fetch ?? fetch)(
-      new URL(options.path, normalizeBaseUrl(options.baseUrl)),
+      gatewayApiUrl(options.baseUrl, options.path),
       {
         method: options.method ?? "GET",
         headers,
