@@ -14,7 +14,9 @@ test.describe("accessibility and responsive smoke", () => {
     test(`login is labelled and does not overflow at ${viewport.name} width`, async ({ page }) => {
       await page.setViewportSize(viewport);
       await page.goto("/login");
-      await expect(page.getByRole("heading", { level: 2, name: "Chào mừng trở lại!" })).toBeVisible();
+      await expect(
+        page.getByRole("heading", { level: 2, name: /Chào mừng trở lại!?/ }),
+      ).toBeVisible();
       await expect(page.getByLabel("Email")).toBeVisible();
       await expect(page.getByLabel("Mật khẩu")).toBeVisible();
       const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
@@ -25,9 +27,11 @@ test.describe("accessibility and responsive smoke", () => {
   test("critical login controls have visible keyboard focus", async ({ page }) => {
     await page.goto("/login");
     await page.keyboard.press("Tab");
-    await expect(page.getByRole("link", { name: /Road Trip/i })).toBeFocused();
+    await expect(page.getByRole("link", { name: /Về trang chủ/i })).toBeFocused();
     await page.keyboard.press("Tab");
     await expect(page.getByLabel("Email")).toBeFocused();
+    await page.keyboard.press("Tab");
+    await expect(page.getByRole("link", { name: "Quên mật khẩu?" })).toBeFocused();
     await page.keyboard.press("Tab");
     await expect(page.getByLabel("Mật khẩu")).toBeFocused();
   });

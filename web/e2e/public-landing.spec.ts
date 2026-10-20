@@ -12,20 +12,33 @@ test.describe("public landing page", () => {
     await expect(
       page.getByRole("heading", {
         level: 1,
-        name: /Mọi cung đường.*Một hành trình.*đáng nhớ/i,
+        name: /Khám phá Việt Nam\.\s*Tự do\. Phiêu lưu\./i,
       }),
     ).toBeVisible();
     await expect(
-      page.getByRole("heading", { name: /Khám phá Việt Nam,.*từng cung đường/i }),
+      page.getByRole("heading", { name: "Cảm Hứng Điểm Đến" }),
     ).toBeVisible();
-    await expect(
-      page.getByRole("link", { name: /Lên kế hoạch chuyến đi/i }).first(),
-    ).toHaveAttribute("href", "/trips/new");
-    await expect(
-      page.getByRole("link", { name: /Khám phá cung đường/i }).first(),
-    ).toHaveAttribute("href", "/explore");
+    await page
+      .getByPlaceholder("VD: Hà Giang, Phú Quốc...")
+      .fill("Hà Giang");
+    await page.getByRole("button", { name: "Khám Phá Ngay" }).click();
+    await expect(page).toHaveURL(/\/explore\?q=H%C3%A0\+Giang$/);
 
-    const menu = page.locator('summary[aria-label="Mở hoặc đóng điều hướng"]');
+    await page.goto("/");
+    await page.getByRole("button", { name: "AI May Đo Độc Bản" }).click();
+    await page
+      .getByPlaceholder("VD: Hà Giang, Phú Quốc...")
+      .fill("Đà Lạt");
+    await page.getByRole("button", { name: "Khám Phá Ngay" }).click();
+    await expect(page).toHaveURL((url) => {
+      return (
+        url.pathname === "/login" &&
+        url.searchParams.get("next") === "/planner/new?title=%C4%90%C3%A0+L%E1%BA%A1t"
+      );
+    });
+
+    await page.goto("/");
+    const menu = page.getByRole("button", { name: "Mở điều hướng" });
     await expect(menu).toBeVisible();
     await menu.click();
     await expect(page.getByRole("navigation", { name: "Điều hướng di động" })).toBeVisible();
@@ -33,34 +46,28 @@ test.describe("public landing page", () => {
     await expect(page.getByRole("navigation", { name: "Điều hướng di động" })).toBeHidden();
   });
 
-  test("keeps every in-page navigation target centered and inside the laptop viewport", async ({
+  test("keeps the landing and primary navigation inside the laptop viewport", async ({
     page,
   }) => {
     await page.setViewportSize({ width: 1366, height: 900 });
     await page.goto("/");
 
-    await expect(page.locator("header")).toHaveCSS("position", "relative");
+    await expect(page.locator("header")).toHaveCSS("position", "sticky");
     expect(
       await page.evaluate(
         () => document.documentElement.scrollWidth <= window.innerWidth,
       ),
     ).toBe(true);
 
-    const destinations = [
-      { label: "Khám phá", title: "#kham-pha h2", section: "#kham-pha" },
-      { label: "Cách hoạt động", title: "#cach-hoat-dong h2", section: "#cach-hoat-dong" },
-    ] as const;
+    await expect(page.getByRole("heading", { name: "Cảm Hứng Điểm Đến" })).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: /Trải Nghiệm Độc Bản Với 3 Bước/i }),
+    ).toBeVisible();
 
-    for (const destination of destinations) {
-      await page.getByRole("link", { name: destination.label }).first().click();
-      await page.waitForTimeout(700);
-      await expect(page.locator(destination.title)).toBeInViewport();
-      await expect(page.locator(destination.section)).toBeInViewport();
-      expect(
-        await page.evaluate(
-          () => document.documentElement.scrollWidth <= window.innerWidth,
-        ),
-      ).toBe(true);
-    }
+    await page.getByRole("link", { name: "Khám phá" }).click();
+    await expect(page).toHaveURL("/explore");
+    await page.goto("/");
+    await page.getByRole("link", { name: "Cộng đồng", exact: true }).click();
+    await expect(page).toHaveURL("/feed");
   });
 });
