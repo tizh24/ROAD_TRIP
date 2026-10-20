@@ -84,6 +84,7 @@ export default function LandingPage({
             alt="Mù Căng Chải - Việt Nam"
             fill
             priority
+            unoptimized
             sizes="(max-width: 1280px) 100vw, 1280px"
             className="absolute inset-0 w-full h-full object-cover object-center transform scale-105 transition-transform duration-1000 ease-out group-hover:scale-100"
           />
@@ -280,6 +281,7 @@ export default function LandingPage({
                 src="https://images.unsplash.com/photo-1509030450996-93f2e3d8ed05?q=80&w=1000&auto=format&fit=crop"
                 alt="Góc nhìn lữ khách"
                 fill
+                unoptimized
                 sizes="(max-width: 1024px) 100vw, 42vw"
                 className="object-cover"
               />
@@ -327,6 +329,7 @@ export default function LandingPage({
                 src="https://images.unsplash.com/photo-1540611025311-01df3cef54b5?q=80&w=1200&auto=format&fit=crop"
                 alt="Sa Pa"
                 fill
+                unoptimized
                 sizes="(max-width: 768px) 100vw, 58vw"
                 className="object-cover"
               />
@@ -356,6 +359,7 @@ export default function LandingPage({
                 src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=1000&auto=format&fit=crop"
                 alt="Hội An"
                 fill
+                unoptimized
                 sizes="(max-width: 768px) 100vw, 42vw"
                 className="object-cover"
               />
@@ -385,6 +389,7 @@ export default function LandingPage({
                 src="https://images.unsplash.com/photo-1528127269322-539801943592?q=80&w=800&auto=format&fit=crop"
                 alt="Ninh Bình"
                 fill
+                unoptimized
                 sizes="(max-width: 768px) 100vw, 33vw"
                 className="object-cover"
               />
@@ -408,6 +413,7 @@ export default function LandingPage({
                 src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=800&auto=format&fit=crop"
                 alt="Nha Trang"
                 fill
+                unoptimized
                 sizes="(max-width: 768px) 100vw, 33vw"
                 className="object-cover"
               />
@@ -431,6 +437,7 @@ export default function LandingPage({
                 src="https://images.unsplash.com/photo-1512100356356-de1b84283e18?q=80&w=800&auto=format&fit=crop"
                 alt="Phú Quốc"
                 fill
+                unoptimized
                 sizes="(max-width: 768px) 100vw, 33vw"
                 className="object-cover"
               />
@@ -596,6 +603,7 @@ export default function LandingPage({
                   alt="Linh Hải"
                   width={48}
                   height={48}
+                  unoptimized
                   sizes="48px"
                   className="w-12 h-12 rounded-full object-cover border border-brand-orange"
                 />
@@ -617,6 +625,7 @@ export default function LandingPage({
                   alt="Trần Đạt"
                   width={48}
                   height={48}
+                  unoptimized
                   sizes="48px"
                   className="w-12 h-12 rounded-full object-cover border border-brand-orange"
                 />
