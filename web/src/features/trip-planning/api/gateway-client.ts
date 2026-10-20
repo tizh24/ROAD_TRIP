@@ -3,6 +3,7 @@
 import { z } from "zod";
 import {
   requestGateway,
+  gatewayApiPath,
   type GatewayRequestOptions,
 } from "./gateway-request";
 
@@ -25,7 +26,7 @@ export class GatewayClient {
       {
         ...options,
         baseUrl: gatewayBaseUrl(),
-        path,
+        path: gatewayApiPath(path),
       },
       schema,
     );

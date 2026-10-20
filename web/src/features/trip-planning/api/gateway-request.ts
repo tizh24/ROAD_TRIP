@@ -41,6 +41,13 @@ export interface GatewayRequestOptions {
   readonly signal?: AbortSignal;
 }
 
+export function gatewayApiPath(path: string): string {
+  const normalizedPath = path.replace(/^\/+/, "");
+  return normalizedPath.startsWith("api/")
+    ? normalizedPath
+    : `api/v1/${normalizedPath}`;
+}
+
 export async function requestGateway<T extends z.ZodType>(
   options: GatewayRequestOptions,
   schema: T,
