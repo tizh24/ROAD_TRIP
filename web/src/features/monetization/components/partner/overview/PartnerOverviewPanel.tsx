@@ -12,7 +12,6 @@ import {
   MessageSquare,
   Plus,
   Store,
-  Tag,
   Trash2,
   Wallet,
   X,

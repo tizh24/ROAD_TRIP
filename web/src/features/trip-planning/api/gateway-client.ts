@@ -2,7 +2,6 @@
 
 import { z } from "zod";
 import {
-  GatewayApiError,
   requestGateway,
   type GatewayRequestOptions,
 } from "./gateway-request";

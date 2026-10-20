@@ -51,7 +51,6 @@ export default function LandingPage({
   const [destination, setDestination] = useState("");
   const [budget, setBudget] = useState("Cân bằng (5 - 15 triệu)");
   const [duration, setDuration] = useState("Vừa đủ (3 Ngày 2 Đêm)");
-  const [notice, setNotice] = useState("");
   const [newsletterNotice, setNewsletterNotice] = useState("");
 
   const handlePlannerSubmit = (e: React.FormEvent) => {
@@ -215,11 +214,6 @@ export default function LandingPage({
                 <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
               </button>
             </form>
-            {notice && (
-              <p className="text-xs text-brand-orange font-medium mt-3" role="status">
-                {notice}
-              </p>
-            )}
           </div>
         </div>
       </section>

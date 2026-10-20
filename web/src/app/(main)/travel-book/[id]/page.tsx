@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { use, useCallback, useEffect, useState } from "react";
 import {
@@ -8,17 +7,10 @@ import {
   Book,
   BookOpen,
   CheckCircle2,
-  ChevronRight,
   CreditCard,
   FileText,
-  Image as ImageIcon,
-  MapPin,
-  Package,
-  Phone,
-  Printer,
   Sparkles,
   Truck,
-  User,
 } from "lucide-react";
 import {
   createBillingOrder,

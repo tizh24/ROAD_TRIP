@@ -1,20 +1,17 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import {
   AlertCircle,
   ArrowLeft,
   CheckCircle2,
   Circle,
-  Clock,
-  Compass,
   ExternalLink,
   MapPin,
   Navigation,
   PhoneCall,
-  QrCode,
-  Share2,
   ShieldAlert,
   Smartphone,
 } from "lucide-react";
@@ -36,6 +33,7 @@ type State =
   | { kind: "error"; message: string };
 
 export default function RoadTripView({ tripId }: { tripId: string }) {
+  const router = useRouter();
   const [state, setState] = useState<State>({ kind: "loading" });
   const [dayIndex, setDayIndex] = useState(0);
   const [checkIns, setCheckIns] = useState<Record<string, boolean>>({});
@@ -120,7 +118,7 @@ export default function RoadTripView({ tripId }: { tripId: string }) {
     setCompletingTrip(true);
     try {
       await updateTripStatus(tripId, "COMPLETED");
-      window.location.href = `/memory/${tripId}`;
+      router.push(`/memory/${tripId}`);
     } catch (cause) {
       alert(cause instanceof Error ? cause.message : "Không thể hoàn tất chuyến đi.");
       setCompletingTrip(false);

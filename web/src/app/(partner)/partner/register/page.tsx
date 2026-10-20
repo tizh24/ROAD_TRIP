@@ -8,13 +8,10 @@ import {
   Building2,
   CheckCircle2,
   Clock,
-  Compass,
-  FileCheck,
   Mail,
   Phone,
   Send,
   ShieldCheck,
-  Sparkles,
 } from "lucide-react";
 import {
   getPartnerApplication,
@@ -25,7 +22,7 @@ import {
 export default function PartnerRegisterPage() {
   const [application, setApplication] = useState<PartnerApplication | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string>();
+  const [, setError] = useState<string>();
 
   // Form fields
   const [businessName, setBusinessName] = useState("");

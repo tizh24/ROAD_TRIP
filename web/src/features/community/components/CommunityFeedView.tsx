@@ -4,18 +4,14 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import {
   Bookmark,
-  Calendar,
   Compass,
   Flag,
   Heart,
-  Image as ImageIcon,
   MapPin,
   MessageCircle,
   Plus,
   Send,
-  Share2,
   Sparkles,
-  User,
   UsersRound,
   X,
 } from "lucide-react";
@@ -93,7 +89,7 @@ export default function CommunityFeedView() {
           };
         }),
       );
-    } catch (err) {
+    } catch {
       alert("Vui lòng đăng nhập để thích bài viết.");
     }
   };
@@ -111,7 +107,7 @@ export default function CommunityFeedView() {
           };
         }),
       );
-    } catch (err) {
+    } catch {
       alert("Vui lòng đăng nhập để lưu bài viết.");
     }
   };
@@ -146,7 +142,7 @@ export default function CommunityFeedView() {
           p.id === activeCommentsPostId ? { ...p, commentCount: p.commentCount + 1 } : p,
         ),
       );
-    } catch (err) {
+    } catch {
       alert("Không thể gửi bình luận. Vui lòng đăng nhập.");
     } finally {
       setSubmittingComment(false);
@@ -197,7 +193,7 @@ export default function CommunityFeedView() {
         setReportSuccess(false);
         setReportDetails("");
       }, 1500);
-    } catch (err) {
+    } catch {
       alert("Không thể gửi báo cáo vi phạm.");
     } finally {
       setSubmittingReport(false);

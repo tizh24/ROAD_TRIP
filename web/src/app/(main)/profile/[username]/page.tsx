@@ -5,11 +5,8 @@ import { use, useCallback, useEffect, useState } from "react";
 import {
   Calendar,
   Compass,
-  MapPin,
-  Share2,
   UserCheck,
   UserPlus,
-  Users,
   Wallet,
 } from "lucide-react";
 import {
@@ -65,7 +62,7 @@ export default function PublicProfilePage({
             }
           : null,
       );
-    } catch (err) {
+    } catch {
       alert("Vui lòng đăng nhập để theo dõi người dùng này.");
     } finally {
       setUpdatingFollow(false);

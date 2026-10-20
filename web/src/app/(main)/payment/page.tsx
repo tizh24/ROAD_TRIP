@@ -4,11 +4,9 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useCallback, useEffect, useState } from "react";
 import {
-  AlertCircle,
   ArrowRight,
   Book,
   CheckCircle2,
-  Clock,
   CreditCard,
   QrCode,
   Receipt,
@@ -29,7 +27,7 @@ function PaymentContent() {
   const [order, setOrder] = useState<OrderRecord | null>(null);
   const [orders, setOrders] = useState<OrderRecord[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string>();
+  const [, setError] = useState<string>();
 
   const [selectedMethod, setSelectedMethod] = useState<"VIETQR" | "MOMO" | "CREDIT_CARD">("VIETQR");
   const [paymentSuccess, setPaymentSuccess] = useState(false);

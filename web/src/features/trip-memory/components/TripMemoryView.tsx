@@ -6,16 +6,12 @@ import {
   ArrowLeft,
   BookOpen,
   Camera,
-  Check,
-  DollarSign,
   Globe,
   Image as ImageIcon,
   Lock,
   Plus,
-  Receipt,
   Share2,
   Trash2,
-  Users,
   Wallet,
 } from "lucide-react";
 import { GatewayApiError } from "@/features/trip-planning/api/gateway-request";
