@@ -33,7 +33,7 @@ export default function Navbar({ user }: { user?: NavbarUser }) {
 
         {/* Center: Search Bar */}
         <div className="flex-1 max-w-md hidden md:block">
-          <SearchBar onSearch={(val) => console.log(val)} />
+          <SearchBar />
         </div>
 
         {/* Center-Right: Navigation Links */}

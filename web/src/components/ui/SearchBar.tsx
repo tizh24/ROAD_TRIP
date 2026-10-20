@@ -6,9 +6,9 @@ import { GatewayApiError } from "@/features/trip-planning/api/gateway-request";
 import { searchPlaces } from "@/features/trip-planning/api/trips";
 import type { Place } from "@/features/trip-planning/api/trip-model";
 
-type Props = { placeholder?: string; onSearch?: (value: string) => void; className?: string };
+type Props = { placeholder?: string; className?: string };
 
-export default function SearchBar({ placeholder = "Tìm địa danh, cung đường phượt...", onSearch, className = "" }: Props) {
+export default function SearchBar({ placeholder = "Tìm địa danh, cung đường phượt...", className = "" }: Props) {
   const [value, setValue] = useState("");
   const [open, setOpen] = useState(false);
   const [places, setPlaces] = useState<readonly Place[]>([]);
@@ -39,7 +39,6 @@ export default function SearchBar({ placeholder = "Tìm địa danh, cung đư�
   const update = (next: string) => {
     setValue(next);
     if (next.trim().length < 2) { setPlaces([]); setMessage(undefined); setBusy(false); }
-    onSearch?.(next);
   };
 
   const showResults = open && value.trim().length >= 2;
