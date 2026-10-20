@@ -1,9 +1,10 @@
-const protectedPath = /^\/(?:dashboard|trips|trip-invitations|planner|road|profile|memory|partner|admin|travel-book|payment)(?:\/|$)/;
+const protectedPath = /^\/(?:dashboard|trips|trip-invitations|planner|road|memory|partner|admin|travel-book|payment)(?:\/|$)/;
+const privateProfilePath = /^\/profile(?:$|\/(?:settings|collections|billing)(?:\/|$))/;
 
 type CookieWithName = { name: string };
 
 export function isProtectedRoute(pathname: string) {
-  return protectedPath.test(pathname);
+  return protectedPath.test(pathname) || privateProfilePath.test(pathname);
 }
 
 export function hasGatewayAuthCookie(cookies: readonly CookieWithName[]) {

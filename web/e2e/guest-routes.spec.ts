@@ -13,6 +13,11 @@ const protectedPaths = [
 test.describe('guest access to protected trip routes', () => {
   test.skip(!process.env.E2E_BASE_URL, 'Requires E2E_BASE_URL.');
 
+  test('allows a guest to open a public community profile', async ({ page }) => {
+    await page.goto('/profile/community-member');
+    await expect(page).toHaveURL('/profile/community-member');
+  });
+
   for (const path of protectedPaths) {
     test(`redirects ${path} to login and preserves the return path`, async ({
       page,
