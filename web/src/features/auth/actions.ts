@@ -83,7 +83,7 @@ export async function signUp(
   });
   if (result.data && !result.data.confirmationRequired) {
     revalidatePath("/", "layout");
-    redirect(getSafeInternalPath(formData.get("next")) ?? "/profile");
+    redirect(getSafeInternalPath(formData.get("next")) ?? "/dashboard");
   }
 
   return {
