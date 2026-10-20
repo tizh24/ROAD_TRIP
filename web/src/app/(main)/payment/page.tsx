@@ -182,7 +182,7 @@ function PaymentContent() {
               </div>
               <div className="flex justify-between">
                 <span className="text-text-sub">Mã giao dịch:</span>
-                <span className="font-mono text-text-sub">{order.paymentRef || "TX_MOCK_SUCCESS"}</span>
+                <span className="font-mono text-text-sub">{order.paymentRef || "Chưa được cung cấp"}</span>
               </div>
             </div>
 
