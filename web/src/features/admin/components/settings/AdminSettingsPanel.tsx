@@ -41,7 +41,8 @@ export default function AdminSettingsPanel() {
   }, []);
 
   useEffect(() => {
-    loadUsers();
+    const timer = window.setTimeout(() => void loadUsers(), 0);
+    return () => window.clearTimeout(timer);
   }, [loadUsers]);
 
   const handleRoleChange = async (userId: string, newRole: AdminUser["role"]) => {

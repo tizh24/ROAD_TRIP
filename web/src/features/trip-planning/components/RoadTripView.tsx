@@ -45,14 +45,17 @@ export default function RoadTripView({ tripId }: { tripId: string }) {
 
   // Load check-in records from localStorage on client
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem(`roadtrip_checkins_${tripId}`);
-      if (stored) {
-        setCheckIns(JSON.parse(stored) as Record<string, boolean>);
+    const timer = window.setTimeout(() => {
+      try {
+        const stored = localStorage.getItem(`roadtrip_checkins_${tripId}`);
+        if (stored) {
+          setCheckIns(JSON.parse(stored) as Record<string, boolean>);
+        }
+      } catch {
+        // localStorage unavailable or restricted
       }
-    } catch {
-      // localStorage unavailable or restricted
-    }
+    }, 0);
+    return () => window.clearTimeout(timer);
   }, [tripId]);
 
   const toggleCheckIn = (stopId: string) => {
@@ -87,7 +90,8 @@ export default function RoadTripView({ tripId }: { tripId: string }) {
   }, [tripId]);
 
   useEffect(() => {
-    void load();
+    const timer = window.setTimeout(() => void load(), 0);
+    return () => window.clearTimeout(timer);
   }, [load]);
 
   useEffect(() => {

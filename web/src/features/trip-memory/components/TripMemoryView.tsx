@@ -86,7 +86,8 @@ export default function TripMemoryView({ tripId }: { tripId: string }) {
   }, [tripId]);
 
   useEffect(() => {
-    void load();
+    const timer = window.setTimeout(() => void load(), 0);
+    return () => window.clearTimeout(timer);
   }, [load]);
 
   async function handleAddPhoto(e: React.FormEvent) {
@@ -379,7 +380,11 @@ export default function TripMemoryView({ tripId }: { tripId: string }) {
                 />
                 <select
                   value={category}
-                  onChange={(e) => setCategory(e.target.value as any)}
+                  onChange={(e) =>
+                    setCategory(
+                      e.target.value as "FOOD" | "STAY" | "FUEL" | "ACTIVITY" | "OTHER",
+                    )
+                  }
                   className="field bg-surface text-sm"
                 >
                   <option value="FOOD">Ăn uống (FOOD)</option>

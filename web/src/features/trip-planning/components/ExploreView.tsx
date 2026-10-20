@@ -25,7 +25,8 @@ export default function ExploreView() {
 
   useEffect(() => {
     if (queryParam) {
-      setSearch(queryParam);
+      const timer = window.setTimeout(() => setSearch(queryParam), 0);
+      return () => window.clearTimeout(timer);
     }
   }, [queryParam]);
 
@@ -42,7 +43,8 @@ export default function ExploreView() {
   }, []);
 
   useEffect(() => {
-    void load();
+    const timer = window.setTimeout(() => void load(), 0);
+    return () => window.clearTimeout(timer);
   }, [load]);
 
   const filteredTrips = useMemo(() => {

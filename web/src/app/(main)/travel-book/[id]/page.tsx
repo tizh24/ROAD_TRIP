@@ -81,7 +81,8 @@ export default function TravelBookPage({
   }, [targetId]);
 
   useEffect(() => {
-    loadBook();
+    const timer = window.setTimeout(() => void loadBook(), 0);
+    return () => window.clearTimeout(timer);
   }, [loadBook]);
 
   const handleOrder = async (e: React.FormEvent) => {

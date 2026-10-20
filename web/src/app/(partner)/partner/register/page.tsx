@@ -58,7 +58,8 @@ export default function PartnerRegisterPage() {
   }, []);
 
   useEffect(() => {
-    loadStatus();
+    const timer = window.setTimeout(() => void loadStatus(), 0);
+    return () => window.clearTimeout(timer);
   }, [loadStatus]);
 
   const handleSubmit = async (e: React.FormEvent) => {

@@ -48,7 +48,8 @@ export default function AdminPartnersPanel() {
   }, []);
 
   useEffect(() => {
-    loadApplications();
+    const timer = window.setTimeout(() => void loadApplications(), 0);
+    return () => window.clearTimeout(timer);
   }, [loadApplications]);
 
   const handleOpenReview = (app: PartnerApplication, action: "APPROVE" | "REJECT") => {

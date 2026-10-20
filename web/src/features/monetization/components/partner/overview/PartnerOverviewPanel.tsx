@@ -81,7 +81,8 @@ export default function PartnerOverviewPanel() {
   }, []);
 
   useEffect(() => {
-    loadListings();
+    const timer = window.setTimeout(() => void loadListings(), 0);
+    return () => window.clearTimeout(timer);
   }, [loadListings]);
 
   const handleCreateListing = async (e: React.FormEvent) => {
@@ -198,7 +199,7 @@ export default function PartnerOverviewPanel() {
               <Store className="mx-auto text-text-sub opacity-40" size={40} />
               <p className="mt-3 text-base font-bold text-text-main">Bạn chưa có dịch vụ nào</p>
               <p className="mt-1 text-xs text-text-sub">
-                Bấm vào nút "Thêm dịch vụ mới" phía trên để niêm yết phòng nghỉ, nhà hàng hoặc tour du lịch đầu tiên!
+                Bấm vào nút &ldquo;Thêm dịch vụ mới&rdquo; phía trên để niêm yết phòng nghỉ, nhà hàng hoặc tour du lịch đầu tiên!
               </p>
             </div>
           ) : (
@@ -338,7 +339,7 @@ export default function PartnerOverviewPanel() {
                 <label className="block text-xs font-bold text-text-main">Phân loại *</label>
                 <select
                   value={category}
-                  onChange={(e) => setCategory(e.target.value as any)}
+                  onChange={(e) => setCategory(e.target.value as PartnerListing["category"])}
                   className="mt-1 w-full rounded-xl border border-border-main bg-white px-3.5 py-2 text-sm outline-none focus:border-primary"
                 >
                   <option value="STAY">Lưu trú (Khách sạn/Homestay)</option>

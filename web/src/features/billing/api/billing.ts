@@ -20,7 +20,7 @@ export async function createBillingOrder(data: {
   amount: number;
   currency?: string;
   tripId?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }): Promise<OrderRecord> {
   return requestGateway(
     {

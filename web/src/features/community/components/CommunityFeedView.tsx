@@ -76,7 +76,8 @@ export default function CommunityFeedView() {
   }, []);
 
   useEffect(() => {
-    loadPosts();
+    const timer = window.setTimeout(() => void loadPosts(), 0);
+    return () => window.clearTimeout(timer);
   }, [loadPosts]);
 
   const handleToggleLike = async (postId: string) => {
