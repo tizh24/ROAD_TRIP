@@ -38,7 +38,9 @@ test.describe("public landing page", () => {
     });
 
     await page.goto("/");
-    const menu = page.getByRole("button", { name: "Mở điều hướng" });
+    const menu = page.getByRole("button", {
+      name: /(?:Mở|Đóng) điều hướng/,
+    });
     await expect(menu).toBeVisible();
     await menu.click();
     await expect(page.getByRole("navigation", { name: "Điều hướng di động" })).toBeVisible();
@@ -68,6 +70,11 @@ test.describe("public landing page", () => {
     await expect(page).toHaveURL("/explore");
     await page.goto("/");
     await page.getByRole("link", { name: "Cộng đồng", exact: true }).click();
-    await expect(page).toHaveURL("/feed");
+    await expect(page).toHaveURL((url) => {
+      return (
+        url.pathname === "/login" &&
+        url.searchParams.get("next") === "/feed"
+      );
+    });
   });
 });

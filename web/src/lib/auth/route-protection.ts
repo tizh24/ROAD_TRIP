@@ -1,4 +1,4 @@
-const protectedPath = /^\/(?:dashboard|trips|trip-invitations|planner|road|memory|partner|admin|travel-book|payment)(?:\/|$)/;
+const protectedPath = /^\/(?:dashboard|trips|trip-invitations|planner|road|memory|feed|partner|admin|travel-book|payment)(?:\/|$)/;
 const privateProfilePath = /^\/profile(?:$|\/(?:settings|collections|billing)(?:\/|$))/;
 
 type CookieWithName = { name: string };
