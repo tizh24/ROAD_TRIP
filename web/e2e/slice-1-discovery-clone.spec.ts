@@ -7,7 +7,9 @@ test.describe("Slice 1: Discovery to Clone journey", () => {
     await page.goto("/explore");
     await expect(page).toHaveURL("/explore");
     await expect(page.getByRole("heading", { level: 1 })).toContainText(/Chọn một hướng đi/i);
-    await expect(page.getByPlaceholder("Tìm theo tên điểm đến, lộ trình...")).toBeVisible();
+    await expect(
+      page.getByLabel("Tìm điểm đến hoặc cung đường"),
+    ).toBeVisible();
   });
 
   test("guest on /trip/:id sees login gate button and redirects safely", async ({ page }) => {
