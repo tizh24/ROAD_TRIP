@@ -12,6 +12,8 @@ describe('Health endpoints (e2e)', () => {
       SUPABASE_URL: 'http://localhost:54321',
       SUPABASE_JWKS_URL: 'http://localhost:54321/jwks',
       SUPABASE_JWT_ISSUER: 'http://localhost:54321/auth/v1',
+      SUPABASE_PUBLISHABLE_KEY: 'test-publishable-key',
+      SUPABASE_SERVICE_ROLE_KEY: 'test-service-role-key',
       REDIS_URL: 'redis://localhost:6379',
       INTERNAL_SERVICE_TOKEN: 'test-internal-token-that-is-long-enough',
       LOCATIONIQ_BASE_URL: 'https://us1.locationiq.com',
@@ -51,6 +53,6 @@ describe('Health endpoints (e2e)', () => {
   });
 
   afterEach(async () => {
-    await app.close();
+    if (app) await app.close();
   });
 });

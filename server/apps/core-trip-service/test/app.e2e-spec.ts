@@ -17,6 +17,8 @@ describe('Health endpoints (e2e)', () => {
       SUPABASE_JWKS_URL: 'http://127.0.0.1:54321/auth/v1/.well-known/jwks.json',
       SUPABASE_JWT_ISSUER: 'http://127.0.0.1:54321/auth/v1',
       SUPABASE_JWT_AUDIENCE: 'authenticated',
+      SUPABASE_PUBLISHABLE_KEY: 'test-publishable-key',
+      SUPABASE_SERVICE_ROLE_KEY: 'test-service-role-key',
       REDIS_URL: 'redis://127.0.0.1:6379',
       DATABASE_URL: 'postgresql://postgres:postgres@127.0.0.1:54322/postgres',
       INTERNAL_SERVICE_TOKEN: 'test-internal-token-at-least-32-characters',
@@ -65,6 +67,8 @@ describe('Health endpoints (e2e)', () => {
   });
 
   afterEach(async () => {
-    await app.close();
+    if (app) {
+      await app.close();
+    }
   });
 });
