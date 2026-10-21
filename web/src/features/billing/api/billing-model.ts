@@ -12,7 +12,7 @@ export const orderRecordSchema = z.object({
   status: z.enum(["PENDING", "PROCESSING", "COMPLETED", "FAILED", "CANCELLED"]),
   paymentMethod: z.string().nullable().optional(),
   paymentRef: z.string().nullable().optional(),
-  metadata: z.record(z.string(), z.any()).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
   createdAt: z.string(),
 });
 
@@ -38,7 +38,7 @@ export const travelBookRecordSchema = z.object({
     .optional(),
   status: z.enum(["DRAFT", "ORDERED", "PRINTING", "SHIPPED", "DELIVERED"]),
   orderId: z.string().uuid().nullable().optional(),
-  previewData: z.record(z.string(), z.any()).optional(),
+  previewData: z.record(z.string(), z.unknown()).optional(),
   createdAt: z.string(),
 });
 
