@@ -25,14 +25,30 @@ export const tripDetailSchema = tripListItemSchema
     currency: z.string().length(3),
     visibility: z.enum(["PRIVATE", "UNLISTED", "PUBLISHED"]).default("PRIVATE"),
     sourceTripId: z.string().uuid().nullable().optional(),
-    days: z.array(z.object({
-      id: z.string().uuid(), date: z.string().date(), dayIndex: z.number().int().positive(),
-      stops: z.array(z.object({
-        id: z.string().uuid(), placeId: z.string(), name: z.string(), address: z.string(),
-        latitude: z.number().min(-90).max(90), longitude: z.number().min(-180).max(180),
-        notes: z.string().nullable(), stopIndex: z.number().int().positive(), version: z.number().int().positive(),
-      }).strict()),
-    }).strict()),
+    days: z.array(
+      z
+        .object({
+          id: z.string().uuid(),
+          date: z.string().date(),
+          dayIndex: z.number().int().positive(),
+          stops: z.array(
+            z
+              .object({
+                id: z.string().uuid(),
+                placeId: z.string(),
+                name: z.string(),
+                address: z.string(),
+                latitude: z.number().min(-90).max(90),
+                longitude: z.number().min(-180).max(180),
+                notes: z.string().nullable(),
+                stopIndex: z.number().int().positive(),
+                version: z.number().int().positive(),
+              })
+              .strict(),
+          ),
+        })
+        .strict(),
+    ),
   })
   .strict();
 
@@ -48,39 +64,90 @@ export const createTripInputSchema = z
   .strict()
   .superRefine((value, context) => {
     if (value.endDate < value.startDate) {
-      context.addIssue({ code: "custom", path: ["endDate"], message: "Ngày kết thúc phải sau ngày bắt đầu." });
+      context.addIssue({
+        code: "custom",
+        path: ["endDate"],
+        message: "Ngày kết thúc phải sau ngày bắt đầu.",
+      });
     }
     const start = new Date(`${value.startDate}T00:00:00Z`);
     const end = new Date(`${value.endDate}T00:00:00Z`);
     if ((end.getTime() - start.getTime()) / 86_400_000 + 1 > 30) {
-      context.addIssue({ code: "custom", path: ["endDate"], message: "Chuyến đi tối đa 30 ngày." });
+      context.addIssue({
+        code: "custom",
+        path: ["endDate"],
+        message: "Chuyến đi tối đa 30 ngày.",
+      });
     }
   });
 
 export type CreateTripInput = z.infer<typeof createTripInputSchema>;
 export type TripDetail = z.infer<typeof tripDetailSchema>;
 
-export const placeSchema = z.object({
-  id: z.string().min(1), name: z.string().min(1), address: z.string().min(1),
-  coordinate: z.object({ latitude: z.number().min(-90).max(90), longitude: z.number().min(-180).max(180) }).strict(),
-}).strict();
+export const placeSchema = z
+  .object({
+    id: z.string().min(1),
+    name: z.string().min(1),
+    address: z.string().min(1),
+    coordinate: z
+      .object({
+        latitude: z.number().min(-90).max(90),
+        longitude: z.number().min(-180).max(180),
+      })
+      .strict(),
+  })
+  .strict();
 export type Place = z.infer<typeof placeSchema>;
 
-export const stopMutationSchema = z.object({
-  id: z.string().uuid(), tripId: z.string().uuid(), dayId: z.string().uuid(), stopIndex: z.number().int().positive(), version: z.number().int().positive(),
-}).strict();
+export const stopMutationSchema = z
+  .object({
+    id: z.string().uuid(),
+    tripId: z.string().uuid(),
+    dayId: z.string().uuid(),
+    stopIndex: z.number().int().positive(),
+    version: z.number().int().positive(),
+  })
+  .strict();
 
-export const routePreviewSchema = z.object({
-  geometry: z.object({ type: z.literal("LineString"), coordinates: z.array(z.tuple([z.number(), z.number()])).min(2) }).strict(),
-  distanceMeters: z.number().nonnegative(), durationSeconds: z.number().nonnegative(), source: z.enum(["provider", "cache"]), calculatedAt: z.string(),
-}).strict();
+export const routePreviewSchema = z
+  .object({
+    geometry: z
+      .object({
+        type: z.literal("LineString"),
+        coordinates: z.array(z.tuple([z.number(), z.number()])).min(2),
+      })
+      .strict(),
+    distanceMeters: z.number().nonnegative(),
+    durationSeconds: z.number().nonnegative(),
+    source: z.enum(["provider", "cache"]),
+    calculatedAt: z.string(),
+  })
+  .strict();
 
-export const invitationSchema = z.object({
-  id: z.string().uuid(), tripId: z.string().uuid(), inviteeEmail: z.string().email(), permission: z.enum(["VIEW", "EDIT"]), status: z.enum(["PENDING", "ACCEPTED", "DECLINED", "EXPIRED", "REVOKED"]), expiresAt: z.string(), acceptedUserId: z.string().uuid().nullable(), createdAt: z.string(),
-}).strict();
+export const invitationSchema = z
+  .object({
+    id: z.string().uuid(),
+    tripId: z.string().uuid(),
+    inviteeEmail: z.string().email(),
+    permission: z.enum(["VIEW", "EDIT"]),
+    status: z.enum(["PENDING", "ACCEPTED", "DECLINED", "EXPIRED", "REVOKED"]),
+    expiresAt: z.string(),
+    acceptedUserId: z.string().uuid().nullable(),
+    createdAt: z.string(),
+  })
+  .strict();
 export type Invitation = z.infer<typeof invitationSchema>;
-export const createdInvitationSchema = invitationSchema.extend({ token: z.string().min(32) }).strict();
-export const memberSchema = z.object({ userId: z.string().uuid(), role: z.enum(["OWNER", "MEMBER"]), permission: z.enum(["VIEW", "EDIT"]), status: z.enum(["ACTIVE", "LEFT", "REMOVED"]) }).strict();
+export const createdInvitationSchema = invitationSchema
+  .extend({ token: z.string().min(32) })
+  .strict();
+export const memberSchema = z
+  .object({
+    userId: z.string().uuid(),
+    role: z.enum(["OWNER", "MEMBER"]),
+    permission: z.enum(["VIEW", "EDIT"]),
+    status: z.enum(["ACTIVE", "LEFT", "REMOVED"]),
+  })
+  .strict();
 export type Member = z.infer<typeof memberSchema>;
 
 export const tripMemoryPhotoSchema = z.object({
@@ -91,6 +158,16 @@ export const tripMemoryPhotoSchema = z.object({
   takenAt: z.string(),
   createdAt: z.string(),
 });
+
+export const createdTripMemoryPhotoSchema = z
+  .object({
+    id: z.string().uuid(),
+    memoryId: z.string().uuid(),
+    photoUrl: z.string(),
+    caption: z.string().nullable(),
+    createdAt: z.string(),
+  })
+  .strict();
 
 export const tripMemorySchema = z.object({
   id: z.string().uuid(),
@@ -103,6 +180,17 @@ export const tripMemorySchema = z.object({
   updatedAt: z.string(),
   photos: z.array(tripMemoryPhotoSchema).default([]),
 });
+
+export const updatedTripMemorySchema = z
+  .object({
+    id: z.string().uuid(),
+    tripId: z.string().uuid(),
+    title: z.string(),
+    summary: z.string().nullable(),
+    coverPhotoUrl: z.string().nullable(),
+    visibility: z.enum(["PRIVATE", "UNLISTED", "PUBLISHED"]),
+  })
+  .strict();
 
 export type TripMemory = z.infer<typeof tripMemorySchema>;
 export type TripMemoryPhoto = z.infer<typeof tripMemoryPhotoSchema>;
@@ -129,4 +217,3 @@ export const tripLiveLocationSchema = z.object({
 });
 
 export type TripLiveLocation = z.infer<typeof tripLiveLocationSchema>;
-
