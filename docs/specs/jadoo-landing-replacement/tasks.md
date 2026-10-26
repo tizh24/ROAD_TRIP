@@ -89,8 +89,8 @@ button contrast is about 3:1 and needs a decision), 5.5, 6.6, 6.7.
 - [x] 6.4 Run `npm test` from `web/` and address affected test regressions.
 - [x] 6.5 Run `npm run build` from `web/` to validate route, asset and font
   production compilation.
-- [ ] 6.6 Manually review 320px, 768px and 1440px screens; test keyboard-only
+- [x] 6.6 Manually review 320px, 768px and 1440px screens; test keyboard-only
   navigation, menu close behavior, newsletter validation, reduced motion and
   no horizontal scroll.
-- [ ] 6.7 Document final verification results and any explicitly deferred
+- [x] 6.7 Document final verification results and any explicitly deferred
   backend-dependent subscription behavior in the implementation handoff.
