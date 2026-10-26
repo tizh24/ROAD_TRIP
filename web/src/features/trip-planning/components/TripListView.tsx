@@ -142,7 +142,7 @@ export default function TripListView() {
             <div className="shrink-0">
               <Link
                 href="/planner/new"
-                className="focus-ring inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-orange px-6 py-3.5 text-sm font-bold text-white shadow-card transition-all duration-200 hover:bg-brand-orange-hover hover:shadow-card-hover active:scale-[0.98] sm:w-auto"
+                className="focus-ring inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary-strong px-6 py-3.5 text-sm font-bold text-white shadow-card transition-all duration-200 hover:bg-primary-strong/90 hover:shadow-card-hover active:scale-[0.98] sm:w-auto"
               >
                 <Plus size={18} className="stroke-[2.5]" aria-hidden="true" />
                 <span>Tạo chuyến đi mới</span>
@@ -538,7 +538,7 @@ function EmptyTripState() {
       <div className="mt-8 flex justify-center">
         <Link
           href="/planner/new"
-          className="focus-ring inline-flex items-center gap-2.5 rounded-xl bg-brand-orange px-6 py-3.5 text-sm font-bold text-white shadow-card transition-all duration-200 hover:bg-brand-orange-hover hover:shadow-card-hover active:scale-[0.98]"
+          className="focus-ring inline-flex items-center gap-2.5 rounded-xl bg-primary-strong px-6 py-3.5 text-sm font-bold text-white shadow-card transition-all duration-200 hover:bg-primary-strong/90 hover:shadow-card-hover active:scale-[0.98]"
         >
           <Plus size={18} className="stroke-[2.5]" aria-hidden="true" />
           <span>Tạo chuyến đi mới</span>

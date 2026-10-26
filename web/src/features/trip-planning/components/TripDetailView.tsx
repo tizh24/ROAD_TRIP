@@ -133,7 +133,7 @@ export default function TripDetailView({
                 <li key={day.id} className="relative pl-8 sm:pl-11">
                   <span
                     aria-hidden="true"
-                    className="absolute left-0 top-1 flex size-6 items-center justify-center rounded-full bg-brand-orange text-xs font-extrabold text-white sm:size-7"
+                    className="absolute left-0 top-1 flex size-6 items-center justify-center rounded-full bg-primary-strong text-xs font-extrabold text-white sm:size-7"
                   >
                     {day.dayIndex}
                   </span>
@@ -220,7 +220,7 @@ export default function TripDetailView({
             type="button"
             disabled={busy}
             onClick={() => void clone()}
-            className="focus-ring mt-6 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-lg bg-brand-orange px-4 text-sm font-extrabold text-white transition-colors hover:bg-brand-orange-hover disabled:cursor-not-allowed disabled:opacity-60"
+            className="focus-ring mt-6 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-lg bg-primary-strong px-4 text-sm font-extrabold text-white transition-colors hover:bg-primary-strong/90 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {busy
               ? "Đang tạo bản sao…"

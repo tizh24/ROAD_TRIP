@@ -152,7 +152,7 @@ export default function ExploreView() {
                       type="button"
                       aria-pressed={active}
                       onClick={() => setBudgetTier(key)}
-                      className={`focus-ring min-h-11 rounded-full border px-3.5 text-sm font-bold transition-colors ${active ? "border-brand-orange bg-brand-orange text-white" : "border-border-main bg-surface text-text-sub hover:border-brand-orange hover:text-brand-charcoal"}`}
+                      className={`focus-ring min-h-11 rounded-full border px-3.5 text-sm font-bold transition-colors ${active ? "border-brand-orange bg-primary-strong text-white" : "border-border-main bg-surface text-text-sub hover:border-brand-orange hover:text-brand-charcoal"}`}
                     >
                       {label}
                     </button>
@@ -190,7 +190,7 @@ export default function ExploreView() {
             <button
               type="button"
               onClick={() => void load()}
-              className="focus-ring mt-5 inline-flex min-h-11 items-center gap-2 rounded-lg bg-brand-orange px-4 text-sm font-bold text-white hover:bg-brand-orange-hover"
+              className="focus-ring mt-5 inline-flex min-h-11 items-center gap-2 rounded-lg bg-primary-strong px-4 text-sm font-bold text-white hover:bg-primary-strong/90"
             >
               <RefreshCw aria-hidden="true" size={16} /> Thử lại
             </button>
@@ -233,7 +233,7 @@ export default function ExploreView() {
               <button
                 type="button"
                 onClick={resetFilters}
-                className="focus-ring mt-6 inline-flex min-h-11 items-center rounded-lg bg-brand-orange px-4 text-sm font-bold text-white hover:bg-brand-orange-hover"
+                className="focus-ring mt-6 inline-flex min-h-11 items-center rounded-lg bg-primary-strong px-4 text-sm font-bold text-white hover:bg-primary-strong/90"
               >
                 Xóa bộ lọc
               </button>

@@ -46,15 +46,16 @@
   --color-text-sub: #6E665E;
   --color-border-main: #EAE7E2;
   --color-border-light: #F0EDE8;
-  --color-brand-orange: #E87535;
-  --color-brand-orange-hover: #d66324;
+  /* Legacy brand-* names now alias the canonical tokens above. */
+  --color-brand-orange: var(--color-primary);
+  --color-brand-orange-hover: var(--color-primary-hover);
   --color-brand-orange-light: rgba(232, 117, 53, 0.08);
-  --color-brand-offwhite: #FAF8F5;
-  --color-brand-cream: #F3EFEA;
-  --color-brand-charcoal: #1A1918;
+  --color-brand-offwhite: var(--color-background);
+  --color-brand-cream: var(--color-border-light);
+  --color-brand-charcoal: var(--color-text-main);
   --color-brand-slate: #2C2A29;
-  --color-brand-muted: #706C68;
-  --color-brand-border: #E5DFD7;
+  --color-brand-muted: var(--color-text-sub);
+  --color-brand-border: var(--color-border-main);
   --font-serif: var(--font-playfair-loaded), "Playfair Display", Georgia, serif;
   --font-sans: var(--font-plus-jakarta-sans), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-be-vietnam-pro), var(--font-plus-jakarta-sans), ui-sans-serif, system-ui, sans-serif;
