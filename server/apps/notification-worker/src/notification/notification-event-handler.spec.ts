@@ -2,156 +2,145 @@ import { UnrecoverableError } from 'bullmq';
 import type { QueryExecutor } from '@roadtrip/db-client';
 import { NotificationEventHandler } from './notification-event-handler';
 
-describe('NotificationEventHandler', () => {
-  const event = {
-    eventId: '00000000-0000-4000-8000-000000000001',
-    eventType: 'trip.created.v1',
-    eventVersion: 1,
-    occurredAt: '2026-08-29T00:00:00.000Z',
-    correlationId: 'c-1',
-    producer: 'core-trip-service',
-    aggregateId: '00000000-0000-4000-8000-000000000002',
-    payload: {
-      tripId: '00000000-0000-4000-8000-000000000002',
-      ownerId: '00000000-0000-4000-8000-000000000003',
-      title: 'Trip',
-      startDate: '2026-09-01',
-      endDate: '2026-09-02',
-      dayCount: 2,
-    },
-  };
-  it('records a processed event and pending delivery atomically', async () => {
-    const query = jest
-      .fn()
-      .mockResolvedValueOnce({ rows: [{ eventId: event.eventId }] })
-      .mockResolvedValue({ rows: [] });
-    const database = {
-      query,
-      transaction: <Result>(
-        work: (tx: QueryExecutor) => Promise<Result>,
-      ): Promise<Result> => work({ query }),
-    };
-    await new NotificationEventHandler(database).handle(event);
-    expect(query).toHaveBeenCalledTimes(2);
+const tripEvent = {
+  eventId: '00000000-0000-4000-8000-000000000001',
+  eventType: 'trip.created.v1',
+  eventVersion: 1,
+  occurredAt: '2026-08-29T00:00:00.000Z',
+  correlationId: 'c-1',
+  producer: 'core-trip-service',
+  aggregateId: '00000000-0000-4000-8000-000000000002',
+  payload: {
+    tripId: '00000000-0000-4000-8000-000000000002',
+    ownerId: '00000000-0000-4000-8000-000000000003',
+    title: 'Trip',
+    startDate: '2026-09-01',
+    endDate: '2026-09-02',
+    dayCount: 2,
+  },
+};
+
+const invitationEvent = {
+  eventId: '00000000-0000-4000-8000-000000000010',
+  eventType: 'trip.invitation.created.v1',
+  eventVersion: 1,
+  occurredAt: '2026-08-29T00:00:00.000Z',
+  correlationId: 'c-10',
+  producer: 'core-trip-service',
+  aggregateId: '00000000-0000-4000-8000-000000000011',
+  payload: {
+    invitationId: '00000000-0000-4000-8000-000000000011',
+    tripId: '00000000-0000-4000-8000-000000000002',
+    inviterId: '00000000-0000-4000-8000-000000000003',
+    inviteeEmail: 'invited@example.com',
+    permission: 'VIEW',
+    expiresAt: '2026-09-05T00:00:00.000Z',
+  },
+};
+
+interface Delivery {
+  status: string;
+  attempts: number;
+  lastError?: string;
+}
+
+/** In-memory model of the delivery table behind the handler's SQL. */
+function fakeDatabase(invitationStatus = 'PENDING') {
+  const deliveries = new Map<string, Delivery>();
+  const key = (params?: unknown[]) =>
+    `${String(params?.[0])}|${String(params?.[1])}|${String(params?.[2])}`;
+  const query = jest.fn((sql: string, params?: unknown[]) => {
+    if (
+      sql.includes('INSERT INTO notification_schema.notification_deliveries')
+    ) {
+      if (!deliveries.has(key(params)))
+        deliveries.set(key(params), { status: 'PENDING', attempts: 0 });
+      return Promise.resolve({ rows: [] });
+    }
+    if (sql.includes('FOR UPDATE')) {
+      const row = deliveries.get(key(params));
+      return Promise.resolve({
+        rows: row ? [{ deliveryStatus: row.status }] : [],
+      });
+    }
+    if (sql.includes('trip_schema.trip_invitations')) {
+      return Promise.resolve({ rows: [{ status: invitationStatus }] });
+    }
+    if (sql.includes('UPDATE notification_schema.notification_deliveries')) {
+      const row = deliveries.get(key(params))!;
+      row.status = sql.includes("'SENT'")
+        ? 'SENT'
+        : sql.includes("'FAILED'")
+          ? 'FAILED'
+          : 'SKIPPED';
+      if (row.status !== 'SKIPPED') row.attempts += 1;
+      if (row.status === 'FAILED') row.lastError = String(params?.[4]);
+      return Promise.resolve({ rows: [] });
+    }
+    return Promise.resolve({ rows: [] });
   });
+  const database = {
+    query,
+    transaction: <Result>(
+      work: (tx: QueryExecutor) => Promise<Result>,
+    ): Promise<Result> => work({ query } as never),
+  };
+  return { database: database as never, deliveries };
+}
+
+describe('NotificationEventHandler', () => {
   it('rejects malformed events without retry', async () => {
-    const database = { query: jest.fn(), transaction: jest.fn() };
+    const { database } = fakeDatabase();
     await expect(
       new NotificationEventHandler(database).handle({}),
     ).rejects.toBeInstanceOf(UnrecoverableError);
   });
 
-  it('ignores a replayed event after consumer recovery', async () => {
-    const processed = new Set<string>();
-    const deliveries: string[] = [];
-    const query = jest.fn((sql: string, parameters?: unknown[]) => {
-      if (sql.includes('processed_events')) {
-        const eventId = parameters?.[0] as string;
-        if (processed.has(eventId)) return Promise.resolve({ rows: [] });
-        processed.add(eventId);
-        return Promise.resolve({ rows: [{ eventId }] });
-      }
-      if (sql.includes('notification_deliveries')) {
-        deliveries.push(parameters?.[0] as string);
-      }
-      return Promise.resolve({ rows: [] });
-    });
-    const database = {
-      query,
-      transaction: <Result>(
-        work: (tx: QueryExecutor) => Promise<Result>,
-      ): Promise<Result> => work({ query } as never),
-    };
-    const handler = new NotificationEventHandler(database as never);
+  it('delivers once and ignores a replayed event', async () => {
+    const { database, deliveries } = fakeDatabase();
+    const sender = { send: jest.fn().mockResolvedValue(undefined) };
+    const handler = new NotificationEventHandler(database, sender);
 
-    await handler.handle(event);
-    await handler.handle(event);
+    await handler.handle(tripEvent);
+    await handler.handle(tripEvent);
 
-    expect(deliveries).toEqual([event.eventId]);
-    expect(query).toHaveBeenCalledTimes(3);
+    expect(sender.send).toHaveBeenCalledTimes(1);
+    expect([...deliveries.values()]).toEqual([{ status: 'SENT', attempts: 1 }]);
   });
 
-  it('skips delivery if invitation was revoked before processing', async () => {
-    const invitationEvent = {
-      eventId: '00000000-0000-4000-8000-000000000010',
-      eventType: 'trip.invitation.created.v1',
-      eventVersion: 1,
-      occurredAt: '2026-08-29T00:00:00.000Z',
-      correlationId: 'c-10',
-      producer: 'core-trip-service',
-      aggregateId: '00000000-0000-4000-8000-000000000011',
-      payload: {
-        invitationId: '00000000-0000-4000-8000-000000000011',
-        tripId: '00000000-0000-4000-8000-000000000002',
-        inviterId: '00000000-0000-4000-8000-000000000003',
-        inviteeEmail: 'invited@example.com',
-        permission: 'VIEW',
-        expiresAt: '2026-09-05T00:00:00.000Z',
-      },
-    };
-
-    const query = jest.fn((sql: string) => {
-      if (sql.includes('processed_events')) {
-        return Promise.resolve({
-          rows: [{ eventId: invitationEvent.eventId }],
-        });
-      }
-      if (sql.includes('trip_invitations')) {
-        return Promise.resolve({ rows: [{ status: 'REVOKED' }] });
-      }
-      if (sql.includes('notification_deliveries')) {
-        return Promise.resolve({ rows: [] });
-      }
-      return Promise.resolve({ rows: [] });
-    });
-
-    const database = {
-      query,
-      transaction: <Result>(
-        work: (tx: QueryExecutor) => Promise<Result>,
-      ): Promise<Result> => work({ query } as never),
-    };
-
+  it('skips delivery if the invitation was revoked before processing', async () => {
+    const { database, deliveries } = fakeDatabase('REVOKED');
     const sender = { send: jest.fn() };
-    const handler = new NotificationEventHandler(database as never, sender);
-
-    await handler.handle(invitationEvent);
+    await new NotificationEventHandler(database, sender).handle(
+      invitationEvent,
+    );
 
     expect(sender.send).not.toHaveBeenCalled();
-    expect(query).toHaveBeenCalledWith(
-      expect.stringContaining('SKIPPED'),
-      expect.arrayContaining([invitationEvent.eventId, 'invited@example.com']),
-    );
+    expect([...deliveries.values()][0]?.status).toBe('SKIPPED');
   });
 
-  it('marks delivery as FAILED with retry interval when sender fails', async () => {
-    const query = jest.fn((sql: string) => {
-      if (sql.includes('processed_events')) {
-        return Promise.resolve({ rows: [{ eventId: event.eventId }] });
-      }
-      return Promise.resolve({ rows: [] });
+  it('records a failed delivery and rethrows so BullMQ retries it', async () => {
+    const { database, deliveries } = fakeDatabase();
+    const sender = {
+      send: jest
+        .fn()
+        .mockRejectedValueOnce(new Error('SMTP timeout'))
+        .mockResolvedValueOnce(undefined),
+    };
+    const handler = new NotificationEventHandler(database, sender);
+
+    await expect(handler.handle(tripEvent)).rejects.toThrow('SMTP timeout');
+    expect([...deliveries.values()][0]).toMatchObject({
+      status: 'FAILED',
+      attempts: 1,
+      lastError: 'SMTP timeout',
     });
 
-    const database = {
-      query,
-      transaction: <Result>(
-        work: (tx: QueryExecutor) => Promise<Result>,
-      ): Promise<Result> => work({ query } as never),
-    };
-
-    const failingSender = {
-      send: jest.fn().mockRejectedValue(new Error('SMTP timeout')),
-    };
-    const handler = new NotificationEventHandler(
-      database as never,
-      failingSender,
-    );
-
-    await handler.handle(event);
-
-    expect(query).toHaveBeenCalledWith(
-      expect.stringContaining('FAILED'),
-      expect.arrayContaining([event.eventId, 'SMTP timeout']),
-    );
+    await handler.handle(tripEvent);
+    expect(sender.send).toHaveBeenCalledTimes(2);
+    expect([...deliveries.values()][0]).toMatchObject({
+      status: 'SENT',
+      attempts: 2,
+    });
   });
 });
