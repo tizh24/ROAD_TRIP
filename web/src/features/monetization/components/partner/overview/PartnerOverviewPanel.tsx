@@ -1,4 +1,6 @@
 "use client";
+import { toast } from "@/components/ui/sonner";
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
@@ -65,6 +67,7 @@ export default function PartnerOverviewPanel() {
   const [priceAmount, setPriceAmount] = useState("");
   const [mediaUrl, setMediaUrl] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
 
   const loadListings = useCallback(async () => {
     try {
@@ -108,7 +111,7 @@ export default function PartnerOverviewPanel() {
       setPriceAmount("");
       setMediaUrl("");
     } catch (err) {
-      alert(err instanceof Error ? err.message : "Không thể tạo dịch vụ đối tác.");
+      toast.error(err instanceof Error ? err.message : "Không thể tạo dịch vụ đối tác.");
     } finally {
       setSubmitting(false);
     }
@@ -122,17 +125,21 @@ export default function PartnerOverviewPanel() {
         prev.map((l) => (l.id === listing.id ? { ...l, status: nextStatus } : l)),
       );
     } catch {
-      alert("Không thể cập nhật trạng thái dịch vụ.");
+      toast.error("Không thể cập nhật trạng thái dịch vụ.");
     }
   };
 
-  const handleDeleteListing = async (listingId: string) => {
-    if (!confirm("Bạn có chắc chắn muốn xóa dịch vụ này?")) return;
+  const handleDeleteListing = (listingId: string) => setPendingDeleteId(listingId);
+
+  const confirmDeleteListing = async () => {
+    const listingId = pendingDeleteId;
+    setPendingDeleteId(null);
+    if (!listingId) return;
     try {
       await deletePartnerListing(listingId);
       setListings((prev) => prev.filter((l) => l.id !== listingId));
     } catch {
-      alert("Không thể xóa dịch vụ.");
+      toast.error("Không thể xóa dịch vụ.");
     }
   };
 
@@ -140,6 +147,14 @@ export default function PartnerOverviewPanel() {
 
   return (
     <main className="min-h-full bg-[#f7f1e8] p-4 sm:p-8">
+      <ConfirmDialog
+        open={pendingDeleteId !== null}
+        title="Xóa dịch vụ?"
+        description="Bạn có chắc chắn muốn xóa dịch vụ này? Thao tác này không thể hoàn tác."
+        confirmLabel="Xóa dịch vụ"
+        onConfirm={confirmDeleteListing}
+        onClose={() => setPendingDeleteId(null)}
+      />
       <div className="mx-auto max-w-6xl space-y-8">
         {/* Header Hero */}
         <header className="rounded-[2rem] bg-secondary p-7 text-white sm:p-10">

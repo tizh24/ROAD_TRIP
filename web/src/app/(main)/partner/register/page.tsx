@@ -1,4 +1,5 @@
 "use client";
+import { toast } from "@/components/ui/sonner";
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
@@ -75,7 +76,7 @@ export default function PartnerRegisterPage() {
       });
       setApplication(res);
     } catch (err) {
-      alert(err instanceof Error ? err.message : "Không thể gửi hồ sơ đăng ký.");
+      toast.error(err instanceof Error ? err.message : "Không thể gửi hồ sơ đăng ký.");
     } finally {
       setSubmitting(false);
     }

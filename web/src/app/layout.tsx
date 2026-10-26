@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Be_Vietnam_Pro, Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import LoginAnalyticsMarker from "@/lib/analytics/LoginAnalyticsMarker";
+import { Toaster } from "@/components/ui/sonner";
 
 const beVietnamPro = Be_Vietnam_Pro({
   subsets: ["latin", "vietnamese"],
@@ -37,6 +38,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <div className="w-full flex-1 flex flex-col min-h-screen relative overflow-x-hidden">
           {children}
         </div>
+        <Toaster />
       </body>
     </html>
   );

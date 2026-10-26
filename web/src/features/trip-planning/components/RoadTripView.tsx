@@ -1,4 +1,6 @@
 "use client";
+import { toast } from "@/components/ui/sonner";
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -39,6 +41,7 @@ export default function RoadTripView({ tripId }: { tripId: string }) {
   const [checkIns, setCheckIns] = useState<Record<string, boolean>>({});
   const [copiedLink, setCopiedLink] = useState(false);
   const [completingTrip, setCompletingTrip] = useState(false);
+  const [confirmingComplete, setConfirmingComplete] = useState(false);
   const [isSharingLocation, setIsSharingLocation] = useState(false);
 
   // Load check-in records from localStorage on client
@@ -113,14 +116,16 @@ export default function RoadTripView({ tripId }: { tripId: string }) {
     }
   };
 
-  const handleCompleteTrip = async () => {
-    if (!confirm("Xác nhận hoàn tất chuyến đi? Hệ thống sẽ tạo kỷ niệm hành trình để cả đoàn lưu giữ hình ảnh và quyết toán chi tiêu.")) return;
+  const handleCompleteTrip = () => setConfirmingComplete(true);
+
+  const confirmCompleteTrip = async () => {
+    setConfirmingComplete(false);
     setCompletingTrip(true);
     try {
       await updateTripStatus(tripId, "COMPLETED");
       router.push(`/memory/${tripId}`);
     } catch (cause) {
-      alert(cause instanceof Error ? cause.message : "Không thể hoàn tất chuyến đi.");
+      toast.error(cause instanceof Error ? cause.message : "Không thể hoàn tất chuyến đi.");
       setCompletingTrip(false);
     }
   };
@@ -128,7 +133,7 @@ export default function RoadTripView({ tripId }: { tripId: string }) {
   const handleToggleLocationSharing = async () => {
     if (!isSharingLocation) {
       if (!navigator.geolocation) {
-        alert("Thiết bị không hỗ trợ định vị GPS.");
+        toast.error("Thiết bị không hỗ trợ định vị GPS.");
         return;
       }
       navigator.geolocation.getCurrentPosition(
@@ -142,11 +147,11 @@ export default function RoadTripView({ tripId }: { tripId: string }) {
             });
             setIsSharingLocation(true);
           } catch (cause) {
-            alert(cause instanceof Error ? cause.message : "Không thể chia sẻ vị trí.");
+            toast.error(cause instanceof Error ? cause.message : "Không thể chia sẻ vị trí.");
           }
         },
         (err) => {
-          alert(`Không thể lấy tọa độ GPS: ${err.message}`);
+          toast.error(`Không thể lấy tọa độ GPS: ${err.message}`);
         },
         { enableHighAccuracy: true },
       );
@@ -160,7 +165,7 @@ export default function RoadTripView({ tripId }: { tripId: string }) {
         });
         setIsSharingLocation(false);
       } catch (cause) {
-        alert(cause instanceof Error ? cause.message : "Không thể tắt chia sẻ vị trí.");
+        toast.error(cause instanceof Error ? cause.message : "Không thể tắt chia sẻ vị trí.");
       }
     }
   };
@@ -215,6 +220,14 @@ export default function RoadTripView({ tripId }: { tripId: string }) {
 
   return (
     <main className="min-h-screen bg-background-warm pb-20">
+      <ConfirmDialog
+        open={confirmingComplete}
+        title="Hoàn tất chuyến đi?"
+        description="Hệ thống sẽ tạo kỷ niệm hành trình để cả đoàn lưu giữ hình ảnh và quyết toán chi tiêu."
+        confirmLabel="Hoàn tất"
+        onConfirm={confirmCompleteTrip}
+        onClose={() => setConfirmingComplete(false)}
+      />
       {/* Top Banner / Mobile Handoff on Desktop */}
       <section className="bg-secondary px-4 py-6 text-white sm:px-6 lg:py-8">
         <div className="page-shell px-0">

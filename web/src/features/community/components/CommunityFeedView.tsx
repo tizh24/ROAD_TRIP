@@ -1,4 +1,5 @@
 "use client";
+import { toast } from "@/components/ui/sonner";
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
@@ -90,7 +91,7 @@ export default function CommunityFeedView() {
         }),
       );
     } catch {
-      alert("Vui lòng đăng nhập để thích bài viết.");
+      toast.error("Vui lòng đăng nhập để thích bài viết.");
     }
   };
 
@@ -108,7 +109,7 @@ export default function CommunityFeedView() {
         }),
       );
     } catch {
-      alert("Vui lòng đăng nhập để lưu bài viết.");
+      toast.error("Vui lòng đăng nhập để lưu bài viết.");
     }
   };
 
@@ -143,7 +144,7 @@ export default function CommunityFeedView() {
         ),
       );
     } catch {
-      alert("Không thể gửi bình luận. Vui lòng đăng nhập.");
+      toast.error("Không thể gửi bình luận. Vui lòng đăng nhập.");
     } finally {
       setSubmittingComment(false);
     }
@@ -170,7 +171,7 @@ export default function CommunityFeedView() {
       setNewMediaUrl("");
       setNewTripId("");
     } catch (err) {
-      alert(err instanceof Error ? err.message : "Không thể đăng bài viết.");
+      toast.error(err instanceof Error ? err.message : "Không thể đăng bài viết.");
     } finally {
       setSubmitting(false);
     }
@@ -194,7 +195,7 @@ export default function CommunityFeedView() {
         setReportDetails("");
       }, 1500);
     } catch {
-      alert("Không thể gửi báo cáo vi phạm.");
+      toast.error("Không thể gửi báo cáo vi phạm.");
     } finally {
       setSubmittingReport(false);
     }

@@ -1,4 +1,5 @@
 "use client";
+import { toast } from "@/components/ui/sonner";
 
 import React, { useCallback, useEffect, useState } from "react";
 import {
@@ -68,7 +69,7 @@ export default function AdminPartnersPanel() {
       );
       setReviewingApp(null);
     } catch (err) {
-      alert(err instanceof Error ? err.message : "Không thể xử lý yêu cầu duyệt.");
+      toast.error(err instanceof Error ? err.message : "Không thể xử lý yêu cầu duyệt.");
     } finally {
       setSubmittingReview(false);
     }

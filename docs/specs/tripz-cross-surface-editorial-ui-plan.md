@@ -47,5 +47,5 @@
 ## Rollout constraints
 
 - Changes are divided by route group so each phase can be independently reviewed and verified.
-- No schema migration, API endpoint, dependency, or authorization change is needed.
+- No schema migration, API endpoint, or authorization change is needed. The only dependency change is the shadcn/ui primitive layer (copied into `web/src/components/ui`), themed with DESIGN.md tokens; existing wrappers (`CTAButton`, `FeedbackState`, `PageHeader`) stay as thin adapters. Button backgrounds use `#B84E1B` (about 5.1:1 with white text; `#E87535` is only about 3:1).
 - Existing dirty/unrelated worktree changes remain outside this work unless explicitly brought into scope.

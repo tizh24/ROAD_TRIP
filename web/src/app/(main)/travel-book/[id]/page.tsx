@@ -1,4 +1,5 @@
 "use client";
+import { toast } from "@/components/ui/sonner";
 
 import { useRouter } from "next/navigation";
 import { use, useCallback, useEffect, useState } from "react";
@@ -82,7 +83,7 @@ export default function TravelBookPage({
     if (!book) return;
 
     if (format !== "DIGITAL_PDF" && (!recipientName.trim() || !phone.trim() || !address.trim())) {
-      alert("Vui lòng nhập đầy đủ thông tin giao nhận sách.");
+      toast.error("Vui lòng nhập đầy đủ thông tin giao nhận sách.");
       return;
     }
 
@@ -120,7 +121,7 @@ export default function TravelBookPage({
       // 3. Redirect to payment checkout
       router.push(`/payment?orderId=${order.id}`);
     } catch (err) {
-      alert(err instanceof Error ? err.message : "Không thể tạo đơn đặt sách.");
+      toast.error(err instanceof Error ? err.message : "Không thể tạo đơn đặt sách.");
     } finally {
       setOrdering(false);
     }

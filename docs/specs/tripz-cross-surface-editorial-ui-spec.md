@@ -42,5 +42,5 @@ The work covers all current frontend route groups:
 ## Non-goals
 
 - Backend, database, API, authentication, authorization, data model, or business-rule changes.
-- New dependencies or a new frontend framework.
+- A new frontend framework. New dependencies are limited to the shadcn/ui primitive layer (Radix UI, class-variance-authority, clsx, tailwind-merge, tw-animate-css), approved 2026-10-27.
 - New product features, fabricated analytics, or rewriting established factual travel content.

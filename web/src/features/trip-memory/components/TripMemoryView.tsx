@@ -1,4 +1,6 @@
 "use client";
+import { toast } from "@/components/ui/sonner";
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
@@ -54,6 +56,7 @@ export default function TripMemoryView({ tripId }: { tripId: string }) {
 
   // Visibility state
   const [savingVisibility, setSavingVisibility] = useState(false);
+  const [pendingExpenseId, setPendingExpenseId] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     try {
@@ -96,7 +99,7 @@ export default function TripMemoryView({ tripId }: { tripId: string }) {
       setPhotoCaption("");
       await load();
     } catch (cause) {
-      alert(cause instanceof Error ? cause.message : "Không thể thêm ảnh.");
+      toast.error(cause instanceof Error ? cause.message : "Không thể thêm ảnh.");
     } finally {
       setAddingPhoto(false);
     }
@@ -117,19 +120,25 @@ export default function TripMemoryView({ tripId }: { tripId: string }) {
       setDescription("");
       await load();
     } catch (cause) {
-      alert(cause instanceof Error ? cause.message : "Không thể lưu khoản chi tiêu.");
+      toast.error(cause instanceof Error ? cause.message : "Không thể lưu khoản chi tiêu.");
     } finally {
       setAddingExpense(false);
     }
   }
 
-  async function handleDeleteExpense(expenseId: string) {
-    if (!confirm("Bạn có chắc chắn muốn xóa khoản chi tiêu này?")) return;
+  function handleDeleteExpense(expenseId: string) {
+    setPendingExpenseId(expenseId);
+  }
+
+  async function confirmDeleteExpense() {
+    const expenseId = pendingExpenseId;
+    setPendingExpenseId(null);
+    if (!expenseId) return;
     try {
       await deleteTripExpense(tripId, expenseId);
       await load();
     } catch (cause) {
-      alert(cause instanceof Error ? cause.message : "Không thể xóa chi tiêu.");
+      toast.error(cause instanceof Error ? cause.message : "Không thể xóa chi tiêu.");
     }
   }
 
@@ -145,7 +154,7 @@ export default function TripMemoryView({ tripId }: { tripId: string }) {
       });
       await load();
     } catch (cause) {
-      alert(cause instanceof Error ? cause.message : "Không thể cập nhật quyền hiển thị.");
+      toast.error(cause instanceof Error ? cause.message : "Không thể cập nhật quyền hiển thị.");
     } finally {
       setSavingVisibility(false);
     }
@@ -182,6 +191,14 @@ export default function TripMemoryView({ tripId }: { tripId: string }) {
 
   return (
     <main className="min-h-screen bg-background-warm pb-20">
+      <ConfirmDialog
+        open={pendingExpenseId !== null}
+        title="Xóa khoản chi tiêu?"
+        description="Bạn có chắc chắn muốn xóa khoản chi tiêu này? Thao tác này không thể hoàn tác."
+        confirmLabel="Xóa khoản chi"
+        onConfirm={confirmDeleteExpense}
+        onClose={() => setPendingExpenseId(null)}
+      />
       {/* Header */}
       <section className="relative isolate overflow-hidden bg-secondary px-4 py-8 text-white sm:px-6 lg:py-12">
         <div className="page-shell px-0">

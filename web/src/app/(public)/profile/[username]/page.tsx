@@ -1,4 +1,5 @@
 "use client";
+import { toast } from "@/components/ui/sonner";
 
 import Link from "next/link";
 import { use, useCallback, useEffect, useState } from "react";
@@ -63,7 +64,7 @@ export default function PublicProfilePage({
           : null,
       );
     } catch {
-      alert("Vui lòng đăng nhập để theo dõi người dùng này.");
+      toast.error("Vui lòng đăng nhập để theo dõi người dùng này.");
     } finally {
       setUpdatingFollow(false);
     }

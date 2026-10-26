@@ -1,4 +1,5 @@
 "use client";
+import { toast } from "@/components/ui/sonner";
 
 import React, { useCallback, useEffect, useState } from "react";
 import {
@@ -50,7 +51,7 @@ export default function AdminSettingsPanel() {
       setSuccessMessage(`Đã cập nhật vai trò cho người dùng thành ${newRole}.`);
       setTimeout(() => setSuccessMessage(null), 3000);
     } catch (err) {
-      alert(err instanceof Error ? err.message : "Không thể cập nhật quyền người dùng.");
+      toast.error(err instanceof Error ? err.message : "Không thể cập nhật quyền người dùng.");
     } finally {
       setUpdatingId(null);
     }
