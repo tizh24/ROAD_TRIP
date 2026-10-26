@@ -260,18 +260,9 @@ function PaymentContent() {
                     </div>
 
                     {selectedMethod === "VIETQR" && (
-                      <div className="mt-4 rounded-xl bg-white p-4 border border-dashed border-border-main flex flex-col items-center text-center">
-                        <div className="h-44 w-44 rounded-xl bg-gray-100 border border-border-main flex items-center justify-center p-2">
-                          <QrCode size={140} className="text-slate-800" />
-                        </div>
-                        <p className="mt-3 text-xs font-bold text-text-main">
-                          Ngân hàng Quân Đội (MB Bank)
-                        </p>
-                        <p className="text-xs font-mono text-text-sub">STK: 0386123456 • TRIPZ VN</p>
-                        <p className="mt-1 text-[11px] text-primary font-mono">
-                          Nội dung: {order.id.slice(0, 8).toUpperCase()}
-                        </p>
-                      </div>
+                      <p className="mt-3 rounded-xl border border-dashed border-border-main p-3 text-[11px] text-text-sub">
+                        Thông tin chuyển khoản sẽ hiển thị khi cổng thanh toán được kết nối.
+                      </p>
                     )}
                   </div>
 

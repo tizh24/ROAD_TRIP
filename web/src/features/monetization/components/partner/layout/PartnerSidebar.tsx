@@ -93,15 +93,6 @@ export default function PartnerSidebar() {
           })}
         </nav>
         
-        {(!isCollapsed || isMobileOpen) && (
-          <div className="m-4 rounded-xl border border-border-light bg-background-warm p-4 text-center">
-            <p className="text-[10px] text-text-sub uppercase font-bold tracking-wider mb-1">Số dư Ads</p>
-            <p className="text-lg font-black text-secondary mb-3">1.5M đ</p>
-            <button className="w-full bg-surface border border-border-main text-text-main hover:bg-background text-xs font-semibold py-2 rounded-lg transition-colors shadow-sm">
-              Nạp Thêm
-            </button>
-          </div>
-        )}
       </aside>
     </>
   );
