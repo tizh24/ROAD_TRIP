@@ -1,58 +1,60 @@
 "use client";
 import React, { useState } from "react";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "./sheet";
+import { cn } from "@/lib/utils";
 
 export interface BottomSheetProps {
   isOpen: boolean;
   onClose: () => void;
   children: React.ReactNode;
   initialState?: "collapsed" | "half" | "expanded";
+  title?: string;
 }
 
-export default function BottomSheet({ isOpen, onClose, children, initialState = "half" }: BottomSheetProps) {
-  const [state, setState] = useState(initialState);
+const sizes = [
+  { id: "collapsed", label: "Thu gọn", width: "sm:max-w-[300px]" },
+  { id: "half", label: "Tiêu chuẩn", width: "sm:max-w-[500px]" },
+  { id: "expanded", label: "Mở rộng", width: "sm:max-w-[800px]" },
+] as const;
 
-  if (!isOpen) return null;
-
-  const widthClass = 
-    state === "collapsed" ? "w-[300px]" :
-    state === "half" ? "w-[500px]" : "w-[800px] max-w-full";
+/** Side panel on the shadcn Sheet (focus trap, Escape, ARIA) with three width presets. */
+export default function BottomSheet({
+  isOpen,
+  onClose,
+  children,
+  initialState = "half",
+  title = "Chi tiết",
+}: BottomSheetProps) {
+  const [state, setState] = useState<(typeof sizes)[number]["id"]>(initialState);
+  const current = sizes.find((size) => size.id === state) ?? sizes[1];
 
   return (
-    <>
-      <div className="fixed inset-0 bg-text-main/20 backdrop-blur-sm z-40 transition-opacity" onClick={onClose} />
-      <div className={`fixed top-0 right-0 h-full bg-surface shadow-card-hover z-50 flex flex-col transition-all duration-300 ease-in-out ${widthClass}`}>
-        <div className="flex items-center justify-between p-4 border-b border-border-main bg-background/50">
-          <div className="flex gap-2">
-            <button 
-              onClick={() => setState("collapsed")} 
-              className={`px-3 py-1 rounded-chip text-caption font-semibold transition-colors ${state === "collapsed" ? "bg-primary text-white" : "bg-white border border-border-main text-text-sub hover:text-text-main"}`}
-            >
-              Thu gọn
-            </button>
-            <button 
-              onClick={() => setState("half")} 
-              className={`px-3 py-1 rounded-chip text-caption font-semibold transition-colors ${state === "half" ? "bg-primary text-white" : "bg-white border border-border-main text-text-sub hover:text-text-main"}`}
-            >
-              Tiêu chuẩn
-            </button>
-            <button 
-              onClick={() => setState("expanded")} 
-              className={`px-3 py-1 rounded-chip text-caption font-semibold transition-colors ${state === "expanded" ? "bg-primary text-white" : "bg-white border border-border-main text-text-sub hover:text-text-main"}`}
-            >
-              Mở rộng
-            </button>
+    <Sheet open={isOpen} onOpenChange={(next) => { if (!next) onClose(); }}>
+      <SheetContent side="right" className={cn("w-full gap-0 p-0", current.width)}>
+        <SheetHeader className="border-b border-border bg-background/50">
+          <SheetTitle>{title}</SheetTitle>
+          <SheetDescription className="sr-only">Bảng thông tin chi tiết</SheetDescription>
+          <div className="flex gap-2 pr-8">
+            {sizes.map((size) => (
+              <button
+                key={size.id}
+                type="button"
+                aria-pressed={state === size.id}
+                onClick={() => setState(size.id)}
+                className={cn(
+                  "min-h-8 rounded-full px-3 text-xs font-semibold transition-colors",
+                  state === size.id
+                    ? "bg-primary-strong text-white"
+                    : "border border-border bg-white text-text-sub hover:text-text-main",
+                )}
+              >
+                {size.label}
+              </button>
+            ))}
           </div>
-          <button 
-            onClick={onClose} 
-            className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-border-main text-text-main font-bold smooth-transition"
-          >
-            ✕
-          </button>
-        </div>
-        <div className="flex-1 overflow-y-auto p-4 bg-surface">
-          {children}
-        </div>
-      </div>
-    </>
+        </SheetHeader>
+        <div className="flex-1 overflow-y-auto bg-surface p-4">{children}</div>
+      </SheetContent>
+    </Sheet>
   );
 }
