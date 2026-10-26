@@ -2,6 +2,8 @@
 -- Slice 4: Community posts, comments, likes, saves, reports, follows, and moderation
 
 CREATE SCHEMA IF NOT EXISTS community_schema;
+CREATE SCHEMA IF NOT EXISTS users_schema;
+GRANT USAGE ON SCHEMA users_schema TO authenticated, service_role, postgres;
 GRANT USAGE ON SCHEMA community_schema TO authenticated, service_role, postgres;
 
 -- 1. Posts table

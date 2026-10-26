@@ -1,4 +1,5 @@
 import type { QueryExecutor } from '@roadtrip/db-client';
+import { getCorrelationId } from '@roadtrip/observability';
 
 export interface PartnerApplicationRecord {
   id: string;
@@ -152,14 +153,14 @@ export class PartnerRepository {
                 a.tax_id, a.description, a.status, a.review_notes, a.reviewed_by, a.reviewed_at, a.created_at,
                 p.full_name AS applicant_name
          FROM partner_schema.applications a
-         LEFT JOIN users_schema.profiles p ON p.id = a.user_id
+         LEFT JOIN public.user_profiles p ON p.id = a.user_id
          WHERE a.status = $1
          ORDER BY a.created_at DESC`
       : `SELECT a.id, a.user_id, a.business_name, a.business_type, a.contact_email, a.contact_phone,
                 a.tax_id, a.description, a.status, a.review_notes, a.reviewed_by, a.reviewed_at, a.created_at,
                 p.full_name AS applicant_name
          FROM partner_schema.applications a
-         LEFT JOIN users_schema.profiles p ON p.id = a.user_id
+         LEFT JOIN public.user_profiles p ON p.id = a.user_id
          ORDER BY a.created_at DESC`;
     const params = status ? [status] : [];
     const res = await this.database.query<{
@@ -220,25 +221,30 @@ export class PartnerRepository {
     if (action === 'APPROVE') {
       // Elevate platform role to PARTNER in profiles
       const prevRoleRes = await this.database.query<{ role: string }>(
-        `SELECT role FROM users_schema.profiles WHERE id = $1`,
+        `SELECT role FROM public.user_profiles WHERE id = $1`,
         [app.user_id],
       );
       const prevRole = prevRoleRes.rows[0]?.role || 'USER';
 
       await this.database.query(
-        `UPDATE users_schema.profiles SET role = 'PARTNER', updated_at = now() WHERE id = $1`,
+        `UPDATE public.user_profiles SET role = 'PARTNER', updated_at = now() WHERE id = $1`,
         [app.user_id],
       );
 
       // Audit trail
       await this.database.query(
-        `INSERT INTO audit_schema.role_audit_logs (actor_id, target_user_id, previous_role, new_role, reason)
-         VALUES ($1, $2, $3, 'PARTNER', $4)`,
+        `INSERT INTO public.platform_audit_logs
+           (actor_id, action, entity_type, entity_id, old_values, new_values, correlation_id)
+         VALUES ($1, 'PLATFORM_ROLE_UPDATE', 'user_profile', $2, $3::jsonb, $4::jsonb, $5)`,
         [
           reviewerId,
           app.user_id,
-          prevRole,
-          `Phê duyệt đối tác kinh doanh: ${app.business_name}`,
+          JSON.stringify({ role: prevRole }),
+          JSON.stringify({
+            role: 'PARTNER',
+            reason: `Partner application approved: ${app.business_name}`,
+          }),
+          getCorrelationId() ?? null,
         ],
       );
     }
@@ -423,7 +429,7 @@ export class PartnerRepository {
       created_at: string;
     }>(
       `SELECT p.id, p.full_name, u.email, p.role, p.status, p.created_at
-       FROM users_schema.profiles p
+       FROM public.user_profiles p
        LEFT JOIN auth.users u ON u.id = p.id
        ORDER BY p.created_at DESC LIMIT 100`,
     );

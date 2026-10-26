@@ -459,9 +459,10 @@ export class TripRepository {
         title: string;
         description: string | null;
         visibility: string;
+        status: string;
         version: number;
       }>(
-        `SELECT id, title, description, visibility, version FROM trip_schema.trips WHERE id=$1 AND deleted_at IS NULL FOR UPDATE`,
+        `SELECT id, title, description, visibility, status, version FROM trip_schema.trips WHERE id=$1 AND deleted_at IS NULL FOR UPDATE`,
         [tripId],
       );
       const row = current.rows[0];
@@ -490,7 +491,7 @@ export class TripRepository {
         [
           tripId,
           actorId,
-          JSON.stringify({ status: row.version }),
+          JSON.stringify({ status: row.status }),
           JSON.stringify({ status }),
         ],
       );

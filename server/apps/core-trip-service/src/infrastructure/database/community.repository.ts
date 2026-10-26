@@ -30,7 +30,7 @@ export class CommunityRepository {
         EXISTS(SELECT 1 FROM community_schema.post_likes pl WHERE pl.post_id = p.id AND pl.user_id = $1) AS has_liked,
         EXISTS(SELECT 1 FROM community_schema.post_saves ps WHERE ps.post_id = p.id AND ps.user_id = $1) AS has_saved
        FROM community_schema.posts p
-       LEFT JOIN users_schema.profiles pr ON pr.id = p.author_id
+       LEFT JOIN public.user_profiles pr ON pr.id = p.author_id
        LEFT JOIN trip_schema.trips t ON t.id = p.trip_id
        WHERE p.status = 'PUBLISHED'
        ORDER BY p.created_at DESC
@@ -85,7 +85,7 @@ export class CommunityRepository {
         EXISTS(SELECT 1 FROM community_schema.post_likes pl WHERE pl.post_id = p.id AND pl.user_id = $2) AS has_liked,
         EXISTS(SELECT 1 FROM community_schema.post_saves ps WHERE ps.post_id = p.id AND ps.user_id = $2) AS has_saved
        FROM community_schema.posts p
-       LEFT JOIN users_schema.profiles pr ON pr.id = p.author_id
+       LEFT JOIN public.user_profiles pr ON pr.id = p.author_id
        LEFT JOIN trip_schema.trips t ON t.id = p.trip_id
        WHERE p.id = $1 AND p.status = 'PUBLISHED'`,
       [postId, currentUserId || null],
@@ -223,7 +223,7 @@ export class CommunityRepository {
       `SELECT c.id, c.post_id, c.author_id, c.content, c.created_at,
               pr.full_name AS author_name, pr.avatar_url AS author_avatar
        FROM community_schema.comments c
-       LEFT JOIN users_schema.profiles pr ON pr.id = c.author_id
+       LEFT JOIN public.user_profiles pr ON pr.id = c.author_id
        WHERE c.post_id = $1 AND c.status = 'VISIBLE'
        ORDER BY c.created_at ASC`,
       [postId],
@@ -318,7 +318,7 @@ export class CommunityRepository {
       avatar_url: string | null;
       created_at: string;
     }>(
-      `SELECT id, full_name, avatar_url, created_at FROM users_schema.profiles WHERE id = $1`,
+      `SELECT id, full_name, avatar_url, created_at FROM public.user_profiles WHERE id = $1`,
       [targetUserId],
     );
     const p = profileRes.rows[0];

@@ -7,6 +7,377 @@ export type Json =
   | Json[];
 
 export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: '14.15';
+  };
+  billing_schema: {
+    Tables: {
+      orders: {
+        Row: {
+          amount: number;
+          created_at: string;
+          currency: string;
+          id: string;
+          item_id: string;
+          item_type: string;
+          metadata: Json;
+          payment_method: string | null;
+          payment_ref: string | null;
+          status: string;
+          title: string;
+          trip_id: string | null;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          amount: number;
+          created_at?: string;
+          currency?: string;
+          id?: string;
+          item_id: string;
+          item_type: string;
+          metadata?: Json;
+          payment_method?: string | null;
+          payment_ref?: string | null;
+          status?: string;
+          title: string;
+          trip_id?: string | null;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          amount?: number;
+          created_at?: string;
+          currency?: string;
+          id?: string;
+          item_id?: string;
+          item_type?: string;
+          metadata?: Json;
+          payment_method?: string | null;
+          payment_ref?: string | null;
+          status?: string;
+          title?: string;
+          trip_id?: string | null;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
+      payments: {
+        Row: {
+          amount: number;
+          currency: string;
+          id: string;
+          order_id: string;
+          payload: Json;
+          processed_at: string;
+          provider: string;
+          signature: string | null;
+          status: string;
+          transaction_id: string;
+        };
+        Insert: {
+          amount: number;
+          currency?: string;
+          id?: string;
+          order_id: string;
+          payload?: Json;
+          processed_at?: string;
+          provider?: string;
+          signature?: string | null;
+          status: string;
+          transaction_id: string;
+        };
+        Update: {
+          amount?: number;
+          currency?: string;
+          id?: string;
+          order_id?: string;
+          payload?: Json;
+          processed_at?: string;
+          provider?: string;
+          signature?: string | null;
+          status?: string;
+          transaction_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'payments_order_id_fkey';
+            columns: ['order_id'];
+            isOneToOne: false;
+            referencedRelation: 'orders';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      travel_books: {
+        Row: {
+          cover_photo_url: string | null;
+          created_at: string;
+          format: string;
+          id: string;
+          order_id: string | null;
+          page_count: number;
+          preview_data: Json;
+          shipping_address: Json | null;
+          status: string;
+          subtitle: string | null;
+          title: string;
+          trip_id: string;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          cover_photo_url?: string | null;
+          created_at?: string;
+          format?: string;
+          id?: string;
+          order_id?: string | null;
+          page_count?: number;
+          preview_data?: Json;
+          shipping_address?: Json | null;
+          status?: string;
+          subtitle?: string | null;
+          title: string;
+          trip_id: string;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          cover_photo_url?: string | null;
+          created_at?: string;
+          format?: string;
+          id?: string;
+          order_id?: string | null;
+          page_count?: number;
+          preview_data?: Json;
+          shipping_address?: Json | null;
+          status?: string;
+          subtitle?: string | null;
+          title?: string;
+          trip_id?: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'travel_books_order_id_fkey';
+            columns: ['order_id'];
+            isOneToOne: false;
+            referencedRelation: 'orders';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+    };
+    Views: {
+      [_ in never]: never;
+    };
+    Functions: {
+      [_ in never]: never;
+    };
+    Enums: {
+      [_ in never]: never;
+    };
+    CompositeTypes: {
+      [_ in never]: never;
+    };
+  };
+  community_schema: {
+    Tables: {
+      comments: {
+        Row: {
+          author_id: string;
+          content: string;
+          created_at: string;
+          id: string;
+          post_id: string;
+          status: string;
+        };
+        Insert: {
+          author_id: string;
+          content: string;
+          created_at?: string;
+          id?: string;
+          post_id: string;
+          status?: string;
+        };
+        Update: {
+          author_id?: string;
+          content?: string;
+          created_at?: string;
+          id?: string;
+          post_id?: string;
+          status?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'comments_post_id_fkey';
+            columns: ['post_id'];
+            isOneToOne: false;
+            referencedRelation: 'posts';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      post_likes: {
+        Row: {
+          created_at: string;
+          post_id: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          post_id: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          post_id?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'post_likes_post_id_fkey';
+            columns: ['post_id'];
+            isOneToOne: false;
+            referencedRelation: 'posts';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      post_saves: {
+        Row: {
+          created_at: string;
+          post_id: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          post_id: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          post_id?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'post_saves_post_id_fkey';
+            columns: ['post_id'];
+            isOneToOne: false;
+            referencedRelation: 'posts';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      posts: {
+        Row: {
+          author_id: string;
+          comment_count: number;
+          content: string;
+          created_at: string;
+          id: string;
+          like_count: number;
+          location_name: string | null;
+          media_urls: string[];
+          save_count: number;
+          status: string;
+          title: string;
+          trip_id: string | null;
+          updated_at: string;
+        };
+        Insert: {
+          author_id: string;
+          comment_count?: number;
+          content: string;
+          created_at?: string;
+          id?: string;
+          like_count?: number;
+          location_name?: string | null;
+          media_urls?: string[];
+          save_count?: number;
+          status?: string;
+          title: string;
+          trip_id?: string | null;
+          updated_at?: string;
+        };
+        Update: {
+          author_id?: string;
+          comment_count?: number;
+          content?: string;
+          created_at?: string;
+          id?: string;
+          like_count?: number;
+          location_name?: string | null;
+          media_urls?: string[];
+          save_count?: number;
+          status?: string;
+          title?: string;
+          trip_id?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      reports: {
+        Row: {
+          created_at: string;
+          details: string | null;
+          id: string;
+          reason: string;
+          reporter_id: string;
+          resolution_notes: string | null;
+          reviewed_at: string | null;
+          reviewed_by: string | null;
+          status: string;
+          target_id: string;
+          target_type: string;
+        };
+        Insert: {
+          created_at?: string;
+          details?: string | null;
+          id?: string;
+          reason: string;
+          reporter_id: string;
+          resolution_notes?: string | null;
+          reviewed_at?: string | null;
+          reviewed_by?: string | null;
+          status?: string;
+          target_id: string;
+          target_type: string;
+        };
+        Update: {
+          created_at?: string;
+          details?: string | null;
+          id?: string;
+          reason?: string;
+          reporter_id?: string;
+          resolution_notes?: string | null;
+          reviewed_at?: string | null;
+          reviewed_by?: string | null;
+          status?: string;
+          target_id?: string;
+          target_type?: string;
+        };
+        Relationships: [];
+      };
+    };
+    Views: {
+      [_ in never]: never;
+    };
+    Functions: {
+      [_ in never]: never;
+    };
+    Enums: {
+      [_ in never]: never;
+    };
+    CompositeTypes: {
+      [_ in never]: never;
+    };
+  };
   notification_schema: {
     Tables: {
       notification_deliveries: {
@@ -100,8 +471,168 @@ export type Database = {
       [_ in never]: never;
     };
   };
+  partner_schema: {
+    Tables: {
+      applications: {
+        Row: {
+          business_name: string;
+          business_type: string;
+          contact_email: string;
+          contact_phone: string;
+          created_at: string;
+          description: string | null;
+          id: string;
+          review_notes: string | null;
+          reviewed_at: string | null;
+          reviewed_by: string | null;
+          status: string;
+          tax_id: string | null;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          business_name: string;
+          business_type: string;
+          contact_email: string;
+          contact_phone: string;
+          created_at?: string;
+          description?: string | null;
+          id?: string;
+          review_notes?: string | null;
+          reviewed_at?: string | null;
+          reviewed_by?: string | null;
+          status?: string;
+          tax_id?: string | null;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          business_name?: string;
+          business_type?: string;
+          contact_email?: string;
+          contact_phone?: string;
+          created_at?: string;
+          description?: string | null;
+          id?: string;
+          review_notes?: string | null;
+          reviewed_at?: string | null;
+          reviewed_by?: string | null;
+          status?: string;
+          tax_id?: string | null;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
+      listings: {
+        Row: {
+          category: string;
+          created_at: string;
+          description: string;
+          id: string;
+          latitude: number | null;
+          location_name: string;
+          longitude: number | null;
+          media_urls: string[];
+          partner_id: string;
+          price_amount: number;
+          price_currency: string;
+          status: string;
+          title: string;
+          updated_at: string;
+        };
+        Insert: {
+          category: string;
+          created_at?: string;
+          description: string;
+          id?: string;
+          latitude?: number | null;
+          location_name: string;
+          longitude?: number | null;
+          media_urls?: string[];
+          partner_id: string;
+          price_amount: number;
+          price_currency?: string;
+          status?: string;
+          title: string;
+          updated_at?: string;
+        };
+        Update: {
+          category?: string;
+          created_at?: string;
+          description?: string;
+          id?: string;
+          latitude?: number | null;
+          location_name?: string;
+          longitude?: number | null;
+          media_urls?: string[];
+          partner_id?: string;
+          price_amount?: number;
+          price_currency?: string;
+          status?: string;
+          title?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+    };
+    Views: {
+      [_ in never]: never;
+    };
+    Functions: {
+      [_ in never]: never;
+    };
+    Enums: {
+      [_ in never]: never;
+    };
+    CompositeTypes: {
+      [_ in never]: never;
+    };
+  };
   public: {
     Tables: {
+      platform_audit_logs: {
+        Row: {
+          action: string;
+          actor_id: string;
+          correlation_id: string | null;
+          created_at: string;
+          entity_id: string;
+          entity_type: string;
+          id: string;
+          ip_address: string | null;
+          new_values: Json | null;
+          old_values: Json | null;
+          user_agent: string | null;
+        };
+        Insert: {
+          action: string;
+          actor_id: string;
+          correlation_id?: string | null;
+          created_at?: string;
+          entity_id: string;
+          entity_type: string;
+          id?: string;
+          ip_address?: string | null;
+          new_values?: Json | null;
+          old_values?: Json | null;
+          user_agent?: string | null;
+        };
+        Update: {
+          action?: string;
+          actor_id?: string;
+          correlation_id?: string | null;
+          created_at?: string;
+          entity_id?: string;
+          entity_type?: string;
+          id?: string;
+          ip_address?: string | null;
+          new_values?: Json | null;
+          old_values?: Json | null;
+          user_agent?: string | null;
+        };
+        Relationships: [];
+      };
       user_profiles: {
         Row: {
           avatar_url: string | null;
@@ -109,6 +640,7 @@ export type Database = {
           email: string;
           full_name: string;
           id: string;
+          role: string;
           status: string | null;
           updated_at: string | null;
         };
@@ -118,6 +650,7 @@ export type Database = {
           email: string;
           full_name: string;
           id: string;
+          role?: string;
           status?: string | null;
           updated_at?: string | null;
         };
@@ -127,6 +660,7 @@ export type Database = {
           email?: string;
           full_name?: string;
           id?: string;
+          role?: string;
           status?: string | null;
           updated_at?: string | null;
         };
@@ -202,6 +736,47 @@ export type Database = {
         };
         Relationships: [];
       };
+      trip_audit_logs: {
+        Row: {
+          action: string;
+          actor_id: string;
+          correlation_id: string | null;
+          created_at: string;
+          id: string;
+          new_values: Json | null;
+          old_values: Json | null;
+          trip_id: string;
+        };
+        Insert: {
+          action: string;
+          actor_id: string;
+          correlation_id?: string | null;
+          created_at?: string;
+          id?: string;
+          new_values?: Json | null;
+          old_values?: Json | null;
+          trip_id: string;
+        };
+        Update: {
+          action?: string;
+          actor_id?: string;
+          correlation_id?: string | null;
+          created_at?: string;
+          id?: string;
+          new_values?: Json | null;
+          old_values?: Json | null;
+          trip_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'trip_audit_logs_trip_id_fkey';
+            columns: ['trip_id'];
+            isOneToOne: false;
+            referencedRelation: 'trips';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       trip_days: {
         Row: {
           created_at: string;
@@ -233,6 +808,47 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: 'trip_days_trip_id_fkey';
+            columns: ['trip_id'];
+            isOneToOne: false;
+            referencedRelation: 'trips';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      trip_expenses: {
+        Row: {
+          amount: number;
+          category: string;
+          created_at: string;
+          currency: string;
+          description: string;
+          id: string;
+          payer_id: string;
+          trip_id: string;
+        };
+        Insert: {
+          amount: number;
+          category?: string;
+          created_at?: string;
+          currency?: string;
+          description: string;
+          id?: string;
+          payer_id: string;
+          trip_id: string;
+        };
+        Update: {
+          amount?: number;
+          category?: string;
+          created_at?: string;
+          currency?: string;
+          description?: string;
+          id?: string;
+          payer_id?: string;
+          trip_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'trip_expenses_trip_id_fkey';
             columns: ['trip_id'];
             isOneToOne: false;
             referencedRelation: 'trips';
@@ -293,6 +909,47 @@ export type Database = {
           },
         ];
       };
+      trip_live_locations: {
+        Row: {
+          consent_given: boolean;
+          id: string;
+          latitude: number;
+          longitude: number;
+          sharing_active: boolean;
+          trip_id: string;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          consent_given?: boolean;
+          id?: string;
+          latitude: number;
+          longitude: number;
+          sharing_active?: boolean;
+          trip_id: string;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          consent_given?: boolean;
+          id?: string;
+          latitude?: number;
+          longitude?: number;
+          sharing_active?: boolean;
+          trip_id?: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'trip_live_locations_trip_id_fkey';
+            columns: ['trip_id'];
+            isOneToOne: false;
+            referencedRelation: 'trips';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       trip_members: {
         Row: {
           id: string;
@@ -330,6 +987,82 @@ export type Database = {
             columns: ['trip_id'];
             isOneToOne: false;
             referencedRelation: 'trips';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      trip_memories: {
+        Row: {
+          cover_photo_url: string | null;
+          created_at: string;
+          id: string;
+          summary: string | null;
+          title: string;
+          trip_id: string;
+          updated_at: string;
+          visibility: string;
+        };
+        Insert: {
+          cover_photo_url?: string | null;
+          created_at?: string;
+          id?: string;
+          summary?: string | null;
+          title: string;
+          trip_id: string;
+          updated_at?: string;
+          visibility?: string;
+        };
+        Update: {
+          cover_photo_url?: string | null;
+          created_at?: string;
+          id?: string;
+          summary?: string | null;
+          title?: string;
+          trip_id?: string;
+          updated_at?: string;
+          visibility?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'trip_memories_trip_id_fkey';
+            columns: ['trip_id'];
+            isOneToOne: true;
+            referencedRelation: 'trips';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      trip_memory_photos: {
+        Row: {
+          caption: string | null;
+          created_at: string;
+          id: string;
+          memory_id: string;
+          photo_url: string;
+          taken_at: string;
+        };
+        Insert: {
+          caption?: string | null;
+          created_at?: string;
+          id?: string;
+          memory_id: string;
+          photo_url: string;
+          taken_at?: string;
+        };
+        Update: {
+          caption?: string | null;
+          created_at?: string;
+          id?: string;
+          memory_id?: string;
+          photo_url?: string;
+          taken_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'trip_memory_photos_memory_id_fkey';
+            columns: ['memory_id'];
+            isOneToOne: false;
+            referencedRelation: 'trip_memories';
             referencedColumns: ['id'];
           },
         ];
@@ -416,11 +1149,14 @@ export type Database = {
           end_date: string;
           id: string;
           owner_id: string;
+          published_at: string | null;
+          source_trip_id: string | null;
           start_date: string;
           status: string;
           title: string;
           updated_at: string;
           version: number;
+          visibility: string;
         };
         Insert: {
           budget_amount?: number;
@@ -431,11 +1167,14 @@ export type Database = {
           end_date: string;
           id?: string;
           owner_id: string;
+          published_at?: string | null;
+          source_trip_id?: string | null;
           start_date: string;
           status?: string;
           title: string;
           updated_at?: string;
           version?: number;
+          visibility?: string;
         };
         Update: {
           budget_amount?: number;
@@ -446,13 +1185,24 @@ export type Database = {
           end_date?: string;
           id?: string;
           owner_id?: string;
+          published_at?: string | null;
+          source_trip_id?: string | null;
           start_date?: string;
           status?: string;
           title?: string;
           updated_at?: string;
           version?: number;
+          visibility?: string;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: 'trips_source_trip_id_fkey';
+            columns: ['source_trip_id'];
+            isOneToOne: false;
+            referencedRelation: 'trips';
+            referencedColumns: ['id'];
+          },
+        ];
       };
     };
     Views: {
@@ -464,6 +1214,40 @@ export type Database = {
       is_trip_member: { Args: { target_trip_id: string }; Returns: boolean };
       is_trip_owner: { Args: { trip_id: string }; Returns: boolean };
       trip_access_level: { Args: { target_trip_id: string }; Returns: string };
+    };
+    Enums: {
+      [_ in never]: never;
+    };
+    CompositeTypes: {
+      [_ in never]: never;
+    };
+  };
+  users_schema: {
+    Tables: {
+      follows: {
+        Row: {
+          created_at: string;
+          follower_id: string;
+          following_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          follower_id: string;
+          following_id: string;
+        };
+        Update: {
+          created_at?: string;
+          follower_id?: string;
+          following_id?: string;
+        };
+        Relationships: [];
+      };
+    };
+    Views: {
+      [_ in never]: never;
+    };
+    Functions: {
+      [_ in never]: never;
     };
     Enums: {
       [_ in never]: never;
@@ -592,13 +1376,25 @@ export type CompositeTypes<
     : never;
 
 export const Constants = {
+  billing_schema: {
+    Enums: {},
+  },
+  community_schema: {
+    Enums: {},
+  },
   notification_schema: {
+    Enums: {},
+  },
+  partner_schema: {
     Enums: {},
   },
   public: {
     Enums: {},
   },
   trip_schema: {
+    Enums: {},
+  },
+  users_schema: {
     Enums: {},
   },
 } as const;
