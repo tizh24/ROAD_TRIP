@@ -22,7 +22,7 @@ export default function Unauthorized() {
       <div className="flex flex-col sm:flex-row items-center gap-3 w-full max-w-xs sm:max-w-md justify-center">
         <Link
           href="/login"
-          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-white font-medium hover:bg-primary-hover transition-colors shadow-sm"
+          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-primary-strong text-white font-medium hover:bg-primary-strong/90 transition-colors shadow-sm"
         >
           <LogIn size={18} />
           Đăng nhập ngay

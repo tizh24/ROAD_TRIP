@@ -9,7 +9,7 @@ import { initialAuthFormState } from "@/features/auth/form-state";
 
 function SaveButton() {
   const { pending } = useFormStatus();
-  return <button type="submit" disabled={pending} className="focus-ring inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60">{pending ? <><LoaderCircle size={16} className="animate-spin" />Đang lưu…</> : "Lưu tên hiển thị"}</button>;
+  return <button type="submit" disabled={pending} className="focus-ring inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-primary-strong px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-primary-strong/90 disabled:cursor-not-allowed disabled:opacity-60">{pending ? <><LoaderCircle size={16} className="animate-spin" />Đang lưu…</> : "Lưu tên hiển thị"}</button>;
 }
 
 export default function ProfileSettingsForm({ fullName, email }: { fullName: string; email: string }) {

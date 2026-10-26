@@ -30,7 +30,7 @@ export default function LandingHeader({ signedIn }: { signedIn: boolean }) {
     <header className="border-b border-border-main bg-background">
       <div className="page-shell flex min-h-[72px] items-center justify-between gap-4">
         <Link href="/" className="focus-ring flex items-center gap-3 rounded-lg" aria-label="Tripz, về trang chủ">
-          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-white">
+          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-strong text-white">
             <Compass size={20} aria-hidden="true" />
           </span>
           <span className="font-display text-xl font-extrabold tracking-[-0.04em] text-secondary">Tripz</span>
@@ -48,7 +48,7 @@ export default function LandingHeader({ signedIn }: { signedIn: boolean }) {
           <Link href={accountLink.href} className="focus-ring hidden min-h-11 items-center rounded-lg px-4 text-sm font-bold text-text-main hover:bg-background-warm sm:inline-flex">
             {accountLink.label}
           </Link>
-          <Link href={landingRoutes.plan} className="focus-ring hidden min-h-11 items-center rounded-lg bg-primary px-5 text-sm font-bold text-white hover:bg-primary-hover sm:inline-flex">
+          <Link href={landingRoutes.plan} className="focus-ring hidden min-h-11 items-center rounded-lg bg-primary-strong px-5 text-sm font-bold text-white hover:bg-primary-strong/90 sm:inline-flex">
             Bắt đầu lên kế hoạch
           </Link>
           <button
@@ -81,7 +81,7 @@ export default function LandingHeader({ signedIn }: { signedIn: boolean }) {
               </Link>
             </li>
             <li>
-              <Link href={landingRoutes.plan} onClick={close} className="focus-ring mt-2 flex min-h-11 items-center justify-center rounded-lg bg-primary px-4 text-sm font-bold text-white hover:bg-primary-hover">
+              <Link href={landingRoutes.plan} onClick={close} className="focus-ring mt-2 flex min-h-11 items-center justify-center rounded-lg bg-primary-strong px-4 text-sm font-bold text-white hover:bg-primary-strong/90">
                 Bắt đầu lên kế hoạch
               </Link>
             </li>

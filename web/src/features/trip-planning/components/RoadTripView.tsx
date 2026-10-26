@@ -277,7 +277,7 @@ export default function RoadTripView({ tripId }: { tripId: string }) {
                   type="button"
                   onClick={() => void handleCompleteTrip()}
                   disabled={completingTrip}
-                  className="focus-ring inline-flex items-center gap-1.5 rounded-xl bg-primary px-3.5 py-2.5 text-xs font-bold text-white shadow-card hover:bg-primary-hover transition disabled:opacity-50"
+                  className="focus-ring inline-flex items-center gap-1.5 rounded-xl bg-primary-strong px-3.5 py-2.5 text-xs font-bold text-white shadow-card hover:bg-primary-strong/90 transition disabled:opacity-50"
                 >
                   <CheckCircle2 size={16} />
                   <span>{completingTrip ? "Đang xử lý…" : "Hoàn tất chuyến đi"}</span>
@@ -433,7 +433,7 @@ export default function RoadTripView({ tripId }: { tripId: string }) {
                 </p>
                 <Link
                   href={`/planner/${trip.id}`}
-                  className="focus-ring mt-4 inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-white shadow-card hover:bg-primary-hover transition"
+                  className="focus-ring mt-4 inline-flex items-center gap-2 rounded-xl bg-primary-strong px-4 py-2.5 text-sm font-bold text-white shadow-card hover:bg-primary-strong/90 transition"
                 >
                   Thêm điểm dừng vào kế hoạch
                 </Link>

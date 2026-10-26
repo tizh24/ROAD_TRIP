@@ -91,7 +91,7 @@ function PaymentContent() {
               </p>
               <Link
                 href="/trips"
-                className="mt-6 inline-flex rounded-xl bg-primary px-4 py-2 text-xs font-bold text-white hover:bg-primary-hover"
+                className="mt-6 inline-flex rounded-xl bg-primary-strong px-4 py-2 text-xs font-bold text-white hover:bg-primary-strong/90"
               >
                 Về danh sách chuyến đi
               </Link>
@@ -132,7 +132,7 @@ function PaymentContent() {
                     {ord.status === "PENDING" && (
                       <Link
                         href={`/payment?orderId=${ord.id}`}
-                        className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-4 py-2 text-xs font-bold text-white hover:bg-primary-hover"
+                        className="inline-flex items-center gap-1.5 rounded-xl bg-primary-strong px-4 py-2 text-xs font-bold text-white hover:bg-primary-strong/90"
                       >
                         Thanh toán ngay <ArrowRight size={14} />
                       </Link>
@@ -190,7 +190,7 @@ function PaymentContent() {
               {order.itemType === "TRAVEL_BOOK" && order.itemId && (
                 <Link
                   href={`/travel-book/${order.itemId}`}
-                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-xs font-bold text-white hover:bg-primary-hover shadow-md"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary-strong px-5 py-2.5 text-xs font-bold text-white hover:bg-primary-strong/90 shadow-md"
                 >
                   <Book size={15} /> Xem trạng thái Travel Book
                 </Link>

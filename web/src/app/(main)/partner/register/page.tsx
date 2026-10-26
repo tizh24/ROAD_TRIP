@@ -120,7 +120,7 @@ export default function PartnerRegisterPage() {
             <div className="mt-6">
               <Link
                 href="/partner"
-                className="inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-bold text-white shadow-md hover:bg-primary-hover transition"
+                className="inline-flex items-center gap-2 rounded-xl bg-primary-strong px-6 py-3 text-sm font-bold text-white shadow-md hover:bg-primary-strong/90 transition"
               >
                 Vào Bảng điều khiển Đối tác
               </Link>
@@ -298,7 +298,7 @@ export default function PartnerRegisterPage() {
                 <button
                   type="submit"
                   disabled={submitting || !businessName.trim() || !contactEmail.trim() || !contactPhone.trim()}
-                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3 text-sm font-bold text-white shadow-md hover:bg-primary-hover disabled:opacity-50 transition"
+                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary-strong py-3 text-sm font-bold text-white shadow-md hover:bg-primary-strong/90 disabled:opacity-50 transition"
                 >
                   <Send size={16} />
                   {submitting ? "Đang gửi hồ sơ..." : "Nộp hồ sơ đăng ký đối tác"}

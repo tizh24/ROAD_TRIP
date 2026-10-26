@@ -27,7 +27,7 @@ export default function MapMarker({ marker, onClick, className = "" }: MapMarker
     switch (marker.type) {
       case "stop":
         return (
-          <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-primary text-xs font-black text-white shadow-card">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-primary-strong text-xs font-black text-white shadow-card">
             {marker.label || "•"}
           </div>
         );

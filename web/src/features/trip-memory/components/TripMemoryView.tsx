@@ -213,7 +213,7 @@ export default function TripMemoryView({ tripId }: { tripId: string }) {
             <div className="flex items-center gap-2">
               <Link
                 href={`/travel-book/${trip.id}`}
-                className="focus-ring inline-flex items-center gap-1.5 rounded-full bg-primary px-3.5 py-2 text-xs font-bold text-white shadow-sm hover:bg-primary-hover transition"
+                className="focus-ring inline-flex items-center gap-1.5 rounded-full bg-primary-strong px-3.5 py-2 text-xs font-bold text-white shadow-sm hover:bg-primary-strong/90 transition"
               >
                 <BookOpen size={14} />
                 <span>In Travel Book</span>
@@ -310,7 +310,7 @@ export default function TripMemoryView({ tripId }: { tripId: string }) {
                 <button
                   type="submit"
                   disabled={addingPhoto}
-                  className="focus-ring rounded-xl bg-primary px-4 py-2 text-xs font-bold text-white shadow-card hover:bg-primary-hover disabled:opacity-50"
+                  className="focus-ring rounded-xl bg-primary-strong px-4 py-2 text-xs font-bold text-white shadow-card hover:bg-primary-strong/90 disabled:opacity-50"
                 >
                   {addingPhoto ? "Đang lưu…" : "Thêm ảnh"}
                 </button>
@@ -418,7 +418,7 @@ export default function TripMemoryView({ tripId }: { tripId: string }) {
                 <button
                   type="submit"
                   disabled={addingExpense}
-                  className="focus-ring rounded-xl bg-primary px-4 py-2 text-xs font-bold text-white shadow-card hover:bg-primary-hover disabled:opacity-50"
+                  className="focus-ring rounded-xl bg-primary-strong px-4 py-2 text-xs font-bold text-white shadow-card hover:bg-primary-strong/90 disabled:opacity-50"
                 >
                   {addingExpense ? "Đang lưu…" : "Ghi sổ"}
                 </button>

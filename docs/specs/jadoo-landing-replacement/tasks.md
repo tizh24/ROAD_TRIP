@@ -72,7 +72,7 @@ button contrast is about 3:1 and needs a decision), 5.5, 6.6, 6.7.
   focus-visible, active, disabled where applicable, and touch-friendly sizing.
 - [x] 5.2 Add reduced-motion-safe styling and prevent decorative content from
   introducing horizontal scrolling.
-- [ ] 5.3 Check heading hierarchy, landmarks, contrast, keyboard tab order,
+- [x] 5.3 Check heading hierarchy, landmarks, contrast, keyboard tab order,
   skip-link behavior and form feedback announcements.
 - [x] 5.4 Remove the former home route planner/checklist sections and obsolete
   helpers/imports only after their replacements render successfully.

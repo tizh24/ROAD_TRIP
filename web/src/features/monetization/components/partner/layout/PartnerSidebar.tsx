@@ -35,7 +35,7 @@ export default function PartnerSidebar() {
       )}
 
       <button 
-        className="focus-ring lg:hidden fixed bottom-6 right-6 z-50 rounded-full bg-primary p-3 text-white shadow-card hover:bg-primary-hover transition-transform active:scale-95"
+        className="focus-ring lg:hidden fixed bottom-6 right-6 z-50 rounded-full bg-primary-strong p-3 text-white shadow-card hover:bg-primary-strong/90 transition-transform active:scale-95"
         onClick={() => setIsMobileOpen(!isMobileOpen)}
         aria-label={isMobileOpen ? "Đóng điều hướng đối tác" : "Mở điều hướng đối tác"}
         aria-expanded={isMobileOpen}

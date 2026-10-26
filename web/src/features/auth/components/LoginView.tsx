@@ -21,7 +21,7 @@ function SubmitButton() {
     <button
       type="submit"
       disabled={pending}
-      className="focus-ring mt-3 inline-flex min-h-12 w-full items-center justify-center gap-2.5 rounded-lg bg-primary px-6 py-3.5 text-sm font-bold text-white shadow-card transition-all duration-200 hover:bg-primary-hover hover:shadow-card-hover active:translate-y-px disabled:cursor-not-allowed disabled:opacity-60"
+      className="focus-ring mt-3 inline-flex min-h-12 w-full items-center justify-center gap-2.5 rounded-lg bg-primary-strong px-6 py-3.5 text-sm font-bold text-white shadow-card transition-all duration-200 hover:bg-primary-strong/90 hover:shadow-card-hover active:translate-y-px disabled:cursor-not-allowed disabled:opacity-60"
     >
       {pending ? (
         <>
@@ -124,7 +124,7 @@ export default function LoginView({ authError, nextPath }: LoginViewProps) {
           <div className="rounded-card border border-border-main bg-surface p-7 shadow-card sm:p-9">
             {/* Header / Brand Mark */}
             <div className="flex items-center gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-primary text-white shadow-card">
+              <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-primary-strong text-white shadow-card">
                 <Compass size={22} />
               </div>
               <div>

@@ -27,7 +27,7 @@ export default function Navbar({ user }: { user?: NavbarUser }) {
         
         {/* Left Side: Brand Logo */}
         <Link href="/" className="flex items-center gap-3 cursor-pointer shrink-0 group">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-white shadow-card transition-transform group-hover:-translate-y-0.5"><Compass size={20} /></div>
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-strong text-white shadow-card transition-transform group-hover:-translate-y-0.5"><Compass size={20} /></div>
           <span className="font-display text-xl font-extrabold tracking-[-0.045em] text-secondary">Tripz</span>
         </Link>
 
@@ -109,7 +109,7 @@ export default function Navbar({ user }: { user?: NavbarUser }) {
                 </Link>
               );
             })}
-            <Link href="/trips/new" onClick={() => setMobileOpen(false)} className="focus-ring mt-2 flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-3 text-sm font-bold text-white"><Plus size={17} aria-hidden="true" />Tạo chuyến đi</Link>
+            <Link href="/trips/new" onClick={() => setMobileOpen(false)} className="focus-ring mt-2 flex items-center justify-center gap-2 rounded-lg bg-primary-strong px-4 py-3 text-sm font-bold text-white"><Plus size={17} aria-hidden="true" />Tạo chuyến đi</Link>
             {user ? (
               <>
                 <Link href="/profile" onClick={() => setMobileOpen(false)} className="focus-ring mt-1 flex items-center justify-center gap-2 rounded-lg border border-border-main px-4 py-3 text-sm font-bold text-text-main hover:bg-background-warm"><UserRound size={17} aria-hidden="true" />Hồ sơ</Link>

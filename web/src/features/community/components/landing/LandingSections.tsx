@@ -17,7 +17,7 @@ export function Hero() {
             Lên lịch trình nhiều ngày, thêm điểm dừng, xem tuyến đường và cùng bạn đồng hành chỉnh sửa trên một tấm bản đồ. Dành cho những chuyến đi xe máy, ô tô và xe camper khắp Việt Nam.
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <Link href={landingRoutes.plan} className="focus-ring inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-primary px-6 text-sm font-bold text-white hover:bg-primary-hover">
+            <Link href={landingRoutes.plan} className="focus-ring inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-primary-strong px-6 text-sm font-bold text-white hover:bg-primary-strong/90">
               Bắt đầu lên kế hoạch <ArrowRight size={17} aria-hidden="true" />
             </Link>
             <Link href={landingRoutes.explore} className="focus-ring inline-flex min-h-12 items-center justify-center rounded-lg border border-secondary px-6 text-sm font-bold text-secondary hover:bg-background-warm">
@@ -110,7 +110,7 @@ export function PlanSteps({ liveTrip }: { liveTrip?: PublicTrip }) {
           <ol className="mt-10 grid gap-8">
             {planSteps.map((step, index) => (
               <li key={step.title} className="grid grid-cols-[2.5rem_1fr] gap-4">
-                <span aria-hidden="true" className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-sm font-extrabold text-white">
+                <span aria-hidden="true" className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-strong text-sm font-extrabold text-white">
                   {index + 1}
                 </span>
                 <div>
@@ -159,7 +159,7 @@ function TripPreview({ trip }: { trip?: PublicTrip }) {
           <dd className="tabular-nums">{trip.budgetAmount.toLocaleString("vi-VN")} {trip.currency}</dd>
         </div>
       </dl>
-      <Link href={`/trip/${trip.id}`} className="focus-ring mt-5 inline-flex min-h-11 items-center gap-2 rounded-lg bg-primary px-5 text-sm font-bold text-white hover:bg-primary-hover">
+      <Link href={`/trip/${trip.id}`} className="focus-ring mt-5 inline-flex min-h-11 items-center gap-2 rounded-lg bg-primary-strong px-5 text-sm font-bold text-white hover:bg-primary-strong/90">
         Xem lộ trình <ArrowRight size={16} aria-hidden="true" />
       </Link>
     </aside>

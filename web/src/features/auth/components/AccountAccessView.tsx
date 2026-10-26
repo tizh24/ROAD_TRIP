@@ -38,7 +38,7 @@ const content = {
 } as const;
 
 function SubmitButton({ label }: { label: string }) {
-  return <button type="submit" className="focus-ring mt-2 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-lg bg-primary px-5 py-3 text-sm font-bold text-white shadow-card transition-all duration-200 hover:bg-primary-hover hover:shadow-card-hover active:translate-y-px disabled:cursor-not-allowed disabled:opacity-60">
+  return <button type="submit" className="focus-ring mt-2 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-lg bg-primary-strong px-5 py-3 text-sm font-bold text-white shadow-card transition-all duration-200 hover:bg-primary-strong/90 hover:shadow-card-hover active:translate-y-px disabled:cursor-not-allowed disabled:opacity-60">
     <PendingLabel label={label} />
   </button>;
 }
@@ -101,7 +101,7 @@ export default function AccountAccessView({ mode, nextPath }: { mode: AccessMode
     <div className="w-full max-w-md">
       <Link href={mode === "reset-password" ? "/login" : "/"} className="focus-ring inline-flex min-h-11 items-center gap-2 rounded-lg text-sm font-bold text-text-sub transition-colors hover:text-text-main"><ArrowLeft size={16} />{mode === "reset-password" ? "Về đăng nhập" : "Về trang chủ"}</Link>
       <section className="mt-6 rounded-card border border-border-main bg-surface p-6 shadow-card sm:p-8">
-        <span className="flex h-11 w-11 items-center justify-center rounded-lg bg-primary text-white shadow-card"><Icon size={20} /></span>
+        <span className="flex h-11 w-11 items-center justify-center rounded-lg bg-primary-strong text-white shadow-card"><Icon size={20} /></span>
         <p className="mt-5 font-display text-xl font-extrabold tracking-[-0.03em] text-secondary">Tripz</p>
         <h1 className="mt-2 font-display text-3xl font-extrabold tracking-[-0.03em] text-text-main">{title}</h1>
         <p className="mt-3 max-w-[38ch] text-sm leading-6 text-text-sub">{description}</p>

@@ -47,7 +47,7 @@ export default function NewsletterPanel() {
               placeholder="ten@example.com"
               className="focus-ring min-h-12 w-full rounded-lg border border-white/30 bg-white/10 px-4 text-sm text-white placeholder:text-white/50"
             />
-            <button type="submit" className="focus-ring min-h-12 shrink-0 rounded-lg bg-primary px-6 text-sm font-bold text-white hover:bg-primary-hover">
+            <button type="submit" className="focus-ring min-h-12 shrink-0 rounded-lg bg-primary-strong px-6 text-sm font-bold text-white hover:bg-primary-strong/90">
               Gửi email
             </button>
           </div>

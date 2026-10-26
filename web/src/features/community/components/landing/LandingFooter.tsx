@@ -14,7 +14,7 @@ export default function LandingFooter() {
       <div className="page-shell grid gap-10 py-12 md:grid-cols-[1.4fr_repeat(3,1fr)]">
         <div>
           <Link href="/" className="focus-ring inline-flex items-center gap-3 rounded-lg" aria-label="Tripz, về trang chủ">
-            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-white">
+            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-strong text-white">
               <Compass size={20} aria-hidden="true" />
             </span>
             <span className="font-display text-xl font-extrabold tracking-[-0.04em] text-secondary">Tripz</span>

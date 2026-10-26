@@ -38,7 +38,7 @@ export default function AdminSidebar() {
 
       {/* Mobile Hamburger (Visible only on small screens) */}
       <button 
-        className="focus-ring lg:hidden fixed bottom-6 right-6 z-50 rounded-full bg-primary p-3 text-white shadow-card hover:bg-primary-hover transition-transform active:scale-95"
+        className="focus-ring lg:hidden fixed bottom-6 right-6 z-50 rounded-full bg-primary-strong p-3 text-white shadow-card hover:bg-primary-strong/90 transition-transform active:scale-95"
         onClick={() => setIsMobileOpen(!isMobileOpen)}
         aria-label={isMobileOpen ? "Đóng điều hướng quản trị" : "Mở điều hướng quản trị"}
         aria-expanded={isMobileOpen}

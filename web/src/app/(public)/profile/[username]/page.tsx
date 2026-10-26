@@ -86,7 +86,7 @@ export default function PublicProfilePage({
           <p className="mt-2 text-sm text-text-sub">{error || "Hồ sơ không tồn tại."}</p>
           <Link
             href="/feed"
-            className="mt-6 inline-flex rounded-xl bg-primary px-4 py-2 text-sm font-bold text-white hover:bg-primary-hover"
+            className="mt-6 inline-flex rounded-xl bg-primary-strong px-4 py-2 text-sm font-bold text-white hover:bg-primary-strong/90"
           >
             Quay lại bảng tin
           </Link>
@@ -126,7 +126,7 @@ export default function PublicProfilePage({
             <button
               onClick={handleToggleFollow}
               disabled={updatingFollow}
-              className={`inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-bold shadow-sm transition active:scale-95 disabled:opacity-50 ${following ? "border border-border-main bg-gray-100 text-text-main hover:bg-gray-200" : "bg-primary text-white hover:bg-primary-hover"}`}
+              className={`inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-bold shadow-sm transition active:scale-95 disabled:opacity-50 ${following ? "border border-border-main bg-gray-100 text-text-main hover:bg-gray-200" : "bg-primary-strong text-white hover:bg-primary-strong/90"}`}
             >
               {following ? <><UserCheck size={16} /> Đang theo dõi</> : <><UserPlus size={16} /> Theo dõi</>}
             </button>

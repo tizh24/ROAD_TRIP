@@ -194,7 +194,7 @@ export default function PartnerOverviewPanel() {
 
             <button
               onClick={() => setIsModalOpen(true)}
-              className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-primary-hover active:scale-95 transition"
+              className="inline-flex items-center gap-2 rounded-xl bg-primary-strong px-4 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-primary-strong/90 active:scale-95 transition"
             >
               <Plus size={16} /> Thêm dịch vụ mới
             </button>
@@ -426,7 +426,7 @@ export default function PartnerOverviewPanel() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="rounded-xl bg-primary px-5 py-2 text-xs font-bold text-white hover:bg-primary-hover disabled:opacity-50"
+                  className="rounded-xl bg-primary-strong px-5 py-2 text-xs font-bold text-white hover:bg-primary-strong/90 disabled:opacity-50"
                 >
                   {submitting ? "Đang lưu..." : "Tạo dịch vụ"}
                 </button>

@@ -144,7 +144,7 @@ export default function TravelBookPage({
           <p className="mt-1 text-xs text-text-sub">{error || "Hành trình chưa có kỷ niệm để tạo sách."}</p>
           <button
             onClick={() => router.back()}
-            className="mt-6 inline-flex rounded-xl bg-primary px-4 py-2 text-xs font-bold text-white hover:bg-primary-hover"
+            className="mt-6 inline-flex rounded-xl bg-primary-strong px-4 py-2 text-xs font-bold text-white hover:bg-primary-strong/90"
           >
             Quay lại
           </button>
@@ -404,7 +404,7 @@ export default function TravelBookPage({
                 <button
                   type="submit"
                   disabled={ordering || !title.trim()}
-                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-primary px-7 py-3.5 text-sm font-bold text-white shadow-md hover:bg-primary-hover active:scale-95 disabled:opacity-50 transition"
+                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-primary-strong px-7 py-3.5 text-sm font-bold text-white shadow-md hover:bg-primary-strong/90 active:scale-95 disabled:opacity-50 transition"
                 >
                   <CreditCard size={18} />
                   {ordering ? "Đang xử lý..." : "Tiến hành thanh toán"}

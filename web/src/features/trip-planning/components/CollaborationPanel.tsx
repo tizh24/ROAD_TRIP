@@ -153,7 +153,7 @@ export default function CollaborationPanel({ tripId }: { tripId: string }) {
         </select>
         <button
           disabled={pendingAction !== undefined}
-          className="focus-ring w-full rounded-xl bg-primary px-4 py-3 text-sm font-bold text-white shadow-card hover:bg-primary-hover disabled:opacity-50 sm:w-auto"
+          className="focus-ring w-full rounded-xl bg-primary-strong px-4 py-3 text-sm font-bold text-white shadow-card hover:bg-primary-strong/90 disabled:opacity-50 sm:w-auto"
         >
           {pendingAction === "invite" ? "Đang mời…" : "Mời"}
         </button>

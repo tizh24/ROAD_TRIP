@@ -226,7 +226,7 @@ export default function CommunityFeedView() {
 
           <button
             onClick={() => setIsComposerOpen(true)}
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-bold text-white shadow-md transition hover:bg-primary-hover active:scale-95"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary-strong px-5 py-3 text-sm font-bold text-white shadow-md transition hover:bg-primary-strong/90 active:scale-95"
           >
             <Plus size={18} />
             Chia sẻ trải nghiệm
@@ -282,7 +282,7 @@ export default function CommunityFeedView() {
             </p>
             <button
               onClick={() => setIsComposerOpen(true)}
-              className="mt-4 inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-white hover:bg-primary-hover"
+              className="mt-4 inline-flex items-center gap-2 rounded-xl bg-primary-strong px-4 py-2 text-sm font-bold text-white hover:bg-primary-strong/90"
             >
               <Plus size={16} /> Viết bài ngay
             </button>
@@ -492,7 +492,7 @@ export default function CommunityFeedView() {
                       <button
                         type="submit"
                         disabled={submittingComment || !commentInput.trim()}
-                        className="flex items-center gap-1 rounded-xl bg-primary px-3.5 py-2 text-xs font-bold text-white hover:bg-primary-hover disabled:opacity-50"
+                        className="flex items-center gap-1 rounded-xl bg-primary-strong px-3.5 py-2 text-xs font-bold text-white hover:bg-primary-strong/90 disabled:opacity-50"
                       >
                         <Send size={13} />
                         Gửi
@@ -593,7 +593,7 @@ export default function CommunityFeedView() {
                 <button
                   type="submit"
                   disabled={submitting || !newTitle.trim() || !newContent.trim()}
-                  className="rounded-xl bg-primary px-5 py-2 text-sm font-bold text-white hover:bg-primary-hover disabled:opacity-50"
+                  className="rounded-xl bg-primary-strong px-5 py-2 text-sm font-bold text-white hover:bg-primary-strong/90 disabled:opacity-50"
                 >
                   {submitting ? "Đang đăng..." : "Đăng bài viết"}
                 </button>
