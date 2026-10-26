@@ -94,7 +94,7 @@ export async function requestGateway<T extends z.ZodType>(
   } catch {
     throw new GatewayApiError(
       "NETWORK_UNAVAILABLE",
-      "Unable to reach the service.",
+      "Không thể kết nối tới dịch vụ. Vui lòng thử lại.",
       correlationId,
     );
   }
@@ -110,7 +110,7 @@ export async function requestGateway<T extends z.ZodType>(
       );
     throw new GatewayApiError(
       "INTERNAL_ERROR",
-      "The service returned an invalid error response.",
+      "Dịch vụ trả về phản hồi lỗi không hợp lệ.",
       correlationId,
     );
   }
@@ -118,7 +118,7 @@ export async function requestGateway<T extends z.ZodType>(
   if (!parsed.success)
     throw new GatewayApiError(
       "INTERNAL_ERROR",
-      "The service returned an invalid response.",
+      "Dịch vụ trả về phản hồi không hợp lệ.",
       correlationId,
     );
   return (parsed.data as { data: z.infer<T> }).data;

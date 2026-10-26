@@ -62,7 +62,7 @@ export default function TripDetailView({
   };
 
   return (
-    <main className="min-h-[calc(100svh-72px)] overflow-x-clip bg-brand-offwhite pb-14 text-brand-charcoal sm:pb-20">
+    <div className="min-h-[calc(100svh-72px)] overflow-x-clip bg-brand-offwhite pb-14 text-brand-charcoal sm:pb-20">
       <section className="bg-brand-charcoal px-4 pb-12 pt-9 text-white sm:px-6 sm:pb-16 sm:pt-12">
         <div className="page-shell px-0">
           <Link
@@ -163,7 +163,7 @@ export default function TripDetailView({
                             key={stop.id}
                             className="grid grid-cols-[1.75rem_minmax(0,1fr)] gap-3"
                           >
-                            <span className="pt-0.5 text-sm font-extrabold tabular-nums text-primary">
+                            <span className="pt-0.5 text-sm font-extrabold tabular-nums text-primary-strong">
                               {String(index + 1).padStart(2, "0")}
                             </span>
                             <div>
@@ -231,6 +231,6 @@ export default function TripDetailView({
           </button>
         </aside>
       </div>
-    </main>
+    </div>
   );
 }

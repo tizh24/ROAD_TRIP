@@ -106,9 +106,9 @@ export default function AccountAccessView({ mode, nextPath }: { mode: AccessMode
         <h1 className="mt-2 font-display text-3xl font-extrabold tracking-[-0.03em] text-text-main">{title}</h1>
         <p className="mt-3 max-w-[38ch] text-sm leading-6 text-text-sub">{description}</p>
         {form}
-        {mode === "signup" && <p className="mt-6 border-t border-border-main pt-5 text-center text-sm text-text-sub">Đã có tài khoản? <Link href={nextPath ? `/login?next=${encodeURIComponent(nextPath)}` : "/login"} className="focus-ring font-bold text-primary underline-offset-4 hover:underline">Đăng nhập</Link></p>}
-        {mode === "forgot-password" && <p className="mt-6 border-t border-border-main pt-5 text-center text-sm text-text-sub"><Link href="/login" className="focus-ring font-bold text-primary underline-offset-4 hover:underline">Quay lại đăng nhập</Link></p>}
-        {mode === "reset-password" && <p className="mt-6 border-t border-border-main pt-5 text-center text-sm text-text-sub">Không còn hiệu lực? <Link href="/forgot-password" className="focus-ring font-bold text-primary underline-offset-4 hover:underline">Yêu cầu liên kết mới</Link></p>}
+        {mode === "signup" && <p className="mt-6 border-t border-border-main pt-5 text-center text-sm text-text-sub">Đã có tài khoản? <Link href={nextPath ? `/login?next=${encodeURIComponent(nextPath)}` : "/login"} className="focus-ring font-bold text-primary-strong underline-offset-4 hover:underline">Đăng nhập</Link></p>}
+        {mode === "forgot-password" && <p className="mt-6 border-t border-border-main pt-5 text-center text-sm text-text-sub"><Link href="/login" className="focus-ring font-bold text-primary-strong underline-offset-4 hover:underline">Quay lại đăng nhập</Link></p>}
+        {mode === "reset-password" && <p className="mt-6 border-t border-border-main pt-5 text-center text-sm text-text-sub">Không còn hiệu lực? <Link href="/forgot-password" className="focus-ring font-bold text-primary-strong underline-offset-4 hover:underline">Yêu cầu liên kết mới</Link></p>}
       </section>
     </div>
   </main>;

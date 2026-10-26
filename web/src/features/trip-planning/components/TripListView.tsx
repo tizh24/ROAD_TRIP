@@ -121,7 +121,7 @@ export default function TripListView() {
   }, [trips, statusFilter, searchQuery, sortOrder]);
 
   return (
-    <main className="min-h-screen bg-brand-offwhite pb-20 text-brand-charcoal">
+    <div className="min-h-screen bg-brand-offwhite pb-20 text-brand-charcoal">
       {/* Editorial Header Section */}
       <section className="border-b border-brand-border/70 bg-gradient-to-b from-brand-cream/40 via-brand-offwhite to-brand-offwhite">
         <div className="page-shell px-4 py-10 sm:px-6 sm:py-12">
@@ -325,7 +325,7 @@ export default function TripListView() {
           </div>
         )}
       </section>
-    </main>
+    </div>
   );
 }
 

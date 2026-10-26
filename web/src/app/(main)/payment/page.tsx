@@ -60,16 +60,16 @@ function PaymentContent() {
 
   if (loading) {
     return (
-      <main className="flex min-h-[70vh] items-center justify-center bg-background-warm">
+      <div className="flex min-h-[70vh] items-center justify-center bg-background-warm">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-      </main>
+      </div>
     );
   }
 
   // If no specific orderId, display recent orders
   if (!orderId || !order) {
     return (
-      <main className="min-h-screen bg-background-warm px-4 py-8 text-text-main sm:px-6 sm:py-12">
+      <div className="min-h-screen bg-background-warm px-4 py-8 text-text-main sm:px-6 sm:py-12">
         <div className="page-shell max-w-4xl px-0">
           <div className="flex items-center gap-2 text-primary font-bold text-xs">
             <Receipt size={16} />
@@ -143,12 +143,12 @@ function PaymentContent() {
             </div>
           )}
         </div>
-      </main>
+      </div>
     );
   }
 
   return (
-    <main className="min-h-screen bg-background-warm px-4 py-8 text-text-main sm:px-6 sm:py-12">
+    <div className="min-h-screen bg-background-warm px-4 py-8 text-text-main sm:px-6 sm:py-12">
       <div className="mx-auto max-w-2xl">
         {paymentSuccess ? (
           /* Receipt Success State */
@@ -348,7 +348,7 @@ function PaymentContent() {
           </div>
         )}
       </div>
-    </main>
+    </div>
   );
 }
 
@@ -356,9 +356,9 @@ export default function PaymentPage() {
   return (
     <Suspense
       fallback={
-        <main className="flex min-h-[70vh] items-center justify-center bg-background-warm">
+        <div className="flex min-h-[70vh] items-center justify-center bg-background-warm">
           <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-        </main>
+        </div>
       }
     >
       <PaymentContent />

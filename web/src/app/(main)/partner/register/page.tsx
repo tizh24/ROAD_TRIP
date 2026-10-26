@@ -84,14 +84,14 @@ export default function PartnerRegisterPage() {
 
   if (loading) {
     return (
-      <main className="flex min-h-[70vh] items-center justify-center bg-background-warm">
+      <div className="flex min-h-[70vh] items-center justify-center bg-background-warm">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-      </main>
+      </div>
     );
   }
 
   return (
-    <main className="min-h-screen bg-background-warm px-4 py-8 text-text-main sm:px-6 sm:py-12">
+    <div className="min-h-screen bg-background-warm px-4 py-8 text-text-main sm:px-6 sm:py-12">
       <div className="mx-auto max-w-3xl">
         {/* Header */}
         <div className="text-center">
@@ -308,6 +308,6 @@ export default function PartnerRegisterPage() {
           </div>
         )}
       </div>
-    </main>
+    </div>
   );
 }

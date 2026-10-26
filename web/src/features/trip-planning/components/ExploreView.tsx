@@ -103,7 +103,7 @@ export default function ExploreView() {
   const hasActiveFilters = Boolean(search) || budgetTier !== "all";
 
   return (
-    <main className="min-h-[calc(100svh-72px)] overflow-x-clip bg-brand-offwhite pb-14 text-brand-charcoal sm:pb-20">
+    <div className="min-h-[calc(100svh-72px)] overflow-x-clip bg-brand-offwhite pb-14 text-brand-charcoal sm:pb-20">
       <header className="border-b border-border-main bg-brand-offwhite px-4 pb-9 pt-10 sm:px-6 sm:pb-12 sm:pt-16">
         <div className="page-shell px-0">
           <div className="max-w-3xl">
@@ -169,13 +169,13 @@ export default function ExploreView() {
           <div className="flex items-center gap-2 text-sm font-bold text-brand-charcoal">
             <Map aria-hidden="true" size={18} className="text-brand-orange" />
             <span>Lộ trình công khai</span>
-            <span className="text-text-sub">({filteredTrips.length})</span>
+            {!loading && <span className="text-text-sub">({filteredTrips.length})</span>}
           </div>
           {hasActiveFilters && (
             <button
               type="button"
               onClick={resetFilters}
-              className="focus-ring min-h-11 text-sm font-bold text-primary underline decoration-primary/40 underline-offset-4 hover:text-primary-hover"
+              className="focus-ring min-h-11 text-sm font-bold text-primary-strong underline decoration-primary/40 underline-offset-4 hover:text-primary-strong/80"
             >
               Đặt lại bộ lọc
             </button>
@@ -277,7 +277,7 @@ export default function ExploreView() {
                         {trip.currency}
                       </p>
                     </div>
-                    <span className="inline-flex items-center gap-1 text-sm font-bold text-primary transition-transform group-hover:translate-x-1">
+                    <span className="inline-flex items-center gap-1 text-sm font-bold text-primary-strong transition-transform group-hover:translate-x-1">
                       Xem lộ trình <ArrowUpRight aria-hidden="true" size={17} />
                     </span>
                   </div>
@@ -287,6 +287,6 @@ export default function ExploreView() {
           </div>
         )}
       </section>
-    </main>
+    </div>
   );
 }

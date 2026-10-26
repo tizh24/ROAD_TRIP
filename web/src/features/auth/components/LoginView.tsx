@@ -81,9 +81,9 @@ export default function LoginView({ authError, nextPath }: LoginViewProps) {
 
         {/* Center Editorial Manifesto */}
         <div className="relative z-10 max-w-lg py-12">
-          <h1 className="font-display text-5xl font-extrabold leading-[1.08] tracking-[-0.025em] text-white xl:text-6xl">
+          <p className="font-display text-5xl font-extrabold leading-[1.08] tracking-[-0.025em] text-white xl:text-6xl">
             Đi để thấy<br />nhiều hơn.
-          </h1>
+          </p>
           <p className="mt-6 text-base font-normal leading-relaxed text-white/80 xl:text-lg">
             Đăng nhập để lưu hành trình đèo dốc, đồng bộ ghi chú offline và tiếp tục xây dựng chuyến đi cùng bạn đồng hành.
           </p>
@@ -133,9 +133,9 @@ export default function LoginView({ authError, nextPath }: LoginViewProps) {
               </div>
             </div>
 
-            <h2 className="mt-6 font-display text-2xl font-extrabold tracking-[-0.02em] text-text-main sm:text-3xl">
+            <h1 className="mt-6 font-display text-2xl font-extrabold tracking-[-0.02em] text-text-main sm:text-3xl">
               Chào mừng trở lại
-            </h2>
+            </h1>
             <p className="mt-2 text-sm leading-relaxed text-text-sub">
               Nhập thông tin tài khoản để truy cập hành trình của bạn.
             </p>
@@ -178,7 +178,7 @@ export default function LoginView({ authError, nextPath }: LoginViewProps) {
                   <label htmlFor="password" className="block text-xs font-bold uppercase tracking-wider text-text-main">
                     Mật khẩu
                   </label>
-                  <Link href="/forgot-password" className="focus-ring text-[11px] font-bold text-primary hover:underline">Quên mật khẩu?</Link>
+                  <Link href="/forgot-password" className="focus-ring text-[11px] font-bold text-primary-strong hover:underline">Quên mật khẩu?</Link>
                 </div>
                 <div className="mt-1.5">
                   <input
@@ -202,7 +202,7 @@ export default function LoginView({ authError, nextPath }: LoginViewProps) {
               <span>Chưa có tài khoản? </span>
               <Link
                 href={nextPath ? `/signup?next=${encodeURIComponent(nextPath)}` : "/signup"}
-                className="font-bold text-primary underline-offset-4 hover:underline"
+                className="font-bold text-primary-strong underline-offset-4 hover:underline"
               >
                 Tạo tài khoản
               </Link>

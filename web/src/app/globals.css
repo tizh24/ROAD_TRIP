@@ -150,20 +150,23 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
-.field {
-  width: 100%;
-  border: 1px solid var(--color-border-main);
-  border-radius: 0.875rem;
-  background: var(--color-surface);
-  padding: 0.8125rem 0.875rem;
-  font-weight: 400;
-  transition: border-color 150ms ease, box-shadow 150ms ease;
-}
-
-.field:focus {
-  border-color: var(--color-primary);
-  outline: 2px solid color-mix(in srgb, var(--color-primary) 24%, transparent);
-  outline-offset: 1px;
+@layer components {
+  .field {
+    width: 100%;
+    border: 1px solid var(--color-border-main);
+    border-radius: 0.875rem;
+    background: var(--color-surface);
+    padding: 0.8125rem 0.875rem;
+    font-weight: 400;
+    transition: border-color 150ms ease, box-shadow 150ms ease;
+  }
+  
+  .field:focus {
+    border-color: var(--color-primary);
+    outline: 2px solid color-mix(in srgb, var(--color-primary) 24%, transparent);
+    outline-offset: 1px;
+  }
+  
 }
 
 /* Typography styles based on the token sheet */

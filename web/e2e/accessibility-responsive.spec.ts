@@ -15,7 +15,7 @@ test.describe("accessibility and responsive smoke", () => {
       await page.setViewportSize(viewport);
       await page.goto("/login");
       await expect(
-        page.getByRole("heading", { level: 2, name: /Chào mừng trở lại!?/ }),
+        page.getByRole("heading", { level: 1, name: /Chào mừng trở lại!?/ }),
       ).toBeVisible();
       await expect(page.getByLabel("Email")).toBeVisible();
       await expect(page.getByLabel("Mật khẩu")).toBeVisible();

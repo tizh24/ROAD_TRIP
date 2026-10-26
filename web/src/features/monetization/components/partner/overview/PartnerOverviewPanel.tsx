@@ -146,7 +146,7 @@ export default function PartnerOverviewPanel() {
   const activeCount = listings.filter((l) => l.status === "ACTIVE").length;
 
   return (
-    <main className="min-h-full bg-[#f7f1e8] p-4 sm:p-8">
+    <div className="min-h-full bg-[#f7f1e8] p-4 sm:p-8">
       <ConfirmDialog
         open={pendingDeleteId !== null}
         title="Xóa dịch vụ?"
@@ -435,6 +435,6 @@ export default function PartnerOverviewPanel() {
           </div>
         </div>
       )}
-    </main>
+    </div>
   );
 }

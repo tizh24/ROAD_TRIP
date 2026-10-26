@@ -59,9 +59,9 @@ export default function TripEditorView({ tripId }: { tripId: string }) {
   useEffect(() => { queueMicrotask(() => { void load(); }); }, [load]);
   useEffect(() => { if (state.kind === "ready") trackAnalytics("trip_edit_resumed", { role: state.trip.role, permission: state.trip.permission }, { dedupeKey: state.trip.id }); }, [state]);
 
-  if (state.kind === "loading") return <main className="page-shell w-full py-12" aria-busy="true"><div className="h-10 w-72 animate-pulse rounded bg-border-main" /><div className="surface-card mt-8 h-80 animate-pulse" /></main>;
-  if (state.kind === "missing" || state.kind === "forbidden") return <main className="page-shell py-16"><FeedbackState kind={state.kind === "missing" ? "empty" : "permission"} title={state.kind === "missing" ? "Không tìm thấy chuyến đi" : "Bạn không có quyền truy cập"} description={state.kind === "missing" ? "Chuyến đi có thể đã bị xóa hoặc không còn tồn tại." : "Bạn cần lời mời hợp lệ để xem lịch trình này."}><Link href="/dashboard" className="focus-ring text-sm font-bold text-primary hover:underline">Về danh sách chuyến đi</Link></FeedbackState></main>;
-  if (state.kind === "error") return <main className="page-shell py-16"><FeedbackState kind="error" title="Không thể tải lịch trình" description={state.message} actionLabel="Thử lại" onAction={() => void load()} /></main>;
+  if (state.kind === "loading") return <div className="page-shell w-full py-12" aria-busy="true"><div className="h-10 w-72 animate-pulse rounded bg-border-main" /><div className="surface-card mt-8 h-80 animate-pulse" /></div>;
+  if (state.kind === "missing" || state.kind === "forbidden") return <div className="page-shell py-16"><FeedbackState kind={state.kind === "missing" ? "empty" : "permission"} title={state.kind === "missing" ? "Không tìm thấy chuyến đi" : "Bạn không có quyền truy cập"} description={state.kind === "missing" ? "Chuyến đi có thể đã bị xóa hoặc không còn tồn tại." : "Bạn cần lời mời hợp lệ để xem lịch trình này."}><Link href="/dashboard" className="focus-ring text-sm font-bold text-primary hover:underline">Về danh sách chuyến đi</Link></FeedbackState></div>;
+  if (state.kind === "error") return <div className="page-shell py-16"><FeedbackState kind="error" title="Không thể tải lịch trình" description={state.message} actionLabel="Thử lại" onAction={() => void load()} /></div>;
   const { trip } = state;
   const activeDay = trip.days[dayIndex]!;
   const canEdit = trip.role === "OWNER" || trip.permission === "EDIT";
@@ -141,7 +141,7 @@ export default function TripEditorView({ tripId }: { tripId: string }) {
     }
   }
 
-  return <main className="min-h-screen bg-background-warm pb-16">
+  return <div className="min-h-screen bg-background-warm pb-16">
     <section className="relative isolate overflow-hidden bg-secondary px-4 py-8 text-white sm:px-6 lg:py-12">
       <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_8%_10%,rgba(239,177,91,.32),transparent_28%),radial-gradient(circle_at_86%_80%,rgba(217,101,50,.35),transparent_30%)]" />
       <div className="page-shell px-0">
@@ -368,7 +368,7 @@ export default function TripEditorView({ tripId }: { tripId: string }) {
         </div>
       )}
     </div>
-  </main>;
+  </div>;
 }
 
 function Fact({ icon, label, value }: { icon: ReactNode; label: string; value: string }) { return <div className="rounded-2xl border border-white/15 bg-white/10 p-3 backdrop-blur-sm"><span className="flex items-center gap-1 text-[11px] font-bold text-white/60">{icon}{label}</span><strong className="mt-1 block truncate text-sm sm:text-base">{value}</strong></div>; }

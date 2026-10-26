@@ -162,16 +162,16 @@ export default function TripMemoryView({ tripId }: { tripId: string }) {
 
   if (loading) {
     return (
-      <main className="page-shell w-full py-16" aria-busy="true">
+      <div className="page-shell w-full py-16" aria-busy="true">
         <div className="h-8 w-64 animate-pulse rounded bg-border-main" />
         <div className="surface-card mt-8 h-96 animate-pulse" />
-      </main>
+      </div>
     );
   }
 
   if (error || !trip || !memory) {
     return (
-      <main className="page-shell py-20">
+      <div className="page-shell py-20">
         <FeedbackState
           kind="error"
           title="Không thể mở nhật ký hành trình"
@@ -181,7 +181,7 @@ export default function TripMemoryView({ tripId }: { tripId: string }) {
             Về danh sách chuyến đi
           </Link>
         </FeedbackState>
-      </main>
+      </div>
     );
   }
 
@@ -190,7 +190,7 @@ export default function TripMemoryView({ tripId }: { tripId: string }) {
   const perPersonAmount = Math.round(totalExpenseAmount / activeMembersCount);
 
   return (
-    <main className="min-h-screen bg-background-warm pb-20">
+    <div className="min-h-screen bg-background-warm pb-20">
       <ConfirmDialog
         open={pendingExpenseId !== null}
         title="Xóa khoản chi tiêu?"
@@ -476,6 +476,6 @@ export default function TripMemoryView({ tripId }: { tripId: string }) {
           )}
         </section>
       </div>
-    </main>
+    </div>
   );
 }

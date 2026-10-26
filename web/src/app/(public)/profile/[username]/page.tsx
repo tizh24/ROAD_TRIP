@@ -72,15 +72,15 @@ export default function PublicProfilePage({
 
   if (loading) {
     return (
-      <main className="flex min-h-[60vh] items-center justify-center bg-background-warm">
+      <div className="flex min-h-[60vh] items-center justify-center bg-background-warm">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-      </main>
+      </div>
     );
   }
 
   if (error || !profile) {
     return (
-      <main className="min-h-screen bg-background-warm px-4 py-12 text-center">
+      <div className="min-h-screen bg-background-warm px-4 py-12 text-center">
         <div className="mx-auto max-w-md rounded-2xl bg-white p-8 shadow-sm">
           <h2 className="text-xl font-bold text-red-600">Không thể tải thông tin</h2>
           <p className="mt-2 text-sm text-text-sub">{error || "Hồ sơ không tồn tại."}</p>
@@ -91,12 +91,12 @@ export default function PublicProfilePage({
             Quay lại bảng tin
           </Link>
         </div>
-      </main>
+      </div>
     );
   }
 
   return (
-    <main className="min-h-screen bg-background-warm px-4 py-8 text-text-main sm:px-6 sm:py-12">
+    <div className="min-h-screen bg-background-warm px-4 py-8 text-text-main sm:px-6 sm:py-12">
       <div className="page-shell max-w-4xl px-0">
         <section className="overflow-hidden rounded-3xl border border-border-main bg-white p-6 shadow-sm sm:p-8">
           <div className="flex flex-col items-center gap-6 text-center sm:flex-row sm:text-left">
@@ -163,6 +163,6 @@ export default function PublicProfilePage({
           )}
         </section>
       </div>
-    </main>
+    </div>
   );
 }

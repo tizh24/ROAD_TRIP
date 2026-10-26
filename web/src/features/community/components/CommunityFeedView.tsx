@@ -207,7 +207,7 @@ export default function CommunityFeedView() {
   });
 
   return (
-    <main className="min-h-screen bg-background-warm px-4 py-8 text-text-main sm:px-6 sm:py-12">
+    <div className="min-h-screen bg-background-warm px-4 py-8 text-text-main sm:px-6 sm:py-12">
       <div className="page-shell max-w-4xl px-0">
         {/* Hero Section */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -672,6 +672,6 @@ export default function CommunityFeedView() {
           </div>
         </div>
       )}
-    </main>
+    </div>
   );
 }

@@ -172,16 +172,16 @@ export default function RoadTripView({ tripId }: { tripId: string }) {
 
   if (state.kind === "loading") {
     return (
-      <main className="page-shell w-full py-12" aria-busy="true">
+      <div className="page-shell w-full py-12" aria-busy="true">
         <div className="h-10 w-72 animate-pulse rounded bg-border-main" />
         <div className="surface-card mt-8 h-80 animate-pulse" />
-      </main>
+      </div>
     );
   }
 
   if (state.kind === "missing" || state.kind === "forbidden") {
     return (
-      <main className="page-shell py-16">
+      <div className="page-shell py-16">
         <FeedbackState
           kind={state.kind === "missing" ? "empty" : "permission"}
           title={state.kind === "missing" ? "Không tìm thấy chuyến đi" : "Bạn không có quyền truy cập"}
@@ -195,13 +195,13 @@ export default function RoadTripView({ tripId }: { tripId: string }) {
             Về danh sách chuyến đi
           </Link>
         </FeedbackState>
-      </main>
+      </div>
     );
   }
 
   if (state.kind === "error") {
     return (
-      <main className="page-shell py-16">
+      <div className="page-shell py-16">
         <FeedbackState
           kind="error"
           title="Không thể tải chuyến đi"
@@ -209,7 +209,7 @@ export default function RoadTripView({ tripId }: { tripId: string }) {
           actionLabel="Thử lại"
           onAction={() => void load()}
         />
-      </main>
+      </div>
     );
   }
 
@@ -219,7 +219,7 @@ export default function RoadTripView({ tripId }: { tripId: string }) {
   const completedStopsInDay = activeStops.filter((stop) => checkIns[stop.id]).length;
 
   return (
-    <main className="min-h-screen bg-background-warm pb-20">
+    <div className="min-h-screen bg-background-warm pb-20">
       <ConfirmDialog
         open={confirmingComplete}
         title="Hoàn tất chuyến đi?"
@@ -540,6 +540,6 @@ export default function RoadTripView({ tripId }: { tripId: string }) {
           </section>
         )}
       </div>
-    </main>
+    </div>
   );
 }

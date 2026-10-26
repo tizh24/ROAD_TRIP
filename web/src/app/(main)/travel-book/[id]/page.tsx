@@ -129,15 +129,15 @@ export default function TravelBookPage({
 
   if (loading) {
     return (
-      <main className="flex min-h-[70vh] items-center justify-center bg-background-warm">
+      <div className="flex min-h-[70vh] items-center justify-center bg-background-warm">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-      </main>
+      </div>
     );
   }
 
   if (error || !book) {
     return (
-      <main className="min-h-screen bg-background-warm px-4 py-12 text-center">
+      <div className="min-h-screen bg-background-warm px-4 py-12 text-center">
         <div className="mx-auto max-w-md rounded-2xl bg-white p-8 shadow-sm">
           <Book className="mx-auto text-red-500" size={40} />
           <h2 className="mt-3 text-lg font-bold text-text-main">Không thể mở Travel Book</h2>
@@ -149,14 +149,14 @@ export default function TravelBookPage({
             Quay lại
           </button>
         </div>
-      </main>
+      </div>
     );
   }
 
   const selectedPricing = formatPricing[format];
 
   return (
-    <main className="min-h-screen bg-background-warm px-4 py-8 text-text-main sm:px-6 sm:py-12">
+    <div className="min-h-screen bg-background-warm px-4 py-8 text-text-main sm:px-6 sm:py-12">
       <div className="page-shell max-w-5xl px-0">
         {/* Back Link */}
         <div className="mb-6 flex items-center justify-between">
@@ -414,6 +414,6 @@ export default function TravelBookPage({
           </div>
         </div>
       </div>
-    </main>
+    </div>
   );
 }
