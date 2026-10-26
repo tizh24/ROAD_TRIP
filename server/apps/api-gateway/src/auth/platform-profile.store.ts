@@ -99,16 +99,20 @@ export class SupabasePlatformProfileStore implements PlatformProfileStore {
 
     const updated = toPlatformProfile(body[0]);
 
-    // Record immutable audit entry
-    await this.recordAudit({
-      actorId,
-      action: 'PLATFORM_ROLE_UPDATE',
-      entityType: 'user_profile',
-      entityId: targetUserId,
-      oldValues: { role: previous.role },
-      newValues: { role: updated.role },
-      correlationId,
-    });
+    // Record immutable audit entry; an unaudited privileged change is rolled back.
+    await this.auditOrRevert(
+      targetUserId,
+      { role: previous.role },
+      {
+        actorId,
+        action: 'PLATFORM_ROLE_UPDATE',
+        entityType: 'user_profile',
+        entityId: targetUserId,
+        oldValues: { role: previous.role },
+        newValues: { role: updated.role },
+        correlationId,
+      },
+    );
 
     return updated;
   }
@@ -140,16 +144,19 @@ export class SupabasePlatformProfileStore implements PlatformProfileStore {
 
     const updated = toPlatformProfile(body[0]);
 
-    // Record immutable audit entry
-    await this.recordAudit({
-      actorId,
-      action: 'ACCOUNT_STATUS_UPDATE',
-      entityType: 'user_profile',
-      entityId: targetUserId,
-      oldValues: { status: previous.status },
-      newValues: { status: updated.status },
-      correlationId,
-    });
+    await this.auditOrRevert(
+      targetUserId,
+      { status: previous.status },
+      {
+        actorId,
+        action: 'ACCOUNT_STATUS_UPDATE',
+        entityType: 'user_profile',
+        entityId: targetUserId,
+        oldValues: { status: previous.status },
+        newValues: { status: updated.status },
+        correlationId,
+      },
+    );
 
     return updated;
   }
@@ -180,6 +187,28 @@ export class SupabasePlatformProfileStore implements PlatformProfileStore {
     return (body as unknown[]).map(toAuditRecord);
   }
 
+  private async auditOrRevert(
+    targetUserId: string,
+    previousValues: Record<string, unknown>,
+    record: Parameters<SupabasePlatformProfileStore['recordAudit']>[0],
+  ): Promise<void> {
+    try {
+      await this.recordAudit(record);
+    } catch (error) {
+      const url = new URL('/rest/v1/user_profiles', this.config.SUPABASE_URL);
+      url.searchParams.set('id', `eq.${targetUserId}`);
+      await fetch(url, {
+        method: 'PATCH',
+        headers: {
+          ...serviceAuthorizationHeaders(this.config.SUPABASE_SERVICE_ROLE_KEY),
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify(previousValues),
+      }).catch(() => undefined);
+      throw error;
+    }
+  }
+
   private async recordAudit(record: {
     actorId: string;
     action: string;
@@ -189,12 +218,12 @@ export class SupabasePlatformProfileStore implements PlatformProfileStore {
     newValues?: Record<string, unknown> | undefined;
     correlationId?: string | undefined;
   }): Promise<void> {
-    try {
+    {
       const url = new URL(
         '/rest/v1/platform_audit_logs',
         this.config.SUPABASE_URL,
       );
-      await fetch(url, {
+      const response = await fetch(url, {
         method: 'POST',
         headers: {
           ...serviceAuthorizationHeaders(this.config.SUPABASE_SERVICE_ROLE_KEY),
@@ -211,8 +240,7 @@ export class SupabasePlatformProfileStore implements PlatformProfileStore {
           correlation_id: record.correlationId ?? null,
         }),
       });
-    } catch {
-      // Audit recording should not break caller if audit table insertion fails, but is logged
+      if (!response.ok) throw new PlatformProfileUnavailableError();
     }
   }
 }

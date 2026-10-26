@@ -1,7 +1,15 @@
 import type { OpenAPIObject, OperationObject } from '@nestjs/swagger';
+import { errorCodeSchema } from '@roadtrip/contracts';
 
 const sessionSecurity = [{ supabaseBearer: [] }, { sessionCookie: [] }];
-const emptyResponse = { description: 'Successful response.' };
+const webhookAck = {
+  description: 'Webhook accepted.',
+  content: {
+    'application/json': {
+      schema: { $ref: '#/components/schemas/ResourceResponse' },
+    },
+  },
+};
 const errorResponse = {
   description: 'A stable error envelope.',
   content: {
@@ -19,24 +27,34 @@ const authenticated = (
   summary,
   security: sessionSecurity,
   responses: {
-    '200': emptyResponse,
+    '200': schemaResponse('ResourceResponse'),
     '401': errorResponse,
     '403': errorResponse,
+    '404': errorResponse,
   },
 });
 
 const mutation = (operationId: string, summary: string): OperationObject => ({
   ...authenticated(operationId, summary),
+  requestBody: {
+    required: false,
+    content: { 'application/json': { schema: { type: 'object' } } },
+  },
   parameters: [
-    { $ref: '#/components/parameters/IdempotencyKey' },
-    { $ref: '#/components/parameters/IfMatch' },
+    {
+      name: 'X-CSRF-Token',
+      in: 'header',
+      required: false,
+      description: 'Required for cookie-authenticated browser requests.',
+      schema: { type: 'string', minLength: 32 },
+    },
   ],
   responses: {
-    '200': emptyResponse,
-    '201': emptyResponse,
+    '200': schemaResponse('ResourceResponse'),
     '400': errorResponse,
     '401': errorResponse,
     '403': errorResponse,
+    '404': errorResponse,
     '409': errorResponse,
   },
 });
@@ -134,7 +152,7 @@ const tripResource = {
   ),
 };
 
-export function createPublicOpenApiDocument(): OpenAPIObject {
+function buildDocument(): OpenAPIObject {
   return {
     openapi: '3.0.3',
     info: {
@@ -147,6 +165,7 @@ export function createPublicOpenApiDocument(): OpenAPIObject {
     security: sessionSecurity,
     tags: [
       { name: 'Session' },
+      { name: 'Admin' },
       { name: 'Profile' },
       { name: 'Community' },
       { name: 'Partner' },
@@ -610,7 +629,7 @@ export function createPublicOpenApiDocument(): OpenAPIObject {
             },
           ],
           responses: {
-            '200': emptyResponse,
+            '200': webhookAck,
             '401': errorResponse,
             '503': errorResponse,
           },
@@ -809,6 +828,174 @@ export function createPublicOpenApiDocument(): OpenAPIObject {
             createdAt: { type: 'string', format: 'date-time' },
           },
         },
+        ResourceResponse: successEnvelope({
+          type: 'object',
+          additionalProperties: true,
+        }),
+        ResourceListResponse: successEnvelope({
+          type: 'array',
+          items: { type: 'object', additionalProperties: true },
+        }),
+        Coordinate: {
+          type: 'object',
+          required: ['latitude', 'longitude'],
+          properties: {
+            latitude: { type: 'number', minimum: -90, maximum: 90 },
+            longitude: { type: 'number', minimum: -180, maximum: 180 },
+          },
+        },
+        Place: {
+          type: 'object',
+          required: ['id', 'name', 'address', 'coordinate'],
+          properties: {
+            id: { type: 'string' },
+            name: { type: 'string' },
+            address: { type: 'string' },
+            coordinate: { $ref: '#/components/schemas/Coordinate' },
+          },
+        },
+        PlaceListResponse: successEnvelope({
+          type: 'array',
+          items: { $ref: '#/components/schemas/Place' },
+        }),
+        RoutePreview: {
+          type: 'object',
+          required: [
+            'geometry',
+            'distanceMeters',
+            'durationSeconds',
+            'source',
+            'calculatedAt',
+          ],
+          properties: {
+            geometry: {
+              type: 'object',
+              required: ['type', 'coordinates'],
+              properties: {
+                type: { type: 'string', enum: ['LineString'] },
+                coordinates: {
+                  type: 'array',
+                  items: { type: 'array', items: { type: 'number' } },
+                },
+              },
+            },
+            distanceMeters: { type: 'number', minimum: 0 },
+            durationSeconds: { type: 'number', minimum: 0 },
+            source: { type: 'string', enum: ['provider', 'cache'] },
+            calculatedAt: { type: 'string', format: 'date-time' },
+          },
+        },
+        RoutePreviewResponse: successEnvelope({
+          $ref: '#/components/schemas/RoutePreview',
+        }),
+        TripSummary: {
+          type: 'object',
+          required: [
+            'id',
+            'title',
+            'startDate',
+            'endDate',
+            'status',
+            'role',
+            'permission',
+            'version',
+          ],
+          properties: {
+            id: { type: 'string', format: 'uuid' },
+            title: { type: 'string' },
+            startDate: { type: 'string', format: 'date' },
+            endDate: { type: 'string', format: 'date' },
+            status: {
+              type: 'string',
+              enum: ['PLANNING', 'ONGOING', 'COMPLETED', 'CANCELLED'],
+            },
+            role: { type: 'string', enum: ['OWNER', 'MEMBER'] },
+            permission: { type: 'string', enum: ['VIEW', 'EDIT'] },
+            version: { type: 'integer', minimum: 1 },
+          },
+        },
+        TripListResponse: successEnvelope({
+          type: 'array',
+          items: { $ref: '#/components/schemas/TripSummary' },
+        }),
+        TripDetailResponse: successEnvelope({
+          allOf: [
+            { $ref: '#/components/schemas/TripSummary' },
+            {
+              type: 'object',
+              required: ['ownerId', 'budgetAmount', 'currency', 'days'],
+              properties: {
+                ownerId: { type: 'string', format: 'uuid' },
+                description: { type: 'string', nullable: true },
+                budgetAmount: { type: 'number', minimum: 0 },
+                currency: { type: 'string', minLength: 3, maxLength: 3 },
+                visibility: {
+                  type: 'string',
+                  enum: ['PRIVATE', 'UNLISTED', 'PUBLISHED'],
+                },
+                sourceTripId: {
+                  type: 'string',
+                  format: 'uuid',
+                  nullable: true,
+                },
+                days: { type: 'array', items: { type: 'object' } },
+              },
+            },
+          ],
+        }),
+        VersionResponse: successEnvelope({
+          type: 'object',
+          required: ['version'],
+          properties: { version: { type: 'integer', minimum: 1 } },
+        }),
+        StopMutationResponse: successEnvelope({
+          type: 'object',
+          required: ['id', 'tripId', 'dayId', 'stopIndex', 'version'],
+          properties: {
+            id: { type: 'string', format: 'uuid' },
+            tripId: { type: 'string', format: 'uuid' },
+            dayId: { type: 'string', format: 'uuid' },
+            stopIndex: { type: 'integer', minimum: 1 },
+            version: { type: 'integer', minimum: 1 },
+          },
+        }),
+        Invitation: {
+          type: 'object',
+          required: ['id', 'tripId', 'inviteeEmail', 'permission', 'status'],
+          properties: {
+            id: { type: 'string', format: 'uuid' },
+            tripId: { type: 'string', format: 'uuid' },
+            inviteeEmail: { type: 'string', format: 'email' },
+            permission: { type: 'string', enum: ['VIEW', 'EDIT'] },
+            status: {
+              type: 'string',
+              enum: ['PENDING', 'ACCEPTED', 'DECLINED', 'EXPIRED', 'REVOKED'],
+            },
+            expiresAt: { type: 'string', format: 'date-time' },
+            acceptedUserId: { type: 'string', nullable: true },
+            createdAt: { type: 'string', format: 'date-time' },
+          },
+        },
+        InvitationResponse: successEnvelope({
+          $ref: '#/components/schemas/Invitation',
+        }),
+        InvitationListResponse: successEnvelope({
+          type: 'array',
+          items: { $ref: '#/components/schemas/Invitation' },
+        }),
+        MemberListResponse: successEnvelope({
+          type: 'array',
+          items: {
+            type: 'object',
+            required: ['userId', 'role', 'permission', 'status'],
+            properties: {
+              userId: { type: 'string', format: 'uuid' },
+              role: { type: 'string', enum: ['OWNER', 'MEMBER'] },
+              permission: { type: 'string', enum: ['VIEW', 'EDIT'] },
+              status: { type: 'string', enum: ['ACTIVE', 'LEFT', 'REMOVED'] },
+            },
+          },
+        }),
         PublicTrip: {
           type: 'object',
           required: [
@@ -836,28 +1023,7 @@ export function createPublicOpenApiDocument(): OpenAPIObject {
   };
 }
 
-const stableErrorCodes = [
-  'AUTH_REQUIRED',
-  'AUTH_INVALID',
-  'AUTH_RATE_LIMITED',
-  'AUTH_UNAVAILABLE',
-  'PAYMENT_UNAVAILABLE',
-  'FORBIDDEN',
-  'TRIP_NOT_FOUND',
-  'TRIP_DATE_RANGE_INVALID',
-  'TRIP_DATE_RANGE_TOO_LONG',
-  'TRIP_VERSION_CONFLICT',
-  'DAY_NOT_FOUND',
-  'STOP_NOT_FOUND',
-  'STOP_ORDER_INVALID',
-  'INVITATION_INVALID',
-  'INVITATION_EXPIRED',
-  'PLACE_PROVIDER_UNAVAILABLE',
-  'ROUTE_UNAVAILABLE',
-  'VALIDATION_FAILED',
-  'RATE_LIMITED',
-  'INTERNAL_ERROR',
-];
+const stableErrorCodes: string[] = [...errorCodeSchema.options];
 
 function pathParameter(name: string) {
   return {
@@ -889,4 +1055,71 @@ function tokenParameter() {
     required: true,
     schema: { type: 'string', minLength: 32 },
   };
+}
+
+/** Operations whose handlers read the header; no other operation advertises it. */
+const idempotentOperations = new Set([
+  'createTrip',
+  'addStop',
+  'clonePublicTrip',
+]);
+const versionedOperations = new Set([
+  'updateTrip',
+  'deleteTrip',
+  'updateStop',
+  'reorderStops',
+  'moveStop',
+]);
+const responseSchemas: Record<string, string> = {
+  listTrips: 'TripListResponse',
+  getTrip: 'TripDetailResponse',
+  createTrip: 'TripDetailResponse',
+  updateTrip: 'VersionResponse',
+  deleteTrip: 'VersionResponse',
+  clonePublicTrip: 'TripDetailResponse',
+  addStop: 'StopMutationResponse',
+  updateStop: 'VersionResponse',
+  searchPlaces: 'PlaceListResponse',
+  previewRoute: 'RoutePreviewResponse',
+  listTripMembers: 'MemberListResponse',
+  listTripInvitations: 'InvitationListResponse',
+  createInvitation: 'InvitationResponse',
+  getInvitation: 'InvitationResponse',
+  acceptInvitation: 'InvitationResponse',
+  declineInvitation: 'InvitationResponse',
+  listTripExpenses: 'ResourceListResponse',
+  listTripLocations: 'ResourceListResponse',
+  listCommunityPosts: 'ResourceListResponse',
+  listCommunityComments: 'ResourceListResponse',
+  listPartnerListings: 'ResourceListResponse',
+  listBillingOrders: 'ResourceListResponse',
+};
+
+export function createPublicOpenApiDocument(): OpenAPIObject {
+  const document = buildDocument();
+  for (const pathItem of Object.values(document.paths)) {
+    for (const operation of Object.values(pathItem) as unknown[]) {
+      if (
+        !operation ||
+        typeof operation !== 'object' ||
+        !('operationId' in operation)
+      )
+        continue;
+      const op = operation as OperationObject;
+      const id = op.operationId ?? '';
+      const schema = responseSchemas[id];
+      if (schema && op.responses['200'])
+        op.responses['200'] = schemaResponse(schema);
+      const extra = [
+        ...(idempotentOperations.has(id)
+          ? [{ $ref: '#/components/parameters/IdempotencyKey' }]
+          : []),
+        ...(versionedOperations.has(id)
+          ? [{ $ref: '#/components/parameters/IfMatch' }]
+          : []),
+      ];
+      if (extra.length) op.parameters = [...(op.parameters ?? []), ...extra];
+    }
+  }
+  return document;
 }

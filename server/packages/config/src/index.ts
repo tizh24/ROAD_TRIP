@@ -70,7 +70,7 @@ const bullMqShape = {
   BULLMQ_FAILED_RETENTION: nonNegativeInteger.default(1000),
 };
 
-export const gatewayConfigSchema = z.object({
+const gatewayConfigBase = z.object({
   ...commonShape,
   ...authShape,
   ...redisShape,
@@ -85,7 +85,13 @@ export const gatewayConfigSchema = z.object({
   RATE_LIMIT_WINDOW_MS: positiveInteger.default(60_000),
   RATE_LIMIT_MAX: positiveInteger.default(100),
   RATE_LIMIT_AUTHENTICATED_MAX: positiveInteger.default(300),
-  AUTH_COOKIE_DOMAIN: z.string().min(1).optional(),
+  // Canonical browser origin used for auth e-mail return links. Defaults to the
+  // first CORS origin and must be one of them.
+  PUBLIC_WEB_ORIGIN: z.url().optional(),
+  AUTH_COOKIE_DOMAIN: z
+    .string()
+    .regex(/^[a-z0-9]([a-z0-9.-]*[a-z0-9])?$/i, 'bare host name')
+    .optional(),
   AUTH_COOKIE_SECURE: boolean.default(true),
   AUTH_ACCESS_COOKIE_NAME: z.string().min(1).default('__Secure-rt_access'),
   AUTH_REFRESH_COOKIE_NAME: z.string().min(1).default('__Secure-rt_refresh'),
@@ -96,6 +102,35 @@ export const gatewayConfigSchema = z.object({
   // Leaving it unset disables that endpoint rather than accepting unsigned data.
   PAYMENT_WEBHOOK_SECRET: z.string().min(32).optional(),
 });
+
+export const gatewayConfigSchema = gatewayConfigBase.superRefine(
+  (config, context) => {
+    const issue = (path: string, message: string) =>
+      context.addIssue({ code: 'custom', path: [path], message });
+    const names = [
+      ['AUTH_ACCESS_COOKIE_NAME', config.AUTH_ACCESS_COOKIE_NAME],
+      ['AUTH_REFRESH_COOKIE_NAME', config.AUTH_REFRESH_COOKIE_NAME],
+      ['CSRF_COOKIE_NAME', config.CSRF_COOKIE_NAME],
+    ] as const;
+    if (new Set(names.map(([, name]) => name)).size !== names.length) {
+      issue('CSRF_COOKIE_NAME', 'cookie names must be distinct');
+    }
+    for (const [key, name] of names) {
+      if (/^__(Secure|Host)-/.test(name) && !config.AUTH_COOKIE_SECURE) {
+        issue(key, 'prefixed cookie names require AUTH_COOKIE_SECURE=true');
+      }
+    }
+    const origins = config.CORS_ALLOWED_ORIGINS.split(',').map((value) =>
+      value.trim(),
+    );
+    if (
+      config.PUBLIC_WEB_ORIGIN &&
+      !origins.includes(new URL(config.PUBLIC_WEB_ORIGIN).origin)
+    ) {
+      issue('PUBLIC_WEB_ORIGIN', 'must be listed in CORS_ALLOWED_ORIGINS');
+    }
+  },
+);
 
 export const coreTripConfigSchema = z.object({
   ...commonShape,

@@ -62,4 +62,44 @@ describe('runtime configuration', () => {
       }),
     ).toThrow(ConfigurationError);
   });
+
+  describe('gateway session settings', () => {
+    const invalid = (extra: Record<string, string>) =>
+      expect(() =>
+        parseConfig(gatewayConfigSchema, { ...validGatewayEnv, ...extra }),
+      ).toThrow(ConfigurationError);
+
+    it('defaults to secure prefixed cookies', () => {
+      const config = parseConfig(gatewayConfigSchema, validGatewayEnv);
+      expect(config.AUTH_COOKIE_SECURE).toBe(true);
+      expect(config.AUTH_ACCESS_COOKIE_NAME).toBe('__Secure-rt_access');
+      expect(config.AUTH_ACCESS_COOKIE_MAX_AGE_SECONDS).toBe(900);
+    });
+
+    it('rejects prefixed cookie names without Secure cookies', () => {
+      invalid({ AUTH_COOKIE_SECURE: 'false' });
+    });
+
+    it('rejects duplicate names, malformed domains and foreign web origins', () => {
+      const plain = {
+        AUTH_COOKIE_SECURE: 'false',
+        AUTH_ACCESS_COOKIE_NAME: 'rt_a',
+        AUTH_REFRESH_COOKIE_NAME: 'rt_a',
+        CSRF_COOKIE_NAME: 'rt_c',
+      };
+      invalid(plain);
+      invalid({ AUTH_COOKIE_DOMAIN: 'https://tripz.vn' });
+      invalid({ PUBLIC_WEB_ORIGIN: 'https://other.example' });
+    });
+
+    it('accepts a listed public web origin and a bare cookie domain', () => {
+      expect(
+        parseConfig(gatewayConfigSchema, {
+          ...validGatewayEnv,
+          PUBLIC_WEB_ORIGIN: 'http://localhost:3000',
+          AUTH_COOKIE_DOMAIN: 'tripz.vn',
+        }).PUBLIC_WEB_ORIGIN,
+      ).toBe('http://localhost:3000');
+    });
+  });
 });

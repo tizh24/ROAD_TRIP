@@ -173,7 +173,7 @@ export class AuthBffController {
       try {
         await this.auth.requestPasswordReset(
           email,
-          this.config.CORS_ALLOWED_ORIGINS.split(',')[0]?.trim() ?? '',
+          `${this.config.PUBLIC_WEB_ORIGIN ?? this.config.CORS_ALLOWED_ORIGINS.split(',')[0]?.trim() ?? ''}/auth/recovery`,
         );
       } catch {
         // Deliberately indistinguishable from a successful request.
