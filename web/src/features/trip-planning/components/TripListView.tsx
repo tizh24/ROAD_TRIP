@@ -10,14 +10,19 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { GatewayApiError } from "@/features/trip-planning/api/gateway-request";
 import { listTrips } from "@/features/trip-planning/api/trips";
 import type { TripListItem } from "@/features/trip-planning/api/trip-model";
+import {
+  TRIP_PAGE_SIZE,
+  countByStatus,
+  selectTrips,
+  todayIso,
+  type SortOrder,
+  type StatusFilter,
+} from "@/features/trip-planning/api/trip-list-model";
 
 type State =
   | { kind: "loading" }
   | { kind: "content"; trips: readonly TripListItem[] }
   | { kind: "error"; message: string };
-
-type StatusFilter = "ALL" | TripListItem["status"];
-type SortOrder = "NEAREST" | "NEWEST";
 
 const statusLabels: Record<TripListItem["status"], string> = {
   PLANNING: "Sắp tới",
@@ -68,6 +73,7 @@ export default function TripListView() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("ALL");
   const [sortOrder, setSortOrder] = useState<SortOrder>("NEAREST");
+  const [pageState, setPageState] = useState({ key: "", size: TRIP_PAGE_SIZE });
 
   const load = useCallback(async () => {
     setState({ kind: "loading" });
@@ -87,21 +93,16 @@ export default function TripListView() {
   }, [load]);
 
   const trips = state.kind === "content" ? state.trips : null;
-  const count = (status: StatusFilter) => (trips ? (status === "ALL" ? trips.length : trips.filter((t) => t.status === status).length) : 0);
+  const count = (status: StatusFilter) => (trips ? countByStatus(trips, status) : 0);
 
-  const filteredTrips = useMemo(() => {
-    if (!trips) return [];
-    let list = [...trips];
-    if (statusFilter !== "ALL") list = list.filter((t) => t.status === statusFilter);
-    const q = searchQuery.trim().toLowerCase();
-    if (q) list = list.filter((t) => t.title.toLowerCase().includes(q));
-    list.sort((a, b) => {
-      const timeA = new Date(`${a.startDate}T00:00:00Z`).getTime();
-      const timeB = new Date(`${b.startDate}T00:00:00Z`).getTime();
-      return sortOrder === "NEAREST" ? timeA - timeB : timeB - timeA;
-    });
-    return list;
-  }, [trips, statusFilter, searchQuery, sortOrder]);
+  const filteredTrips = useMemo(
+    () => (trips ? selectTrips(trips, { status: statusFilter, query: searchQuery, sort: sortOrder, today: todayIso() }) : []),
+    [trips, statusFilter, searchQuery, sortOrder],
+  );
+  // A new filter, search or sort starts again from the first page.
+  const pageKey = `${statusFilter}|${searchQuery}|${sortOrder}`;
+  const pageSize = pageState.key === pageKey ? pageState.size : TRIP_PAGE_SIZE;
+  const visibleTrips = filteredTrips.slice(0, pageSize);
 
   return (
     <div className="page-shell px-4 py-8 sm:px-6 sm:py-10">
@@ -218,11 +219,28 @@ export default function TripListView() {
         )}
 
         {state.kind === "content" && filteredTrips.length > 0 && (
-          <ul className="mt-4 grid gap-1">
-            {filteredTrips.map((trip, index) => (
-              <TripRow key={trip.id} trip={trip} striped={index % 2 === 0} />
-            ))}
-          </ul>
+          <>
+            <ul className="mt-4 grid gap-1">
+              {visibleTrips.map((trip, index) => (
+                <TripRow key={trip.id} trip={trip} striped={index % 2 === 0} />
+              ))}
+            </ul>
+            {filteredTrips.length > visibleTrips.length && (
+              <div className="mt-4 flex flex-col items-center gap-2">
+                <p className="text-sm tabular-nums text-muted-foreground" role="status">
+                  Đang hiển thị {visibleTrips.length} / {filteredTrips.length} chuyến đi
+                </p>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="min-h-11"
+                  onClick={() => setPageState({ key: pageKey, size: pageSize + TRIP_PAGE_SIZE })}
+                >
+                  Xem thêm
+                </Button>
+              </div>
+            )}
+          </>
         )}
       </section>
     </div>

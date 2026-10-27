@@ -49,7 +49,7 @@ test.describe('Journey C — controlled collaboration', () => {
     const memberRow = ownerPage
       .getByRole('list', { name: 'Thành viên chuyến đi' })
       .getByRole('listitem')
-      .filter({ has: ownerPage.getByText('Thành viên', { exact: true }) });
+      .filter({ has: ownerPage.getByText(/^Thành viên [0-9a-f]{4}$/) });
     await expect(memberRow).toHaveCount(1);
     const permissionResponse = ownerPage.waitForResponse((response) => response.request().method() === 'PATCH' && /\/api\/v1\/trips\/[^/]+\/members\/[^/]+$/.test(response.url()));
     await memberRow.getByRole('combobox').selectOption('EDIT');
@@ -74,6 +74,7 @@ test.describe('Journey C — controlled collaboration', () => {
 
     const removalResponse = ownerPage.waitForResponse((response) => response.request().method() === 'DELETE' && /\/api\/v1\/trips\/[^/]+\/members\/[^/]+$/.test(response.url()));
     await memberRow.getByRole('button', { name: 'Gỡ' }).click();
+    await ownerPage.getByRole('alertdialog').getByRole('button', { name: 'Gỡ thành viên' }).click();
     expect((await removalResponse).ok()).toBe(true);
     await memberPage.reload();
     await expect(memberPage.getByText('Bạn không có quyền truy cập')).toBeVisible();

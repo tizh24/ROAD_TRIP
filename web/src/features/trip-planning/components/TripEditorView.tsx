@@ -21,6 +21,7 @@ import PlaceSearch from "./PlaceSearch";
 import CollaborationPanel from "./CollaborationPanel";
 import { trackAnalytics } from "@/lib/analytics/analytics";
 import FeedbackState from "@/components/ui/FeedbackState";
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
 
 const RouteMap = dynamic(() => import("./RouteMap"), { ssr: false, loading: () => <div className="h-[22rem] animate-pulse rounded-xl bg-muted p-6 text-sm text-muted-foreground">Đang tải bản đồ…</div> });
 type State = { kind: "loading" } | { kind: "ready"; trip: TripDetail } | { kind: "missing" } | { kind: "forbidden" } | { kind: "error"; message: string };
@@ -33,6 +34,8 @@ export default function TripEditorView({ tripId }: { tripId: string }) {
   const [visibilitySaving, setVisibilitySaving] = useState(false);
   const [visibilityError, setVisibilityError] = useState<string>();
   const [copiedLink, setCopiedLink] = useState(false);
+  const [busyStopId, setBusyStopId] = useState<string>();
+  const [stopToRemove, setStopToRemove] = useState<{ id: string; name: string }>();
 
   const load = useCallback(async () => {
     setState({ kind: "loading" });
@@ -57,8 +60,10 @@ export default function TripEditorView({ tripId }: { tripId: string }) {
 
   async function remove(stopId: string) {
     setMutationError(undefined);
+    setBusyStopId(stopId);
     try { await removeStop(trip.id, stopId); await load(); }
     catch (error) { setMutationError(error instanceof Error ? error.message : "Không thể xóa điểm dừng."); }
+    finally { setBusyStopId(undefined); }
   }
 
   async function reorder(stopId: string, direction: -1 | 1) {
@@ -69,6 +74,7 @@ export default function TripEditorView({ tripId }: { tripId: string }) {
     [stops[from], stops[to]] = [stops[to]!, stops[from]!];
     setMutationError(undefined);
     setConflictNotice(undefined);
+    setBusyStopId(stopId);
     try {
       await reorderStops(trip.id, activeDay.id, stops.map((stop) => stop.id), trip.version);
       await load();
@@ -79,12 +85,15 @@ export default function TripEditorView({ tripId }: { tripId: string }) {
       } else {
         setMutationError(error instanceof Error ? error.message : "Không thể đổi thứ tự điểm dừng.");
       }
+    } finally {
+      setBusyStopId(undefined);
     }
   }
 
   async function move(stopId: string, targetDayId: string) {
     setMutationError(undefined);
     setConflictNotice(undefined);
+    setBusyStopId(stopId);
     try {
       await moveStop(trip.id, stopId, targetDayId, 1, trip.version);
       await load();
@@ -95,6 +104,8 @@ export default function TripEditorView({ tripId }: { tripId: string }) {
       } else {
         setMutationError(error instanceof Error ? error.message : "Không thể chuyển ngày cho điểm dừng.");
       }
+    } finally {
+      setBusyStopId(undefined);
     }
   }
 
@@ -267,20 +278,33 @@ export default function TripEditorView({ tripId }: { tripId: string }) {
                       onRefresh={load}
                       controls={
                         <>
-                          <Button type="button" variant="outline" size="sm" aria-label={`Đưa ${stop.name} lên`} disabled={index === 0} onClick={() => void reorder(stop.id, -1)}>
+                          <Button type="button" variant="outline" size="sm" aria-label={`Đưa ${stop.name} lên`} disabled={index === 0 || busyStopId !== undefined} onClick={() => void reorder(stop.id, -1)}>
                             <ChevronUp aria-hidden="true" /> Lên
                           </Button>
-                          <Button type="button" variant="outline" size="sm" aria-label={`Đưa ${stop.name} xuống`} disabled={index === activeDay.stops.length - 1} onClick={() => void reorder(stop.id, 1)}>
+                          <Button type="button" variant="outline" size="sm" aria-label={`Đưa ${stop.name} xuống`} disabled={index === activeDay.stops.length - 1 || busyStopId !== undefined} onClick={() => void reorder(stop.id, 1)}>
                             <ChevronDown aria-hidden="true" /> Xuống
                           </Button>
-                          {trip.days
-                            .filter((day) => day.id !== activeDay.id)
-                            .map((day) => (
-                              <Button key={day.id} type="button" variant="outline" size="sm" aria-label={`Chuyển ${stop.name} sang ngày ${day.dayIndex}`} onClick={() => void move(stop.id, day.id)}>
-                                Sang ngày {day.dayIndex}
-                              </Button>
-                            ))}
-                          <Button type="button" variant="outline" size="sm" aria-label={`Xóa ${stop.name}`} className="text-destructive hover:text-destructive" onClick={() => void remove(stop.id)}>
+                          {trip.days.length > 1 && (
+                            <select
+                              aria-label={`Chuyển ${stop.name} sang ngày khác`}
+                              value=""
+                              disabled={busyStopId !== undefined}
+                              onChange={(event) => {
+                                if (event.target.value) void move(stop.id, event.target.value);
+                              }}
+                              className="field min-h-8 w-auto bg-card py-1 text-sm"
+                            >
+                              <option value="">Chuyển sang ngày…</option>
+                              {trip.days
+                                .filter((day) => day.id !== activeDay.id)
+                                .map((day) => (
+                                  <option key={day.id} value={day.id}>
+                                    Ngày {day.dayIndex} · {day.date}
+                                  </option>
+                                ))}
+                            </select>
+                          )}
+                          <Button type="button" variant="outline" size="sm" aria-label={`Xóa ${stop.name}`} disabled={busyStopId !== undefined} className="text-destructive hover:text-destructive" onClick={() => setStopToRemove({ id: stop.id, name: stop.name })}>
                             <Trash2 aria-hidden="true" /> Xóa
                           </Button>
                         </>
@@ -312,6 +336,20 @@ export default function TripEditorView({ tripId }: { tripId: string }) {
           <CollaborationPanel tripId={trip.id} />
         </div>
       )}
+
+      <ConfirmDialog
+        open={stopToRemove !== undefined}
+        title="Xóa điểm dừng này?"
+        description={stopToRemove ? `“${stopToRemove.name}” sẽ bị xóa khỏi lịch trình của Ngày ${activeDay.dayIndex}.` : ""}
+        confirmLabel="Xóa điểm dừng"
+        busy={busyStopId !== undefined}
+        onClose={() => setStopToRemove(undefined)}
+        onConfirm={() => {
+          const target = stopToRemove;
+          if (!target) return;
+          void remove(target.id).finally(() => setStopToRemove(undefined));
+        }}
+      />
     </div>
   );
 }
