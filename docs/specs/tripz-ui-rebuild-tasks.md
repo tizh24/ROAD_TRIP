@@ -28,6 +28,16 @@ Spec: `./tripz-ui-rebuild-spec.md`. Plan: `./tripz-ui-rebuild-plan.md`.
 - [ ] Replace legacy shared components and delete dead code and `brand-*` tokens.
 - [ ] Gate: typecheck, lint, build.
 
+## 2b. Overlays and shared states
+
+- [ ] Restyle Dialog, AlertDialog, Sheet, Dropdown Menu, Select, Popover, Tooltip, Calendar and Toast.
+- [ ] Rebuild `ConfirmDialog`, `BottomSheet` and the mobile navigation drawers (landing, traveler, partner, admin).
+- [ ] Rebuild `FeedbackState` and empty, error and loading blocks; skeletons match the new system.
+- [ ] Rebuild 401, 403, 404 and global error pages.
+- [ ] Replace hand-written modals in `AdminPartnersPanel`, `CommunityFeedView` and `PartnerOverviewPanel` with shared Dialog/Sheet.
+- [ ] Rebuild form field, validation message, disabled and busy states.
+- [ ] Review all overlays in a temporary local route (deleted before commit): focus trap, Escape, focus return, scroll lock, mobile width.
+
 ## 3. Landing
 
 - [ ] Gather real photographs with credits (`assets.mjs`); store with `CREDITS.md`.
@@ -62,6 +72,9 @@ Spec: `./tripz-ui-rebuild-spec.md`. Plan: `./tripz-ui-rebuild-plan.md`.
 
 ## 8. Hardening
 
+- [ ] Legacy grep gate returns nothing (old tokens/hex values, native `confirm`/`alert`, hand-rolled overlays).
+- [ ] Overlay checklist passed for every overlay type.
+- [ ] Favicon and metadata titles match the new brand; list any email/print views and their disposition.
 - [ ] Accessibility and responsive audit; reduced motion.
 - [ ] Dependency review and dead-code sweep.
 - [ ] `npm run typecheck`, `npm run lint`, `npm test`, `npm run build`, full Playwright, `git diff --check`.

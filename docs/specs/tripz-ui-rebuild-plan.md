@@ -37,6 +37,13 @@ Write the three documents, mark `tripz-cross-surface-editorial-ui-*`, `web-exper
 - Replace `Navbar`, `PageHeader`, `TripCard`, `StatBadge`, `AvatarCluster`, `ExpenseChip`, `MapMarker`, `FeedbackState`, `CTAButton` with new-system components (delete adapters and dead code).
 - Gate: typecheck, lint, build.
 
+### Phase 2b — Overlays and shared states (before any route)
+
+- Restyle Dialog, AlertDialog, Sheet, Dropdown Menu, Select, Popover, Tooltip, Calendar, Toast and the mobile navigation drawer in the new system; one motion and focus behavior for all.
+- Rebuild `ConfirmDialog`, `BottomSheet`, `FeedbackState`, empty/error/loading blocks and the 401/403/404/error pages.
+- Replace hand-written modals (`AdminPartnersPanel`, `CommunityFeedView`, `PartnerOverviewPanel`) with the shared Dialog/Sheet.
+- Add an internal `/_design` page is **not** created in production; overlays are reviewed via a temporary local route that is deleted before the phase commit.
+
 ### Phase 3 — Landing `/`
 
 - Rebuild with the page run: sections from the argument, taste-skill composition, real photographs with credits, interface fragments built from real app components.
@@ -63,6 +70,8 @@ Explore, public trip, community feed, public profile. Viewport matrix across the
 
 ### Phase 8 — Hardening
 
+- Run the legacy grep gate from the spec (old tokens and hex values, native `confirm`/`alert`, hand-rolled overlays); it must return nothing.
+- Overlay checklist for every overlay type: focus trap, Escape, focus return, scroll lock, mobile width, reduced motion.
 - Accessibility and responsive audit, dead-code sweep, dependency review, `git diff --check`.
 - Before/after screenshots, residual-risk list, updated `docs/handoff-claude-session-*.md`.
 

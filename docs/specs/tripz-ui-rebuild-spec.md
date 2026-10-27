@@ -32,6 +32,19 @@ All frontend route groups, presentation layer only:
 - Partner portal: overview, listings, analytics, campaigns, reviews, billing.
 - Admin portal: dashboard, moderation, partners, affiliates, finance, settings.
 
+## Total coverage: nothing keeps the old look
+
+The rebuild is complete only when **every** visible surface follows the new system, not just route pages. The following are explicitly in scope and each must be restyled or rebuilt:
+
+- **Every route** listed above, plus route-level states: `loading`, `error`, `not-found` (404), `unauthorized` (401), `forbidden` (403) and the global error page.
+- **Overlays and pop-ups:** confirm dialogs, form dialogs, sheets and side panels (`BottomSheet`), mobile navigation drawers (traveler, partner, admin sidebars and the landing menu), dropdown menus, selects, popovers, tooltips, date pickers, toasts, the cookie/offline banners if present.
+- **Hand-written modals** that bypass the shared components (found in `AdminPartnersPanel`, `CommunityFeedView`, `PartnerOverviewPanel`) are migrated to the shared Dialog/Sheet so no one-off overlay remains.
+- **Shared components:** buttons, inputs, labels, textareas, selects, badges, tabs, cards, tables, avatars, skeletons, empty/error/feedback states, page headers, search bar, trip card, stat display, expense chip, map marker and map overlays, pagination, breadcrumbs.
+- **Forms:** field affordances, validation messages, disabled and busy states.
+- **Document-level pieces:** favicon and metadata titles stay consistent with the new brand; email or print views, if any exist, are listed and either restyled or recorded as out of scope with a reason.
+
+No component may keep a legacy class, token or color from the retired system (`brand-*`, `bg-primary-strong` experiments, `.field`, `.skip-link` styling from the old palette and similar). A grep gate enforces this (see acceptance criteria).
+
 ## Must remain unchanged
 
 - Routes and URLs, auth guards and role boundaries, API calls and payloads, server actions, Gateway cookie/CSRF behavior, data types and domain workflows.
@@ -49,7 +62,9 @@ All frontend route groups, presentation layer only:
 
 ## Acceptance criteria
 
-- No remnant of the retired system: no `brand-*` tokens, no old `DESIGN.md` palette, no Jadoo/Stitch/cross-surface styles, no unused legacy components.
+- No remnant of the retired system: no `brand-*` tokens, no old `DESIGN.md` palette, no Jadoo/Stitch/cross-surface styles, no unused legacy components. Grep gate: zero matches for `brand-`, the old hex values (`#E87535`, `#B84E1B`, `#C95C24`, `#FAF9F6`, `#1B1B1B`, `#FFF1E6`), `native confirm(`/`alert(`, and hand-rolled `fixed inset-0` overlays outside the shared Dialog/Sheet.
+- Every overlay type in the coverage list is exercised at least once in a test or a documented manual check: focus trap, Escape, return of focus, scroll lock, mobile width, reduced motion.
+- 401, 403, 404 and error pages are shown in the new system and reviewed in screenshots.
 - The owner approved a direction before any route is rebuilt.
 - Every route renders in the new system and passes its checks: `npm run typecheck`, `npm run lint`, `npm test`, `npm run build`, and Playwright (guest, landing, viewport matrix, BFF auth, journeys that run without a live backend).
 - `inspect.mjs` (taste-skill) passes for the landing, and `inspect.mjs --app` for representative dashboard screens, or each deviation is documented.
