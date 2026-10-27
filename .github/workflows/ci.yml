@@ -145,22 +145,14 @@ jobs:
         run: |
           set -euo pipefail
 
-          # A stalled mirror download must fail fast and retry instead of hanging the job.
-          {
-            echo 'Acquire::http::Timeout "20";'
-            echo 'Acquire::https::Timeout "20";'
-            echo 'Acquire::Retries "3";'
-          } | sudo tee /etc/apt/apt.conf.d/99ci-timeouts >/dev/null
-
+          # The ubuntu-24.04 runner already ships the system libraries Chromium needs.
+          # --with-deps only added font packages from the Azure apt mirror, which stalled
+          # for minutes per download, so the browser alone is fetched from Playwright's CDN.
           for attempt in 1 2 3; do
-            if timeout -k 10 240 npx playwright install --with-deps chromium; then
+            if timeout -k 10 180 npx playwright install chromium; then
               exit 0
             fi
             echo "Playwright install attempt $attempt failed or timed out"
-            # Killing npx leaves apt-get running with the dpkg lock held; clear it before retrying.
-            sudo pkill -KILL -x apt-get || true
-            sudo pkill -KILL -x dpkg || true
-            sudo timeout -k 5 60 dpkg --configure -a || true
             sleep $((attempt * 10))
           done
 
