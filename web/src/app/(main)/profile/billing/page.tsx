@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+export const metadata = { title: "Thanh toán và hoá đơn" };
+
 export default function ProfileBillingPage() {
   return (
     <div className="page-shell max-w-3xl px-4 py-8 sm:px-6 sm:py-10">

@@ -1,5 +1,7 @@
 import RoadTripView from "@/features/trip-planning/components/RoadTripView";
 
+export const metadata = { title: "Chế độ đi đường" };
+
 export default async function RoadTripPage({
   params,
 }: {

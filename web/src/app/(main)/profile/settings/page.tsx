@@ -3,6 +3,8 @@ import { requireAuthenticatedUser } from "@/lib/auth/authorization";
 import { gatewayProfile } from "@/lib/api/gateway-server";
 import ProfileSettingsForm from "@/features/auth/components/ProfileSettingsForm";
 
+export const metadata = { title: "Cài đặt hồ sơ" };
+
 export default async function ProfileSettingsPage() {
   const user = await requireAuthenticatedUser("/profile/settings");
   const profile = await gatewayProfile();

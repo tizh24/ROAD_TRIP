@@ -11,7 +11,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Road Trip Planner - Bản Đồ Phượt Việt Nam",
+  title: { default: "Tripz - Lên lịch cả chuyến đi trên một tấm bản đồ", template: "%s · Tripz" },
   description: "Lên kế hoạch, bám sát lộ trình, lưu giữ kỷ niệm và quyết toán chi phí cho các chuyến đi phượt.",
 };
 
