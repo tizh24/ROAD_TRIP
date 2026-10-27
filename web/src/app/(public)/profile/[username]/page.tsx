@@ -72,7 +72,7 @@ export default function PublicProfilePage({
 
   if (loading) {
     return (
-      <div className="flex min-h-[60vh] items-center justify-center bg-background-warm">
+      <div className="flex min-h-[60vh] items-center justify-center bg-muted">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
       </div>
     );
@@ -80,13 +80,13 @@ export default function PublicProfilePage({
 
   if (error || !profile) {
     return (
-      <div className="min-h-screen bg-background-warm px-4 py-12 text-center">
-        <div className="mx-auto max-w-md rounded-2xl bg-white p-8 shadow-sm">
+      <div className="min-h-screen bg-muted px-4 py-12 text-center">
+        <div className="mx-auto max-w-md rounded-2xl bg-card p-8 shadow-sm">
           <h2 className="text-xl font-bold text-red-600">Không thể tải thông tin</h2>
-          <p className="mt-2 text-sm text-text-sub">{error || "Hồ sơ không tồn tại."}</p>
+          <p className="mt-2 text-sm text-muted-foreground">{error || "Hồ sơ không tồn tại."}</p>
           <Link
             href="/feed"
-            className="mt-6 inline-flex rounded-xl bg-primary-strong px-4 py-2 text-sm font-bold text-white hover:bg-primary-strong/90"
+            className="mt-6 inline-flex rounded-xl bg-primary px-4 py-2 text-sm font-bold text-white hover:bg-primary/90"
           >
             Quay lại bảng tin
           </Link>
@@ -96,9 +96,9 @@ export default function PublicProfilePage({
   }
 
   return (
-    <div className="min-h-screen bg-background-warm px-4 py-8 text-text-main sm:px-6 sm:py-12">
+    <div className="min-h-screen bg-muted px-4 py-8 text-foreground sm:px-6 sm:py-12">
       <div className="page-shell max-w-4xl px-0">
-        <section className="overflow-hidden rounded-3xl border border-border-main bg-white p-6 shadow-sm sm:p-8">
+        <section className="overflow-hidden rounded-3xl border border-border bg-card p-6 shadow-sm sm:p-8">
           <div className="flex flex-col items-center gap-6 text-center sm:flex-row sm:text-left">
             {profile.avatarUrl ? (
               // eslint-disable-next-line @next/next/no-img-element -- profile avatars are user-supplied URLs with no fixed host allowlist.
@@ -114,19 +114,19 @@ export default function PublicProfilePage({
             )}
 
             <div className="flex-1">
-              <h1 className="text-2xl font-black text-text-main sm:text-3xl">{profile.fullName}</h1>
-              <p className="mt-1 text-sm text-text-sub">Thành viên cộng đồng phượt Tripz</p>
+              <h1 className="text-2xl font-black text-foreground sm:text-3xl">{profile.fullName}</h1>
+              <p className="mt-1 text-sm text-muted-foreground">Thành viên cộng đồng phượt Tripz</p>
               <div className="mt-4 flex flex-wrap justify-center gap-6 text-sm sm:justify-start">
-                <div><span className="font-extrabold text-text-main">{profile.followerCount}</span> <span className="text-text-sub">Người theo dõi</span></div>
-                <div><span className="font-extrabold text-text-main">{profile.followingCount}</span> <span className="text-text-sub">Đang theo dõi</span></div>
-                <div><span className="font-extrabold text-text-main">{profile.publicTrips.length}</span> <span className="text-text-sub">Chuyến đi công khai</span></div>
+                <div><span className="font-extrabold text-foreground">{profile.followerCount}</span> <span className="text-muted-foreground">Người theo dõi</span></div>
+                <div><span className="font-extrabold text-foreground">{profile.followingCount}</span> <span className="text-muted-foreground">Đang theo dõi</span></div>
+                <div><span className="font-extrabold text-foreground">{profile.publicTrips.length}</span> <span className="text-muted-foreground">Chuyến đi công khai</span></div>
               </div>
             </div>
 
             <button
               onClick={handleToggleFollow}
               disabled={updatingFollow}
-              className={`inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-bold shadow-sm transition active:scale-95 disabled:opacity-50 ${following ? "border border-border-main bg-gray-100 text-text-main hover:bg-gray-200" : "bg-primary-strong text-white hover:bg-primary-strong/90"}`}
+              className={`inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-bold shadow-sm transition active:scale-95 disabled:opacity-50 ${following ? "border border-border bg-gray-100 text-foreground hover:bg-gray-200" : "bg-primary text-white hover:bg-primary/90"}`}
             >
               {following ? <><UserCheck size={16} /> Đang theo dõi</> : <><UserPlus size={16} /> Theo dõi</>}
             </button>
@@ -135,27 +135,27 @@ export default function PublicProfilePage({
 
         <section className="mt-10">
           <div>
-            <h2 className="text-xl font-black text-text-main sm:text-2xl">Hành trình đã chia sẻ</h2>
-            <p className="mt-0.5 text-xs text-text-sub">Các chuyến đi được công khai để mọi người có thể tham khảo hoặc sao chép.</p>
+            <h2 className="text-xl font-black text-foreground sm:text-2xl">Hành trình đã chia sẻ</h2>
+            <p className="mt-0.5 text-xs text-muted-foreground">Các chuyến đi được công khai để mọi người có thể tham khảo hoặc sao chép.</p>
           </div>
 
           {profile.publicTrips.length === 0 ? (
-            <div className="mt-6 rounded-2xl border border-dashed border-border-main bg-white p-12 text-center text-text-sub">
+            <div className="mt-6 rounded-2xl border border-dashed border-border bg-card p-12 text-center text-muted-foreground">
               <Compass className="mx-auto text-primary" size={36} />
-              <p className="mt-3 text-sm font-bold text-text-main">Chưa có hành trình công khai nào</p>
-              <p className="mt-1 text-xs text-text-sub">Người dùng này chưa chia sẻ chuyến đi công khai nào lên cộng đồng.</p>
+              <p className="mt-3 text-sm font-bold text-foreground">Chưa có hành trình công khai nào</p>
+              <p className="mt-1 text-xs text-muted-foreground">Người dùng này chưa chia sẻ chuyến đi công khai nào lên cộng đồng.</p>
             </div>
           ) : (
             <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2">
               {profile.publicTrips.map((trip) => (
-                <div key={trip.id} className="flex flex-col justify-between rounded-2xl border border-border-main bg-white p-5 shadow-sm transition hover:shadow-md">
+                <div key={trip.id} className="flex flex-col justify-between rounded-2xl border border-border bg-card p-5 shadow-sm transition hover:shadow-md">
                   <div>
-                    <h3 className="text-base font-bold text-text-main">{trip.title}</h3>
-                    <div className="mt-3 flex items-center gap-2 text-xs text-text-sub"><Calendar size={14} className="text-primary" /><span>{new Date(trip.startDate).toLocaleDateString("vi-VN")} - {new Date(trip.endDate).toLocaleDateString("vi-VN")}</span></div>
-                    {trip.budgetAmount > 0 && <div className="mt-2 flex items-center gap-2 text-xs text-text-sub"><Wallet size={14} className="text-emerald-600" /><span>Dự trù: {new Intl.NumberFormat("vi-VN").format(trip.budgetAmount)} {trip.currency}</span></div>}
+                    <h3 className="text-base font-bold text-foreground">{trip.title}</h3>
+                    <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground"><Calendar size={14} className="text-primary" /><span>{new Date(trip.startDate).toLocaleDateString("vi-VN")} - {new Date(trip.endDate).toLocaleDateString("vi-VN")}</span></div>
+                    {trip.budgetAmount > 0 && <div className="mt-2 flex items-center gap-2 text-xs text-muted-foreground"><Wallet size={14} className="text-emerald-600" /><span>Dự trù: {new Intl.NumberFormat("vi-VN").format(trip.budgetAmount)} {trip.currency}</span></div>}
                   </div>
-                  <div className="mt-5 border-t border-border-main pt-3">
-                    <Link href={`/road/${trip.id}`} className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-background-warm px-4 py-2 text-xs font-bold text-text-main transition hover:bg-primary hover:text-white"><Compass size={14} /> Xem chi tiết lộ trình</Link>
+                  <div className="mt-5 border-t border-border pt-3">
+                    <Link href={`/road/${trip.id}`} className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-muted px-4 py-2 text-xs font-bold text-foreground transition hover:bg-primary hover:text-white"><Compass size={14} /> Xem chi tiết lộ trình</Link>
                   </div>
                 </div>
               ))}

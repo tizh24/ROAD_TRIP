@@ -10,10 +10,10 @@ export interface CTAButtonProps extends React.ButtonHTMLAttributes<HTMLButtonEle
 }
 
 const variantMap = {
-  primary: { variant: "default", className: "font-bold shadow-card hover:shadow-card-hover" },
-  secondary: { variant: "outline", className: "border-border-main bg-white font-bold text-text-main shadow-sm hover:bg-background-warm" },
-  danger: { variant: "default", className: "bg-danger font-bold text-white hover:bg-[#962B21]" },
-  ghost: { variant: "ghost", className: "font-bold text-text-main hover:bg-background-warm" },
+  primary: { variant: "default", className: "font-bold shadow-xs hover:shadow-sm" },
+  secondary: { variant: "outline", className: "border-border bg-white font-bold text-foreground shadow-sm hover:bg-muted" },
+  danger: { variant: "default", className: "bg-destructive font-bold text-white hover:bg-[#962B21]" },
+  ghost: { variant: "ghost", className: "font-bold text-foreground hover:bg-muted" },
 } as const;
 
 const sizeClass = {

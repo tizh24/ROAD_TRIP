@@ -21,23 +21,23 @@ import Link from "next/link";
 
 export default function TripCard({ trip }: TripCardProps) {
   return (
-    <Link href={`/trip/${trip.id}`} className="group bg-surface rounded-[28px] overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] border border-border-main/60 smooth-transition cursor-pointer flex flex-col h-full transform hover:-translate-y-1 block">
+    <Link href={`/trip/${trip.id}`} className="group bg-card rounded-[28px] overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] border border-border/60 transition-colors cursor-pointer flex flex-col h-full transform hover:-translate-y-1 block">
       {/* Cover Image */}
       <div className="relative w-full h-56 overflow-hidden">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img 
           src={trip.image} 
           alt={trip.title} 
-          className="w-full h-full object-cover group-hover:scale-105 smooth-transition duration-700"
+          className="w-full h-full object-cover group-hover:scale-105 transition-colors duration-700"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-text-main/80 via-transparent to-transparent opacity-80" />
+        <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-transparent to-transparent opacity-80" />
         
         {/* Top Badges */}
         <div className="absolute top-4 left-4 right-4 flex justify-between items-center z-10">
-          <span className="bg-white/90 backdrop-blur-md text-text-main text-[11px] font-black px-3 py-1.5 rounded-full uppercase tracking-wider shadow-sm">
+          <span className="bg-white/90 backdrop-blur-md text-foreground text-[11px] font-black px-3 py-1.5 rounded-full uppercase tracking-wider shadow-sm">
             {trip.province}
           </span>
-          <div className="bg-text-main/60 backdrop-blur-md text-white text-[11px] font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5">
+          <div className="bg-foreground/60 backdrop-blur-md text-white text-[11px] font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5">
             <span className="text-primary">🔥</span> {trip.clones.toLocaleString()} Clones
           </div>
         </div>
@@ -51,30 +51,30 @@ export default function TripCard({ trip }: TripCardProps) {
       </div>
       
       {/* Content */}
-      <div className="p-6 flex flex-col flex-1 bg-surface">
-        <h3 className="text-xl font-black text-text-main mb-4 line-clamp-2 leading-snug group-hover:text-primary smooth-transition">
+      <div className="p-6 flex flex-col flex-1 bg-card">
+        <h3 className="text-xl font-black text-foreground mb-4 line-clamp-2 leading-snug group-hover:text-primary transition-colors">
           {trip.title}
         </h3>
         
         <div className="mt-auto space-y-4">
-          <div className="flex justify-between items-center pb-4 border-b border-border-main/50">
+          <div className="flex justify-between items-center pb-4 border-b border-border/50">
             <div className="flex flex-col">
-              <span className="text-[10px] text-text-sub uppercase font-bold tracking-widest mb-1">Thời gian</span>
-              <span className="text-sm font-black text-text-main">{trip.duration}</span>
+              <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest mb-1">Thời gian</span>
+              <span className="text-sm font-black text-foreground">{trip.duration}</span>
             </div>
-            <div className="w-px h-8 bg-border-main/50" />
+            <div className="w-px h-8 bg-border/50" />
             <div className="flex flex-col">
-              <span className="text-[10px] text-text-sub uppercase font-bold tracking-widest mb-1">Độ dài</span>
-              <span className="text-sm font-black text-text-main">{trip.distance}</span>
+              <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest mb-1">Độ dài</span>
+              <span className="text-sm font-black text-foreground">{trip.distance}</span>
             </div>
           </div>
           
           <div className="flex justify-between items-center pt-1">
             <div className="flex flex-col">
-              <span className="text-[10px] text-text-sub uppercase font-bold tracking-widest mb-1">Dự toán</span>
+              <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest mb-1">Dự toán</span>
               <span className="text-lg font-black text-primary">{trip.cost}</span>
             </div>
-            <span aria-hidden="true" className="w-10 h-10 rounded-full bg-background-warm text-text-main flex items-center justify-center group-hover:bg-primary group-hover:text-white smooth-transition">
+            <span aria-hidden="true" className="w-10 h-10 rounded-full bg-muted text-foreground flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors">
               <span className="text-lg">→</span>
             </span>
           </div>

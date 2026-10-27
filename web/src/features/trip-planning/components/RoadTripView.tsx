@@ -173,7 +173,7 @@ export default function RoadTripView({ tripId }: { tripId: string }) {
   if (state.kind === "loading") {
     return (
       <div className="page-shell w-full py-12" aria-busy="true">
-        <div className="h-10 w-72 animate-pulse rounded bg-border-main" />
+        <div className="h-10 w-72 animate-pulse rounded bg-border" />
         <div className="surface-card mt-8 h-80 animate-pulse" />
       </div>
     );
@@ -219,7 +219,7 @@ export default function RoadTripView({ tripId }: { tripId: string }) {
   const completedStopsInDay = activeStops.filter((stop) => checkIns[stop.id]).length;
 
   return (
-    <div className="min-h-screen bg-background-warm pb-20">
+    <div className="min-h-screen bg-muted pb-20">
       <ConfirmDialog
         open={confirmingComplete}
         title="Hoàn tất chuyến đi?"
@@ -229,12 +229,12 @@ export default function RoadTripView({ tripId }: { tripId: string }) {
         onClose={() => setConfirmingComplete(false)}
       />
       {/* Top Banner / Mobile Handoff on Desktop */}
-      <section className="bg-secondary px-4 py-6 text-white sm:px-6 lg:py-8">
+      <section className="bg-primary px-4 py-6 text-white sm:px-6 lg:py-8">
         <div className="page-shell px-0">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <Link
               href={`/planner/${trip.id}`}
-              className="focus-ring inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3.5 py-2 text-xs font-bold text-white/90 hover:bg-white/20"
+              className="focus-ring inline-flex items-center gap-1.5 rounded-full bg-card/10 px-3.5 py-2 text-xs font-bold text-white/90 hover:bg-card/20"
             >
               <ArrowLeft size={14} />
               <span>Quay lại chỉnh sửa lịch trình</span>
@@ -258,7 +258,7 @@ export default function RoadTripView({ tripId }: { tripId: string }) {
               <button
                 type="button"
                 onClick={() => void copyMobileLink()}
-                className="focus-ring inline-flex items-center gap-2 rounded-xl bg-white/10 px-3.5 py-2.5 text-xs font-bold text-white hover:bg-white/20 transition"
+                className="focus-ring inline-flex items-center gap-2 rounded-xl bg-card/10 px-3.5 py-2.5 text-xs font-bold text-white hover:bg-card/20 transition"
               >
                 <Smartphone size={16} />
                 <span>{copiedLink ? "Đã sao chép liên kết!" : "Mở trên điện thoại"}</span>
@@ -267,7 +267,7 @@ export default function RoadTripView({ tripId }: { tripId: string }) {
               {trip.status === "COMPLETED" ? (
                 <Link
                   href={`/memory/${trip.id}`}
-                  className="focus-ring inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-3.5 py-2.5 text-xs font-bold text-white shadow-card hover:bg-emerald-700 transition"
+                  className="focus-ring inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-3.5 py-2.5 text-xs font-bold text-white shadow-xs hover:bg-emerald-700 transition"
                 >
                   <CheckCircle2 size={16} />
                   <span>Xem Kỷ niệm chuyến đi</span>
@@ -277,7 +277,7 @@ export default function RoadTripView({ tripId }: { tripId: string }) {
                   type="button"
                   onClick={() => void handleCompleteTrip()}
                   disabled={completingTrip}
-                  className="focus-ring inline-flex items-center gap-1.5 rounded-xl bg-primary-strong px-3.5 py-2.5 text-xs font-bold text-white shadow-card hover:bg-primary-strong/90 transition disabled:opacity-50"
+                  className="focus-ring inline-flex items-center gap-1.5 rounded-xl bg-primary px-3.5 py-2.5 text-xs font-bold text-white shadow-xs hover:bg-primary/90 transition disabled:opacity-50"
                 >
                   <CheckCircle2 size={16} />
                   <span>{completingTrip ? "Đang xử lý…" : "Hoàn tất chuyến đi"}</span>
@@ -299,15 +299,15 @@ export default function RoadTripView({ tripId }: { tripId: string }) {
               <Smartphone size={20} />
             </div>
             <div className="min-w-0 flex-1">
-              <h2 id="desktop-handoff-banner" className="text-sm font-extrabold text-text-main">
+              <h2 id="desktop-handoff-banner" className="text-sm font-extrabold text-foreground">
                 Trải nghiệm tối ưu cho điện thoại khi đi đường
               </h2>
-              <p className="mt-1 text-xs leading-5 text-text-sub">
+              <p className="mt-1 text-xs leading-5 text-muted-foreground">
                 Giao diện đi đường được thiết kế nhỏ gọn, dễ thao tác một tay trên điện thoại khi đang di chuyển.
                 Bạn có thể mở chỉ đường Google Maps trực tiếp cho từng điểm dừng, đánh dấu đã đến và gọi nhanh cứu hộ khẩn cấp.
               </p>
-              <div className="mt-3 flex items-center gap-2 text-[11px] text-text-sub bg-background-warm p-2.5 rounded-lg">
-                <AlertCircle size={14} className="text-secondary shrink-0" />
+              <div className="mt-3 flex items-center gap-2 text-[11px] text-muted-foreground bg-muted p-2.5 rounded-lg">
+                <AlertCircle size={14} className="text-foreground shrink-0" />
                 <span>
                   <strong>Lưu ý:</strong> Tính năng chia sẻ vị trí (Consented Live Tracking) cho phép bạn chủ động bật/tắt để các thành viên trong đoàn có thể biết vị trí của nhau.
                 </span>
@@ -319,12 +319,12 @@ export default function RoadTripView({ tripId }: { tripId: string }) {
         {/* Consented Live Location Sharing Card */}
         <section className="surface-card mt-6 p-4 sm:p-5 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className={`p-2.5 rounded-xl ${isSharingLocation ? "bg-emerald-500/15 text-emerald-600" : "bg-background-warm text-text-sub"}`}>
+            <div className={`p-2.5 rounded-xl ${isSharingLocation ? "bg-emerald-500/15 text-emerald-600" : "bg-muted text-muted-foreground"}`}>
               <Navigation size={20} />
             </div>
             <div>
-              <h3 className="text-sm font-extrabold text-text-main">Chia sẻ vị trí với đoàn (Consented Live Tracking)</h3>
-              <p className="text-xs text-text-sub">
+              <h3 className="text-sm font-extrabold text-foreground">Chia sẻ vị trí với đoàn (Consented Live Tracking)</h3>
+              <p className="text-xs text-muted-foreground">
                 {isSharingLocation
                   ? "Vị trí GPS của bạn đang được chia sẻ cho các thành viên trong đoàn."
                   : "Chỉ chia sẻ khi bạn cho phép và có thể tắt bất cứ lúc nào."}
@@ -336,8 +336,8 @@ export default function RoadTripView({ tripId }: { tripId: string }) {
             onClick={() => void handleToggleLocationSharing()}
             className={`focus-ring rounded-xl px-4 py-2.5 text-xs font-bold transition ${
               isSharingLocation
-                ? "bg-emerald-600 text-white shadow-card hover:bg-emerald-700"
-                : "border border-border-main bg-surface text-text-main hover:bg-background-warm"
+                ? "bg-emerald-600 text-white shadow-xs hover:bg-emerald-700"
+                : "border border-border bg-card text-foreground hover:bg-muted"
             }`}
           >
             {isSharingLocation ? "Đang bật chia sẻ (Nhấn để tắt)" : "Bật chia sẻ vị trí"}
@@ -350,33 +350,33 @@ export default function RoadTripView({ tripId }: { tripId: string }) {
           <div className="grid grid-cols-3 gap-2.5 sm:gap-4">
             <a
               href="tel:113"
-              className="focus-ring surface-card flex flex-col items-center justify-center p-3 text-center hover:bg-danger/5 transition border-border-main"
+              className="focus-ring surface-card flex flex-col items-center justify-center p-3 text-center hover:bg-destructive/5 transition border-border"
             >
-              <div className="rounded-full bg-danger/10 p-2 text-danger">
+              <div className="rounded-full bg-destructive/10 p-2 text-destructive">
                 <ShieldAlert size={18} />
               </div>
-              <span className="mt-1.5 text-xs font-bold text-text-main">CSGT / Công an</span>
-              <span className="text-[11px] font-extrabold text-danger">113</span>
+              <span className="mt-1.5 text-xs font-bold text-foreground">CSGT / Công an</span>
+              <span className="text-[11px] font-extrabold text-destructive">113</span>
             </a>
             <a
               href="tel:115"
-              className="focus-ring surface-card flex flex-col items-center justify-center p-3 text-center hover:bg-primary/5 transition border-border-main"
+              className="focus-ring surface-card flex flex-col items-center justify-center p-3 text-center hover:bg-primary/5 transition border-border"
             >
               <div className="rounded-full bg-primary/10 p-2 text-primary">
                 <PhoneCall size={18} />
               </div>
-              <span className="mt-1.5 text-xs font-bold text-text-main">Cấp cứu y tế</span>
+              <span className="mt-1.5 text-xs font-bold text-foreground">Cấp cứu y tế</span>
               <span className="text-[11px] font-extrabold text-primary">115</span>
             </a>
             <a
               href="tel:116"
-              className="focus-ring surface-card flex flex-col items-center justify-center p-3 text-center hover:bg-secondary/5 transition border-border-main"
+              className="focus-ring surface-card flex flex-col items-center justify-center p-3 text-center hover:bg-muted transition border-border"
             >
-              <div className="rounded-full bg-secondary/10 p-2 text-secondary">
+              <div className="rounded-full bg-muted p-2 text-foreground">
                 <Navigation size={18} />
               </div>
-              <span className="mt-1.5 text-xs font-bold text-text-main">Cứu hộ đường bộ</span>
-              <span className="text-[11px] font-extrabold text-secondary">116</span>
+              <span className="mt-1.5 text-xs font-bold text-foreground">Cứu hộ đường bộ</span>
+              <span className="text-[11px] font-extrabold text-foreground">116</span>
             </a>
           </div>
         </section>
@@ -393,8 +393,8 @@ export default function RoadTripView({ tripId }: { tripId: string }) {
                   onClick={() => setDayIndex(idx)}
                   className={`focus-ring shrink-0 rounded-2xl px-4 py-2.5 text-left transition ${
                     active
-                      ? "bg-secondary text-white shadow-card font-extrabold"
-                      : "surface-card text-text-main hover:bg-background font-semibold"
+                      ? "bg-primary text-white shadow-xs font-extrabold"
+                      : "surface-card text-foreground hover:bg-background font-semibold"
                   }`}
                 >
                   <span className="block text-xs uppercase opacity-80">Ngày {day.dayIndex}</span>
@@ -413,7 +413,7 @@ export default function RoadTripView({ tripId }: { tripId: string }) {
                 <p className="text-xs font-extrabold uppercase tracking-wider text-primary">
                   Lộ trình Ngày {activeDay.dayIndex}
                 </p>
-                <h2 id="active-day-heading" className="mt-0.5 text-xl font-extrabold text-text-main">
+                <h2 id="active-day-heading" className="mt-0.5 text-xl font-extrabold text-foreground">
                   {activeDay.date}
                 </h2>
               </div>
@@ -425,15 +425,15 @@ export default function RoadTripView({ tripId }: { tripId: string }) {
             {activeStops.length === 0 ? (
               <div className="surface-card p-8 text-center">
                 <MapPin className="mx-auto text-primary" size={32} />
-                <h3 className="mt-3 text-lg font-extrabold text-text-main">
+                <h3 className="mt-3 text-lg font-extrabold text-foreground">
                   Chưa có điểm dừng cho ngày này
                 </h3>
-                <p className="mt-1 text-sm text-text-sub">
+                <p className="mt-1 text-sm text-muted-foreground">
                   Quay lại giao diện chỉnh sửa để thêm các điểm đến vào hành trình.
                 </p>
                 <Link
                   href={`/planner/${trip.id}`}
-                  className="focus-ring mt-4 inline-flex items-center gap-2 rounded-xl bg-primary-strong px-4 py-2.5 text-sm font-bold text-white shadow-card hover:bg-primary-strong/90 transition"
+                  className="focus-ring mt-4 inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-white shadow-xs hover:bg-primary/90 transition"
                 >
                   Thêm điểm dừng vào kế hoạch
                 </Link>
@@ -450,7 +450,7 @@ export default function RoadTripView({ tripId }: { tripId: string }) {
                     <li
                       key={stop.id}
                       className={`surface-card relative overflow-hidden p-4 sm:p-5 transition-all ${
-                        isCheckedIn ? "opacity-75 bg-background-warm/60" : ""
+                        isCheckedIn ? "opacity-75 bg-muted/60" : ""
                       }`}
                     >
                       <div className="flex items-start gap-3 sm:gap-4">
@@ -468,13 +468,13 @@ export default function RoadTripView({ tripId }: { tripId: string }) {
                           <div className="flex flex-wrap items-start justify-between gap-2">
                             <div>
                               <h3
-                                className={`text-base font-extrabold text-text-main ${
+                                className={`text-base font-extrabold text-foreground ${
                                   isCheckedIn ? "line-through opacity-75" : ""
                                 }`}
                               >
                                 {stop.name}
                               </h3>
-                              <p className="mt-0.5 text-xs text-text-sub flex items-center gap-1">
+                              <p className="mt-0.5 text-xs text-muted-foreground flex items-center gap-1">
                                 <MapPin size={12} className="shrink-0" />
                                 <span className="truncate">{stop.address}</span>
                               </p>
@@ -483,7 +483,7 @@ export default function RoadTripView({ tripId }: { tripId: string }) {
                               className={`rounded-full px-2.5 py-1 text-[11px] font-bold ${
                                 isCheckedIn
                                   ? "bg-emerald-500/15 text-emerald-800"
-                                  : "bg-background-warm text-text-sub"
+                                  : "bg-muted text-muted-foreground"
                               }`}
                             >
                               {isCheckedIn ? "Đã đến" : `Chặng ${index + 1}`}
@@ -491,7 +491,7 @@ export default function RoadTripView({ tripId }: { tripId: string }) {
                           </div>
 
                           {stop.notes && (
-                            <p className="mt-2.5 rounded-xl bg-background-warm p-2.5 text-xs text-text-sub leading-relaxed">
+                            <p className="mt-2.5 rounded-xl bg-muted p-2.5 text-xs text-muted-foreground leading-relaxed">
                               <strong>Ghi chú:</strong> {stop.notes}
                             </p>
                           )}
@@ -503,8 +503,8 @@ export default function RoadTripView({ tripId }: { tripId: string }) {
                               onClick={() => toggleCheckIn(stop.id)}
                               className={`focus-ring inline-flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-bold transition ${
                                 isCheckedIn
-                                  ? "border border-border-main bg-surface text-text-sub hover:bg-background-warm"
-                                  : "bg-emerald-600 text-white shadow-card hover:bg-emerald-700"
+                                  ? "border border-border bg-card text-muted-foreground hover:bg-muted"
+                                  : "bg-emerald-600 text-white shadow-xs hover:bg-emerald-700"
                               }`}
                             >
                               {isCheckedIn ? (
@@ -524,7 +524,7 @@ export default function RoadTripView({ tripId }: { tripId: string }) {
                               href={googleMapsUrl}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="focus-ring inline-flex items-center gap-1.5 rounded-xl border border-border-main bg-surface px-3.5 py-2 text-xs font-bold text-text-main hover:bg-background-warm transition"
+                              className="focus-ring inline-flex items-center gap-1.5 rounded-xl border border-border bg-card px-3.5 py-2 text-xs font-bold text-foreground hover:bg-muted transition"
                             >
                               <ExternalLink size={14} />
                               <span>Mở chỉ đường Google Maps</span>

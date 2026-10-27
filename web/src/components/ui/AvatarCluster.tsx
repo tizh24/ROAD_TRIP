@@ -31,7 +31,7 @@ export default function AvatarCluster({ members, className = "", size = "md" }: 
         return (
           <div
             key={index}
-            className={`relative rounded-full border-2 border-white flex items-center justify-center font-bold text-white overflow-hidden shadow-sm smooth-transition hover:-translate-y-1 hover:z-10 ${sizeClasses} ${index > 0 ? offsetClasses : ""}`}
+            className={`relative rounded-full border-2 border-white flex items-center justify-center font-bold text-white overflow-hidden shadow-sm transition-colors hover:-translate-y-1 hover:z-10 ${sizeClasses} ${index > 0 ? offsetClasses : ""}`}
             style={{ 
               backgroundColor: bgColor, 
               zIndex: visibleMembers.length - index 
@@ -54,7 +54,7 @@ export default function AvatarCluster({ members, className = "", size = "md" }: 
 
       {overflowCount > 0 && (
         <div
-          className={`relative flex items-center justify-center rounded-full border-2 border-white bg-background-warm font-black text-secondary shadow-sm ${sizeClasses} ${offsetClasses}`}
+          className={`relative flex items-center justify-center rounded-full border-2 border-white bg-muted font-black text-foreground shadow-sm ${sizeClasses} ${offsetClasses}`}
           style={{ zIndex: 0 }}
         >
           +{overflowCount}

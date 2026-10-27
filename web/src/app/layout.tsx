@@ -21,7 +21,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       lang="vi"
       className={`h-full antialiased ${inter.variable}`}
     >
-      <body className="min-h-full flex flex-col bg-background text-text-main">
+      <body className="min-h-full flex flex-col bg-background text-foreground">
         <LoginAnalyticsMarker />
         <div className="w-full flex-1 flex flex-col min-h-screen relative overflow-x-hidden">
           {children}

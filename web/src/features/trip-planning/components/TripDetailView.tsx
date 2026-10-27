@@ -62,8 +62,8 @@ export default function TripDetailView({
   };
 
   return (
-    <div className="min-h-[calc(100svh-72px)] overflow-x-clip bg-brand-offwhite pb-14 text-brand-charcoal sm:pb-20">
-      <section className="bg-brand-charcoal px-4 pb-12 pt-9 text-white sm:px-6 sm:pb-16 sm:pt-12">
+    <div className="min-h-[calc(100svh-72px)] overflow-x-clip bg-background pb-14 text-foreground sm:pb-20">
+      <section className="bg-primary px-4 pb-12 pt-9 text-white sm:px-6 sm:pb-16 sm:pt-12">
         <div className="page-shell px-0">
           <Link
             href="/explore"
@@ -84,7 +84,7 @@ export default function TripDetailView({
               <CalendarDays
                 aria-hidden="true"
                 size={17}
-                className="text-brand-orange"
+                className="text-primary"
               />
               <dt className="sr-only">Thời gian</dt>
               <dd>
@@ -95,7 +95,7 @@ export default function TripDetailView({
               <Route
                 aria-hidden="true"
                 size={17}
-                className="text-brand-orange"
+                className="text-primary"
               />
               <dt className="sr-only">Số ngày</dt>
               <dd>{trip.days.length} ngày trong lịch trình</dd>
@@ -106,24 +106,24 @@ export default function TripDetailView({
 
       <div className="page-shell grid gap-10 px-4 py-9 sm:px-6 sm:py-14 lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-14">
         <article className="min-w-0">
-          <header className="border-b border-border-main pb-5">
-            <h2 className="text-3xl font-extrabold tracking-[-.035em] text-brand-charcoal">
+          <header className="border-b border-border pb-5">
+            <h2 className="text-3xl font-extrabold tracking-[-.035em] text-foreground">
               Lịch trình theo ngày
             </h2>
-            <p className="mt-2 text-sm leading-6 text-text-sub">
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">
               Các điểm dừng công khai được sắp theo nhịp di chuyển của chuyến
               đi.
             </p>
           </header>
 
           {trip.days.length === 0 ? (
-            <div className="border-b border-border-main py-10 text-center">
+            <div className="border-b border-border py-10 text-center">
               <MapPin
                 aria-hidden="true"
-                className="mx-auto text-brand-orange"
+                className="mx-auto text-primary"
                 size={34}
               />
-              <p className="mt-4 text-sm text-text-sub">
+              <p className="mt-4 text-sm text-muted-foreground">
                 Lộ trình này chưa có điểm dừng công khai.
               </p>
             </div>
@@ -133,27 +133,27 @@ export default function TripDetailView({
                 <li key={day.id} className="relative pl-8 sm:pl-11">
                   <span
                     aria-hidden="true"
-                    className="absolute left-0 top-1 flex size-6 items-center justify-center rounded-full bg-primary-strong text-xs font-extrabold text-white sm:size-7"
+                    className="absolute left-0 top-1 flex size-6 items-center justify-center rounded-full bg-primary text-xs font-extrabold text-white sm:size-7"
                   >
                     {day.dayIndex}
                   </span>
                   {dayPosition < trip.days.length - 1 && (
                     <span
                       aria-hidden="true"
-                      className="absolute bottom-[-2.25rem] left-[11px] top-8 w-px bg-border-main sm:left-[13px]"
+                      className="absolute bottom-[-2.25rem] left-[11px] top-8 w-px bg-border sm:left-[13px]"
                     />
                   )}
-                  <div className="border-b border-border-main pb-8">
+                  <div className="border-b border-border pb-8">
                     <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-                      <h3 className="text-xl font-extrabold tracking-[-.025em] text-brand-charcoal">
+                      <h3 className="text-xl font-extrabold tracking-[-.025em] text-foreground">
                         Ngày {day.dayIndex}
                       </h3>
-                      <p className="text-sm font-medium text-text-sub">
+                      <p className="text-sm font-medium text-muted-foreground">
                         {day.date}
                       </p>
                     </div>
                     {day.stops.length === 0 ? (
-                      <p className="mt-4 text-sm text-text-sub">
+                      <p className="mt-4 text-sm text-muted-foreground">
                         Chưa có điểm dừng được công khai trong ngày này.
                       </p>
                     ) : (
@@ -163,14 +163,14 @@ export default function TripDetailView({
                             key={stop.id}
                             className="grid grid-cols-[1.75rem_minmax(0,1fr)] gap-3"
                           >
-                            <span className="pt-0.5 text-sm font-extrabold tabular-nums text-primary-strong">
+                            <span className="pt-0.5 text-sm font-extrabold tabular-nums text-primary">
                               {String(index + 1).padStart(2, "0")}
                             </span>
                             <div>
-                              <h4 className="font-bold text-brand-charcoal">
+                              <h4 className="font-bold text-foreground">
                                 {stop.name}
                               </h4>
-                              <p className="mt-1 text-sm leading-6 text-text-sub">
+                              <p className="mt-1 text-sm leading-6 text-muted-foreground">
                                 {stop.address}
                               </p>
                             </div>
@@ -187,21 +187,21 @@ export default function TripDetailView({
 
         <aside
           aria-labelledby="clone-trip-heading"
-          className="h-fit border-y border-border-main py-6 lg:sticky lg:top-24 lg:border-y-0 lg:border-l lg:pl-7"
+          className="h-fit border-y border-border py-6 lg:sticky lg:top-24 lg:border-y-0 lg:border-l lg:pl-7"
         >
-          <Wallet aria-hidden="true" size={24} className="text-brand-orange" />
+          <Wallet aria-hidden="true" size={24} className="text-primary" />
           <h2
             id="clone-trip-heading"
-            className="mt-4 text-2xl font-extrabold tracking-[-.03em] text-brand-charcoal"
+            className="mt-4 text-2xl font-extrabold tracking-[-.03em] text-foreground"
           >
             Đưa cung đường này vào chuyến đi của bạn
           </h2>
-          <p className="mt-3 text-sm leading-6 text-text-sub">
+          <p className="mt-3 text-sm leading-6 text-muted-foreground">
             Bản sao được tạo dưới dạng hành trình riêng tư để bạn điều chỉnh
             điểm dừng, thời gian và ngân sách.
           </p>
-          <p className="mt-5 border-y border-border-main py-4 text-sm font-bold text-brand-charcoal">
-            <span className="block text-xs font-bold uppercase tracking-[.12em] text-text-sub">
+          <p className="mt-5 border-y border-border py-4 text-sm font-bold text-foreground">
+            <span className="block text-xs font-bold uppercase tracking-[.12em] text-muted-foreground">
               Ngân sách dự kiến
             </span>
             <span className="mt-1 block tabular-nums">
@@ -220,7 +220,7 @@ export default function TripDetailView({
             type="button"
             disabled={busy}
             onClick={() => void clone()}
-            className="focus-ring mt-6 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-lg bg-primary-strong px-4 text-sm font-extrabold text-white transition-colors hover:bg-primary-strong/90 disabled:cursor-not-allowed disabled:opacity-60"
+            className="focus-ring mt-6 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 text-sm font-extrabold text-white transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {busy
               ? "Đang tạo bản sao…"

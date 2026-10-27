@@ -21,12 +21,12 @@ Spec: `./tripz-ui-rebuild-spec.md`. Plan: `./tripz-ui-rebuild-plan.md`.
 ## 2. Foundation
 
 - [x] Read the installed Next.js docs relevant to layouts, fonts and `next/image`.
-- [ ] Rewrite tokens, fonts and base CSS from the chosen direction.
-- [ ] Adapt existing Radix primitives to the new tokens.
+- [x] Rewrite tokens, fonts and base CSS from the chosen direction.
+- [x] Adapt existing Radix primitives to the new tokens.
 - [x] Add Sidebar, Card, Table, Breadcrumb, Dropdown Menu, Tooltip, Avatar, Popover/Calendar and Chart primitives (Radix).
 - [x] Port dashboard shell (sidebar, header, content frame, error boundary, loading) with Radix.
-- [ ] Replace legacy shared components and delete dead code and `brand-*` tokens.
-- [ ] Gate: typecheck, lint, build.
+- [x] Legacy token names, aliases and helper classes removed and every usage migrated to the new tokens (shared components `TripCard`, `Navbar`, `CTAButton`... still to be rebuilt in 2b/3). Known page-level leftovers to remove when their page is rebuilt: raw hex colors in payment, travel-book, moderation, overview, partner overview and newsletter views; `surface-card` and `.field` helpers.
+- [x] Gate: typecheck, lint, build.
 
 ## 2b. Overlays and shared states
 

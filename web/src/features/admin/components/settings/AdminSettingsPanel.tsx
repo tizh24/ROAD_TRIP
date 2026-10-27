@@ -67,20 +67,20 @@ export default function AdminSettingsPanel() {
       {/* Header */}
       <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <p className="text-xs font-extrabold uppercase tracking-[.16em] text-secondary">
+          <p className="text-xs font-extrabold uppercase tracking-[.16em] text-foreground">
             Platform Capabilities · Admin Console
           </p>
-          <h1 className="mt-1 text-3xl font-extrabold tracking-[-.03em] text-text-main">
+          <h1 className="mt-1 text-3xl font-extrabold tracking-[-.03em] text-foreground">
             Quản trị Tài khoản & Phân quyền
           </h1>
-          <p className="mt-1 text-sm text-text-sub">
+          <p className="mt-1 text-sm text-muted-foreground">
             Quản lý vai trò người dùng (USER, PARTNER, MODERATOR, ADMIN) và lưu vết kiểm toán hệ thống.
           </p>
         </div>
 
         <button
           onClick={loadUsers}
-          className="inline-flex items-center gap-2 rounded-xl bg-secondary px-4 py-2 text-xs font-bold text-white hover:bg-secondary/90 transition"
+          className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-xs font-bold text-white hover:bg-primary/90 transition"
         >
           <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
           Làm mới
@@ -95,20 +95,20 @@ export default function AdminSettingsPanel() {
       )}
 
       {/* Search Bar */}
-      <div className="mb-6 flex items-center rounded-2xl border border-border-main bg-white px-4 py-2.5 shadow-sm max-w-md">
-        <Search size={16} className="text-text-sub mr-2.5" />
+      <div className="mb-6 flex items-center rounded-2xl border border-border bg-card px-4 py-2.5 shadow-sm max-w-md">
+        <Search size={16} className="text-muted-foreground mr-2.5" />
         <input
           type="text"
           placeholder="Tìm theo tên hoặc email người dùng..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full bg-transparent text-xs text-text-main outline-none"
+          className="w-full bg-transparent text-xs text-foreground outline-none"
         />
       </div>
 
       {/* Users Table */}
       {loading ? (
-        <div className="py-20 text-center text-sm text-text-sub">
+        <div className="py-20 text-center text-sm text-muted-foreground">
           Đang tải danh sách tài khoản người dùng...
         </div>
       ) : error ? (
@@ -116,14 +116,14 @@ export default function AdminSettingsPanel() {
           <p className="font-semibold">{error}</p>
         </div>
       ) : filteredUsers.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-border-main bg-white p-12 text-center text-text-sub">
+        <div className="rounded-2xl border border-dashed border-border bg-card p-12 text-center text-muted-foreground">
           <Users className="mx-auto opacity-40" size={36} />
           <p className="mt-2 text-sm font-bold">Không tìm thấy người dùng phù hợp</p>
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-2xl border border-border-main bg-white shadow-sm">
-          <table className="w-full text-left text-xs text-text-main">
-            <thead className="border-b border-border-main bg-gray-50/70 text-[11px] font-extrabold uppercase text-text-sub">
+        <div className="overflow-x-auto rounded-2xl border border-border bg-card shadow-sm">
+          <table className="w-full text-left text-xs text-foreground">
+            <thead className="border-b border-border bg-gray-50/70 text-[11px] font-extrabold uppercase text-muted-foreground">
               <tr>
                 <th className="px-5 py-3.5">Người dùng</th>
                 <th className="px-5 py-3.5">Email liên kết</th>
@@ -132,19 +132,19 @@ export default function AdminSettingsPanel() {
                 <th className="px-5 py-3.5">Vai trò nền tảng</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border-main">
+            <tbody className="divide-y divide-border">
               {filteredUsers.map((user) => (
                 <tr key={user.id} className="hover:bg-gray-50/50 transition">
                   <td className="px-5 py-4">
-                    <div className="font-bold text-text-main text-sm">{user.fullName}</div>
-                    <div className="text-[11px] font-mono text-text-sub truncate max-w-[200px]">
+                    <div className="font-bold text-foreground text-sm">{user.fullName}</div>
+                    <div className="text-[11px] font-mono text-muted-foreground truncate max-w-[200px]">
                       {user.id}
                     </div>
                   </td>
 
-                  <td className="px-5 py-4 text-text-sub">
+                  <td className="px-5 py-4 text-muted-foreground">
                     <div className="flex items-center gap-1.5">
-                      <Mail size={13} className="text-secondary" />
+                      <Mail size={13} className="text-foreground" />
                       <span>{user.email}</span>
                     </div>
                   </td>
@@ -161,7 +161,7 @@ export default function AdminSettingsPanel() {
                     </span>
                   </td>
 
-                  <td className="px-5 py-4 text-text-sub">
+                  <td className="px-5 py-4 text-muted-foreground">
                     {new Date(user.createdAt).toLocaleDateString("vi-VN")}
                   </td>
 
@@ -170,7 +170,7 @@ export default function AdminSettingsPanel() {
                       value={user.role}
                       disabled={updatingId === user.id}
                       onChange={(e) => handleRoleChange(user.id, e.target.value as AdminUser["role"])}
-                      className="rounded-xl border border-border-main bg-white px-3 py-1.5 text-xs font-bold text-text-main outline-none focus:border-secondary transition cursor-pointer disabled:opacity-50"
+                      className="rounded-xl border border-border bg-card px-3 py-1.5 text-xs font-bold text-foreground outline-none focus:border-primary transition cursor-pointer disabled:opacity-50"
                     >
                       <option value="USER">USER (Người dùng thường)</option>
                       <option value="PARTNER">PARTNER (Đối tác kinh doanh)</option>

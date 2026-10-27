@@ -23,10 +23,10 @@ export default function NewsletterPanel() {
   }
 
   return (
-    <section aria-labelledby="newsletter-title" className="bg-secondary text-white">
+    <section aria-labelledby="newsletter-title" className="bg-primary text-white">
       <div className="page-shell grid gap-8 py-14 lg:grid-cols-[1fr_minmax(0,28rem)] lg:items-center lg:py-20">
         <div>
-          <h2 id="newsletter-title" className="font-display text-3xl font-extrabold tracking-[-0.03em] sm:text-4xl">
+          <h2 id="newsletter-title" className="text-3xl font-extrabold tracking-[-0.03em] sm:text-4xl">
             Nhận gợi ý cung đường khi bản tin ra mắt.
           </h2>
           <p className="mt-4 max-w-xl text-sm leading-7 text-white/75">
@@ -45,9 +45,9 @@ export default function NewsletterPanel() {
               aria-invalid={Boolean(error)}
               aria-describedby="newsletter-feedback"
               placeholder="ten@example.com"
-              className="focus-ring min-h-12 w-full rounded-lg border border-white/30 bg-white/10 px-4 text-sm text-white placeholder:text-white/50"
+              className="focus-ring min-h-12 w-full rounded-lg border border-white/30 bg-card/10 px-4 text-sm text-white placeholder:text-white/50"
             />
-            <button type="submit" className="focus-ring min-h-12 shrink-0 rounded-lg bg-primary-strong px-6 text-sm font-bold text-white hover:bg-primary-strong/90">
+            <button type="submit" className="focus-ring min-h-12 shrink-0 rounded-lg bg-primary px-6 text-sm font-bold text-white hover:bg-primary/90">
               Gửi email
             </button>
           </div>

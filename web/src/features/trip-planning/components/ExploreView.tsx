@@ -103,24 +103,24 @@ export default function ExploreView() {
   const hasActiveFilters = Boolean(search) || budgetTier !== "all";
 
   return (
-    <div className="min-h-[calc(100svh-72px)] overflow-x-clip bg-brand-offwhite pb-14 text-brand-charcoal sm:pb-20">
-      <header className="border-b border-border-main bg-brand-offwhite px-4 pb-9 pt-10 sm:px-6 sm:pb-12 sm:pt-16">
+    <div className="min-h-[calc(100svh-72px)] overflow-x-clip bg-background pb-14 text-foreground sm:pb-20">
+      <header className="border-b border-border bg-background px-4 pb-9 pt-10 sm:px-6 sm:pb-12 sm:pt-16">
         <div className="page-shell px-0">
           <div className="max-w-3xl">
-            <h1 className="text-balance text-4xl font-extrabold tracking-[-.04em] text-brand-charcoal sm:text-5xl lg:text-6xl">
+            <h1 className="text-balance text-4xl font-extrabold tracking-[-.04em] text-foreground sm:text-5xl lg:text-6xl">
               Chọn một hướng đi để bắt đầu.
             </h1>
-            <p className="mt-4 max-w-2xl text-pretty text-sm leading-7 text-text-sub sm:text-base">
+            <p className="mt-4 max-w-2xl text-pretty text-sm leading-7 text-muted-foreground sm:text-base">
               Những cung đường thực tế do cộng đồng Tripz chia sẻ. Lưu một lộ
               trình về tài khoản để tùy chỉnh theo nhịp đi của riêng bạn.
             </p>
           </div>
 
-          <div className="mt-8 border-y border-border-main py-4 sm:mt-10 sm:flex sm:items-end sm:gap-6">
+          <div className="mt-8 border-y border-border py-4 sm:mt-10 sm:flex sm:items-end sm:gap-6">
             <div className="min-w-0 flex-1">
               <label
                 htmlFor="explore-search"
-                className="mb-2 block text-sm font-bold text-brand-charcoal"
+                className="mb-2 block text-sm font-bold text-foreground"
               >
                 Tìm điểm đến hoặc cung đường
               </label>
@@ -134,13 +134,13 @@ export default function ExploreView() {
                   id="explore-search"
                   value={search}
                   onChange={(event) => setSearch(event.target.value)}
-                  className="field min-h-12 border-border-main bg-surface py-3 pl-11 text-brand-charcoal placeholder:text-text-sub"
+                  className="field min-h-12 border-border bg-card py-3 pl-11 text-foreground placeholder:text-muted-foreground"
                   placeholder="Hà Giang, biển miền Trung, đèo..."
                 />
               </div>
             </div>
             <fieldset className="mt-5 min-w-0 sm:mt-0 sm:max-w-xl">
-              <legend className="mb-2 flex items-center gap-2 text-sm font-bold text-brand-charcoal">
+              <legend className="mb-2 flex items-center gap-2 text-sm font-bold text-foreground">
                 <SlidersHorizontal aria-hidden="true" size={16} /> Ngân sách
               </legend>
               <div className="flex flex-wrap gap-2">
@@ -152,7 +152,7 @@ export default function ExploreView() {
                       type="button"
                       aria-pressed={active}
                       onClick={() => setBudgetTier(key)}
-                      className={`focus-ring min-h-11 rounded-full border px-3.5 text-sm font-bold transition-colors ${active ? "border-brand-orange bg-primary-strong text-white" : "border-border-main bg-surface text-text-sub hover:border-brand-orange hover:text-brand-charcoal"}`}
+                      className={`focus-ring min-h-11 rounded-full border px-3.5 text-sm font-bold transition-colors ${active ? "border-primary bg-primary text-white" : "border-border bg-card text-muted-foreground hover:border-primary hover:text-foreground"}`}
                     >
                       {label}
                     </button>
@@ -165,17 +165,17 @@ export default function ExploreView() {
       </header>
 
       <section className="page-shell px-4 py-8 sm:px-6 sm:py-12">
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-3 border-b border-border-main pb-4">
-          <div className="flex items-center gap-2 text-sm font-bold text-brand-charcoal">
-            <Map aria-hidden="true" size={18} className="text-brand-orange" />
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
+          <div className="flex items-center gap-2 text-sm font-bold text-foreground">
+            <Map aria-hidden="true" size={18} className="text-primary" />
             <span>Lộ trình công khai</span>
-            {!loading && <span className="text-text-sub">({filteredTrips.length})</span>}
+            {!loading && <span className="text-muted-foreground">({filteredTrips.length})</span>}
           </div>
           {hasActiveFilters && (
             <button
               type="button"
               onClick={resetFilters}
-              className="focus-ring min-h-11 text-sm font-bold text-primary-strong underline decoration-primary/40 underline-offset-4 hover:text-primary-strong/80"
+              className="focus-ring min-h-11 text-sm font-bold text-primary underline decoration-primary/40 underline-offset-4 hover:text-primary/80"
             >
               Đặt lại bộ lọc
             </button>
@@ -183,14 +183,14 @@ export default function ExploreView() {
         </div>
 
         {error && (
-          <div className="my-8 border border-error/25 bg-surface px-5 py-7 sm:px-7">
+          <div className="my-8 border border-error/25 bg-card px-5 py-7 sm:px-7">
             <p role="alert" className="text-sm font-bold text-error">
               {error}
             </p>
             <button
               type="button"
               onClick={() => void load()}
-              className="focus-ring mt-5 inline-flex min-h-11 items-center gap-2 rounded-lg bg-primary-strong px-4 text-sm font-bold text-white hover:bg-primary-strong/90"
+              className="focus-ring mt-5 inline-flex min-h-11 items-center gap-2 rounded-lg bg-primary px-4 text-sm font-bold text-white hover:bg-primary/90"
             >
               <RefreshCw aria-hidden="true" size={16} /> Thử lại
             </button>
@@ -199,32 +199,32 @@ export default function ExploreView() {
 
         {loading && (
           <div
-            className="grid gap-px overflow-hidden border border-border-main bg-border-main md:grid-cols-2"
+            className="grid gap-px overflow-hidden border border-border bg-border md:grid-cols-2"
             aria-busy="true"
             aria-label="Đang tải lộ trình"
           >
             {[1, 2, 3, 4].map((item) => (
               <div
                 key={item}
-                className="h-64 animate-pulse bg-surface sm:h-72"
+                className="h-64 animate-pulse bg-card sm:h-72"
               />
             ))}
           </div>
         )}
 
         {!loading && !error && filteredTrips.length === 0 && (
-          <div className="my-10 border-y border-border-main py-12 text-center sm:py-16">
+          <div className="my-10 border-y border-border py-12 text-center sm:py-16">
             <Compass
               aria-hidden="true"
-              className="mx-auto text-brand-orange"
+              className="mx-auto text-primary"
               size={38}
             />
-            <h2 className="mt-5 text-2xl font-extrabold tracking-[-.03em] text-brand-charcoal">
+            <h2 className="mt-5 text-2xl font-extrabold tracking-[-.03em] text-foreground">
               {trips.length === 0
                 ? "Chưa có lộ trình công khai nào"
                 : "Không tìm thấy lộ trình phù hợp"}
             </h2>
-            <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-text-sub">
+            <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-muted-foreground">
               {trips.length === 0
                 ? "Các chuyến đi được xuất bản công khai sẽ xuất hiện ở đây để bạn khám phá và clone."
                 : "Hãy thử một từ khóa khác hoặc điều chỉnh khoảng ngân sách."}
@@ -233,7 +233,7 @@ export default function ExploreView() {
               <button
                 type="button"
                 onClick={resetFilters}
-                className="focus-ring mt-6 inline-flex min-h-11 items-center rounded-lg bg-primary-strong px-4 text-sm font-bold text-white hover:bg-primary-strong/90"
+                className="focus-ring mt-6 inline-flex min-h-11 items-center rounded-lg bg-primary px-4 text-sm font-bold text-white hover:bg-primary/90"
               >
                 Xóa bộ lọc
               </button>
@@ -242,42 +242,42 @@ export default function ExploreView() {
         )}
 
         {!loading && !error && filteredTrips.length > 0 && (
-          <div className="grid gap-px overflow-hidden border border-border-main bg-border-main md:grid-cols-2">
+          <div className="grid gap-px overflow-hidden border border-border bg-border md:grid-cols-2">
             {filteredTrips.map((trip) => {
               const days = calculateDays(trip.startDate, trip.endDate);
               return (
                 <Link
                   href={`/trip/${trip.id}`}
                   key={trip.id}
-                  className="group focus-ring flex min-h-72 flex-col bg-surface p-5 transition-colors hover:bg-background-warm sm:p-7"
+                  className="group focus-ring flex min-h-72 flex-col bg-card p-5 transition-colors hover:bg-muted sm:p-7"
                 >
                   <div className="flex items-start justify-between gap-4">
-                    <span className="inline-flex items-center gap-2 border-b-2 border-brand-orange pb-2 text-sm font-bold text-brand-charcoal">
+                    <span className="inline-flex items-center gap-2 border-b-2 border-primary pb-2 text-sm font-bold text-foreground">
                       <CalendarDays aria-hidden="true" size={16} /> {days} ngày
                     </span>
-                    <span className="text-right text-xs font-medium leading-5 text-text-sub">
+                    <span className="text-right text-xs font-medium leading-5 text-muted-foreground">
                       {trip.startDate} – {trip.endDate}
                     </span>
                   </div>
-                  <h2 className="mt-7 text-2xl font-extrabold tracking-[-.035em] text-brand-charcoal transition-colors group-hover:text-primary sm:text-3xl">
+                  <h2 className="mt-7 text-2xl font-extrabold tracking-[-.035em] text-foreground transition-colors group-hover:text-primary sm:text-3xl">
                     {trip.title}
                   </h2>
-                  <p className="mt-3 line-clamp-3 max-w-xl text-sm leading-6 text-text-sub">
+                  <p className="mt-3 line-clamp-3 max-w-xl text-sm leading-6 text-muted-foreground">
                     {trip.description ??
                       "Lộ trình khám phá tự do và trải nghiệm bản địa."}
                   </p>
-                  <div className="mt-auto flex items-end justify-between gap-4 border-t border-border-main pt-5">
+                  <div className="mt-auto flex items-end justify-between gap-4 border-t border-border pt-5">
                     <div>
-                      <p className="flex items-center gap-1.5 text-xs font-bold text-text-sub">
+                      <p className="flex items-center gap-1.5 text-xs font-bold text-muted-foreground">
                         <Wallet aria-hidden="true" size={14} /> Dự toán ngân
                         sách
                       </p>
-                      <p className="mt-1 text-sm font-extrabold tabular-nums text-brand-charcoal">
+                      <p className="mt-1 text-sm font-extrabold tabular-nums text-foreground">
                         {trip.budgetAmount.toLocaleString("vi-VN")}{" "}
                         {trip.currency}
                       </p>
                     </div>
-                    <span className="inline-flex items-center gap-1 text-sm font-bold text-primary-strong transition-transform group-hover:translate-x-1">
+                    <span className="inline-flex items-center gap-1 text-sm font-bold text-primary transition-transform group-hover:translate-x-1">
                       Xem lộ trình <ArrowUpRight aria-hidden="true" size={17} />
                     </span>
                   </div>

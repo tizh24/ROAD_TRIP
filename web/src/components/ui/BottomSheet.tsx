@@ -44,8 +44,8 @@ export default function BottomSheet({
                 className={cn(
                   "min-h-8 rounded-full px-3 text-xs font-semibold transition-colors",
                   state === size.id
-                    ? "bg-primary-strong text-white"
-                    : "border border-border bg-white text-text-sub hover:text-text-main",
+                    ? "bg-primary text-white"
+                    : "border border-border bg-white text-muted-foreground hover:text-foreground",
                 )}
               >
                 {size.label}
@@ -53,7 +53,7 @@ export default function BottomSheet({
             ))}
           </div>
         </SheetHeader>
-        <div className="flex-1 overflow-y-auto bg-surface p-4">{children}</div>
+        <div className="flex-1 overflow-y-auto bg-card p-4">{children}</div>
       </SheetContent>
     </Sheet>
   );

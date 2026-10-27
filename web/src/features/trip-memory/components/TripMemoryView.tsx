@@ -163,7 +163,7 @@ export default function TripMemoryView({ tripId }: { tripId: string }) {
   if (loading) {
     return (
       <div className="page-shell w-full py-16" aria-busy="true">
-        <div className="h-8 w-64 animate-pulse rounded bg-border-main" />
+        <div className="h-8 w-64 animate-pulse rounded bg-border" />
         <div className="surface-card mt-8 h-96 animate-pulse" />
       </div>
     );
@@ -190,7 +190,7 @@ export default function TripMemoryView({ tripId }: { tripId: string }) {
   const perPersonAmount = Math.round(totalExpenseAmount / activeMembersCount);
 
   return (
-    <div className="min-h-screen bg-background-warm pb-20">
+    <div className="min-h-screen bg-muted pb-20">
       <ConfirmDialog
         open={pendingExpenseId !== null}
         title="Xóa khoản chi tiêu?"
@@ -200,12 +200,12 @@ export default function TripMemoryView({ tripId }: { tripId: string }) {
         onClose={() => setPendingExpenseId(null)}
       />
       {/* Header */}
-      <section className="relative isolate overflow-hidden bg-secondary px-4 py-8 text-white sm:px-6 lg:py-12">
+      <section className="relative isolate overflow-hidden bg-primary px-4 py-8 text-white sm:px-6 lg:py-12">
         <div className="page-shell px-0">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <Link
               href="/dashboard"
-              className="focus-ring inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3.5 py-2 text-xs font-bold text-white/90 hover:bg-white/20"
+              className="focus-ring inline-flex items-center gap-1.5 rounded-full bg-card/10 px-3.5 py-2 text-xs font-bold text-white/90 hover:bg-card/20"
             >
               <ArrowLeft size={14} />
               <span>Về danh sách chuyến đi</span>
@@ -213,14 +213,14 @@ export default function TripMemoryView({ tripId }: { tripId: string }) {
             <div className="flex items-center gap-2">
               <Link
                 href={`/travel-book/${trip.id}`}
-                className="focus-ring inline-flex items-center gap-1.5 rounded-full bg-primary-strong px-3.5 py-2 text-xs font-bold text-white shadow-sm hover:bg-primary-strong/90 transition"
+                className="focus-ring inline-flex items-center gap-1.5 rounded-full bg-primary px-3.5 py-2 text-xs font-bold text-white shadow-sm hover:bg-primary/90 transition"
               >
                 <BookOpen size={14} />
                 <span>In Travel Book</span>
               </Link>
               <Link
                 href={`/road/${trip.id}`}
-                className="focus-ring inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3.5 py-2 text-xs font-bold text-white/90 hover:bg-white/20"
+                className="focus-ring inline-flex items-center gap-1.5 rounded-full bg-card/10 px-3.5 py-2 text-xs font-bold text-white/90 hover:bg-card/20"
               >
                 <span>Xem lộ trình đi đường</span>
               </Link>
@@ -234,7 +234,7 @@ export default function TripMemoryView({ tripId }: { tripId: string }) {
                   <Camera size={13} />
                   Kỷ niệm hành trình
                 </span>
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs font-bold">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-card/10 px-3 py-1 text-xs font-bold">
                   {memory.visibility === "PUBLISHED" ? <Globe size={13} /> : memory.visibility === "UNLISTED" ? <Share2 size={13} /> : <Lock size={13} />}
                   {memory.visibility === "PUBLISHED" ? "Công khai" : memory.visibility === "UNLISTED" ? "Có liên kết" : "Riêng tư"}
                 </span>
@@ -252,7 +252,7 @@ export default function TripMemoryView({ tripId }: { tripId: string }) {
 
             {/* Visibility Selector */}
             {trip.role === "OWNER" && (
-              <div className="rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur-sm">
+              <div className="rounded-2xl border border-white/15 bg-card/10 p-4 backdrop-blur-sm">
                 <label className="block text-xs font-bold uppercase tracking-wider text-white/70">
                   Quyền xem kỷ niệm
                 </label>
@@ -260,7 +260,7 @@ export default function TripMemoryView({ tripId }: { tripId: string }) {
                   disabled={savingVisibility}
                   value={memory.visibility}
                   onChange={(e) => void handleVisibilityChange(e.target.value as "PRIVATE" | "UNLISTED" | "PUBLISHED")}
-                  className="mt-2 w-full rounded-xl border border-white/20 bg-secondary/80 px-3 py-2 text-xs font-bold text-white shadow-sm focus:outline-none"
+                  className="mt-2 w-full rounded-xl border border-white/20 bg-primary/80 px-3 py-2 text-xs font-bold text-white shadow-sm focus:outline-none"
                 >
                   <option value="PRIVATE">🔒 Chỉ thành viên chuyến đi</option>
                   <option value="UNLISTED">🔗 Bất kỳ ai có đường link</option>
@@ -275,10 +275,10 @@ export default function TripMemoryView({ tripId }: { tripId: string }) {
       <div className="page-shell px-4 sm:px-6">
         {/* Gallery / Photos Section */}
         <section className="surface-card mt-8 p-5 sm:p-7" aria-labelledby="photos-heading">
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border-main pb-4">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
             <div>
               <p className="text-xs font-extrabold uppercase tracking-wider text-primary">Ảnh chụp khoảnh khắc</p>
-              <h2 id="photos-heading" className="mt-0.5 text-xl font-extrabold text-text-main">
+              <h2 id="photos-heading" className="mt-0.5 text-xl font-extrabold text-foreground">
                 Album hành trình ({memory.photos.length} ảnh)
               </h2>
             </div>
@@ -286,8 +286,8 @@ export default function TripMemoryView({ tripId }: { tripId: string }) {
 
           {/* Add Photo Form */}
           {(trip.role === "OWNER" || trip.permission === "EDIT") && (
-            <form onSubmit={(e) => void handleAddPhoto(e)} className="mt-5 rounded-2xl bg-background-warm p-4 sm:p-5">
-              <h3 className="text-sm font-extrabold text-text-main flex items-center gap-2">
+            <form onSubmit={(e) => void handleAddPhoto(e)} className="mt-5 rounded-2xl bg-muted p-4 sm:p-5">
+              <h3 className="text-sm font-extrabold text-foreground flex items-center gap-2">
                 <Plus size={16} className="text-primary" />
                 Thêm ảnh mới vào nhật ký
               </h3>
@@ -298,19 +298,19 @@ export default function TripMemoryView({ tripId }: { tripId: string }) {
                   value={photoUrl}
                   onChange={(e) => setPhotoUrl(e.target.value)}
                   placeholder="Đường dẫn ảnh (URL: https://...)"
-                  className="field bg-surface text-sm"
+                  className="field bg-card text-sm"
                 />
                 <input
                   type="text"
                   value={photoCaption}
                   onChange={(e) => setPhotoCaption(e.target.value)}
                   placeholder="Ghi chú ảnh (vd: Bình minh Mã Pí Lèng)"
-                  className="field bg-surface text-sm"
+                  className="field bg-card text-sm"
                 />
                 <button
                   type="submit"
                   disabled={addingPhoto}
-                  className="focus-ring rounded-xl bg-primary-strong px-4 py-2 text-xs font-bold text-white shadow-card hover:bg-primary-strong/90 disabled:opacity-50"
+                  className="focus-ring rounded-xl bg-primary px-4 py-2 text-xs font-bold text-white shadow-xs hover:bg-primary/90 disabled:opacity-50"
                 >
                   {addingPhoto ? "Đang lưu…" : "Thêm ảnh"}
                 </button>
@@ -320,16 +320,16 @@ export default function TripMemoryView({ tripId }: { tripId: string }) {
 
           {/* Photos Grid */}
           {memory.photos.length === 0 ? (
-            <div className="my-8 rounded-2xl border border-dashed border-border-main p-8 text-center">
-              <ImageIcon className="mx-auto text-text-sub opacity-50" size={36} />
-              <p className="mt-2 text-sm font-bold text-text-main">Chưa có ảnh nào được thêm vào kỷ niệm</p>
-              <p className="text-xs text-text-sub">Hãy thêm ảnh để lưu giữ những chặng đường tuyệt đẹp!</p>
+            <div className="my-8 rounded-2xl border border-dashed border-border p-8 text-center">
+              <ImageIcon className="mx-auto text-muted-foreground opacity-50" size={36} />
+              <p className="mt-2 text-sm font-bold text-foreground">Chưa có ảnh nào được thêm vào kỷ niệm</p>
+              <p className="text-xs text-muted-foreground">Hãy thêm ảnh để lưu giữ những chặng đường tuyệt đẹp!</p>
             </div>
           ) : (
             <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
               {memory.photos.map((photo) => (
-                <div key={photo.id} className="group relative overflow-hidden rounded-2xl border border-border-main bg-surface shadow-sm">
-                  <div className="aspect-[4/3] w-full overflow-hidden bg-background-warm">
+                <div key={photo.id} className="group relative overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+                  <div className="aspect-[4/3] w-full overflow-hidden bg-muted">
                     {/* eslint-disable-next-line @next/next/no-img-element -- trip-memory photos are user-uploaded URLs from configurable storage hosts. */}
                     <img
                       src={photo.photoUrl}
@@ -340,7 +340,7 @@ export default function TripMemoryView({ tripId }: { tripId: string }) {
                   </div>
                   {photo.caption && (
                     <div className="p-3">
-                      <p className="text-xs font-semibold text-text-main truncate">{photo.caption}</p>
+                      <p className="text-xs font-semibold text-foreground truncate">{photo.caption}</p>
                     </div>
                   )}
                 </div>
@@ -351,10 +351,10 @@ export default function TripMemoryView({ tripId }: { tripId: string }) {
 
         {/* Expenses & Split Section */}
         <section className="surface-card mt-8 p-5 sm:p-7" aria-labelledby="expenses-heading">
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border-main pb-4">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
             <div>
-              <p className="text-xs font-extrabold uppercase tracking-wider text-secondary">Chi tiêu & Quyết toán</p>
-              <h2 id="expenses-heading" className="mt-0.5 text-xl font-extrabold text-text-main">
+              <p className="text-xs font-extrabold uppercase tracking-wider text-foreground">Chi tiêu & Quyết toán</p>
+              <h2 id="expenses-heading" className="mt-0.5 text-xl font-extrabold text-foreground">
                 Sổ quỹ hành trình
               </h2>
             </div>
@@ -365,9 +365,9 @@ export default function TripMemoryView({ tripId }: { tripId: string }) {
                   {totalExpenseAmount.toLocaleString("vi-VN")} VND
                 </strong>
               </div>
-              <div className="rounded-xl bg-secondary/10 px-3.5 py-2 text-right">
-                <span className="block text-[10px] font-bold uppercase text-secondary">Mỗi người ({activeMembersCount} người)</span>
-                <strong className="text-base font-extrabold text-secondary">
+              <div className="rounded-xl bg-muted px-3.5 py-2 text-right">
+                <span className="block text-[10px] font-bold uppercase text-foreground">Mỗi người ({activeMembersCount} người)</span>
+                <strong className="text-base font-extrabold text-foreground">
                   {perPersonAmount.toLocaleString("vi-VN")} VND
                 </strong>
               </div>
@@ -376,8 +376,8 @@ export default function TripMemoryView({ tripId }: { tripId: string }) {
 
           {/* Add Expense Form */}
           {(trip.role === "OWNER" || trip.permission === "EDIT") && (
-            <form onSubmit={(e) => void handleAddExpense(e)} className="mt-5 rounded-2xl bg-background-warm p-4 sm:p-5">
-              <h3 className="text-sm font-extrabold text-text-main flex items-center gap-2">
+            <form onSubmit={(e) => void handleAddExpense(e)} className="mt-5 rounded-2xl bg-muted p-4 sm:p-5">
+              <h3 className="text-sm font-extrabold text-foreground flex items-center gap-2">
                 <Plus size={16} className="text-primary" />
                 Ghi nhận khoản chi tiêu mới
               </h3>
@@ -390,7 +390,7 @@ export default function TripMemoryView({ tripId }: { tripId: string }) {
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
                   placeholder="Số tiền (VND)"
-                  className="field bg-surface text-sm"
+                  className="field bg-card text-sm"
                 />
                 <select
                   value={category}
@@ -399,7 +399,7 @@ export default function TripMemoryView({ tripId }: { tripId: string }) {
                       e.target.value as "FOOD" | "STAY" | "FUEL" | "ACTIVITY" | "OTHER",
                     )
                   }
-                  className="field bg-surface text-sm"
+                  className="field bg-card text-sm"
                 >
                   <option value="FOOD">Ăn uống (FOOD)</option>
                   <option value="STAY">Khách sạn / Homestay (STAY)</option>
@@ -413,12 +413,12 @@ export default function TripMemoryView({ tripId }: { tripId: string }) {
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Nội dung chi tiêu (vd: Ăn trưa Đồng Văn)"
-                  className="field bg-surface text-sm"
+                  className="field bg-card text-sm"
                 />
                 <button
                   type="submit"
                   disabled={addingExpense}
-                  className="focus-ring rounded-xl bg-primary-strong px-4 py-2 text-xs font-bold text-white shadow-card hover:bg-primary-strong/90 disabled:opacity-50"
+                  className="focus-ring rounded-xl bg-primary px-4 py-2 text-xs font-bold text-white shadow-xs hover:bg-primary/90 disabled:opacity-50"
                 >
                   {addingExpense ? "Đang lưu…" : "Ghi sổ"}
                 </button>
@@ -428,31 +428,31 @@ export default function TripMemoryView({ tripId }: { tripId: string }) {
 
           {/* Expenses List */}
           {expenses.length === 0 ? (
-            <div className="my-8 rounded-2xl border border-dashed border-border-main p-8 text-center">
-              <Wallet className="mx-auto text-text-sub opacity-50" size={36} />
-              <p className="mt-2 text-sm font-bold text-text-main">Chưa có khoản chi tiêu nào được ghi nhận</p>
-              <p className="text-xs text-text-sub">Ghi lại các khoản chi để tự động tính tiền chia sẻ đều cho cả đoàn.</p>
+            <div className="my-8 rounded-2xl border border-dashed border-border p-8 text-center">
+              <Wallet className="mx-auto text-muted-foreground opacity-50" size={36} />
+              <p className="mt-2 text-sm font-bold text-foreground">Chưa có khoản chi tiêu nào được ghi nhận</p>
+              <p className="text-xs text-muted-foreground">Ghi lại các khoản chi để tự động tính tiền chia sẻ đều cho cả đoàn.</p>
             </div>
           ) : (
             <div className="mt-5 overflow-x-auto">
               <table className="w-full text-left text-sm">
                 <thead>
-                  <tr className="border-b border-border-main text-xs font-extrabold uppercase text-text-sub">
+                  <tr className="border-b border-border text-xs font-extrabold uppercase text-muted-foreground">
                     <th className="pb-3">Hạng mục</th>
                     <th className="pb-3">Mô tả</th>
                     <th className="pb-3 text-right">Số tiền</th>
                     <th className="pb-3 text-right">Thao tác</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-border-main">
+                <tbody className="divide-y divide-border">
                   {expenses.map((exp) => (
-                    <tr key={exp.id} className="hover:bg-background-warm/50">
-                      <td className="py-3 font-semibold text-text-main">
-                        <span className="rounded-lg bg-background-warm px-2 py-1 text-xs font-bold text-secondary">
+                    <tr key={exp.id} className="hover:bg-muted/50">
+                      <td className="py-3 font-semibold text-foreground">
+                        <span className="rounded-lg bg-muted px-2 py-1 text-xs font-bold text-foreground">
                           {exp.category}
                         </span>
                       </td>
-                      <td className="py-3 text-text-main">{exp.description}</td>
+                      <td className="py-3 text-foreground">{exp.description}</td>
                       <td className="py-3 text-right font-extrabold text-primary">
                         {exp.amount.toLocaleString("vi-VN")} {exp.currency}
                       </td>
@@ -461,7 +461,7 @@ export default function TripMemoryView({ tripId }: { tripId: string }) {
                           <button
                             type="button"
                             onClick={() => void handleDeleteExpense(exp.id)}
-                            className="rounded p-1 text-danger hover:bg-danger/10"
+                            className="rounded p-1 text-destructive hover:bg-destructive/10"
                             aria-label={`Xóa khoản chi ${exp.description}`}
                           >
                             <Trash2 size={15} />

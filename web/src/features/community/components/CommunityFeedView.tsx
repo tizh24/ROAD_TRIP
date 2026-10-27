@@ -207,7 +207,7 @@ export default function CommunityFeedView() {
   });
 
   return (
-    <div className="min-h-screen bg-background-warm px-4 py-8 text-text-main sm:px-6 sm:py-12">
+    <div className="min-h-screen bg-muted px-4 py-8 text-foreground sm:px-6 sm:py-12">
       <div className="page-shell max-w-4xl px-0">
         {/* Hero Section */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -216,17 +216,17 @@ export default function CommunityFeedView() {
               <UsersRound size={18} />
               <span>CỘNG ĐỒNG XÊ DỊCH TRIPZ</span>
             </div>
-            <h1 className="mt-1 text-2xl font-black tracking-tight text-text-main sm:text-3xl">
+            <h1 className="mt-1 text-2xl font-black tracking-tight text-foreground sm:text-3xl">
               Khoảnh Khắc & Kinh Nghiệm
             </h1>
-            <p className="mt-1 text-sm text-text-sub">
+            <p className="mt-1 text-sm text-muted-foreground">
               Khám phá cảm hứng du lịch, những cung đường thực tế và nhật ký của các phượt thủ.
             </p>
           </div>
 
           <button
             onClick={() => setIsComposerOpen(true)}
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary-strong px-5 py-3 text-sm font-bold text-white shadow-md transition hover:bg-primary-strong/90 active:scale-95"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-bold text-white shadow-md transition hover:bg-primary/90 active:scale-95"
           >
             <Plus size={18} />
             Chia sẻ trải nghiệm
@@ -234,13 +234,13 @@ export default function CommunityFeedView() {
         </div>
 
         {/* Tab Filters */}
-        <div className="mt-6 flex border-b border-border-main">
+        <div className="mt-6 flex border-b border-border">
           <button
             onClick={() => setActiveTab("ALL")}
             className={`border-b-2 px-4 py-2.5 text-sm font-bold transition ${
               activeTab === "ALL"
                 ? "border-primary text-primary"
-                : "border-transparent text-text-sub hover:text-text-main"
+                : "border-transparent text-muted-foreground hover:text-foreground"
             }`}
           >
             Tất cả bài viết ({posts.length})
@@ -250,7 +250,7 @@ export default function CommunityFeedView() {
             className={`border-b-2 px-4 py-2.5 text-sm font-bold transition ${
               activeTab === "WITH_TRIP"
                 ? "border-primary text-primary"
-                : "border-transparent text-text-sub hover:text-text-main"
+                : "border-transparent text-muted-foreground hover:text-foreground"
             }`}
           >
             Kèm lộ trình chuyến đi
@@ -259,7 +259,7 @@ export default function CommunityFeedView() {
 
         {/* Feed List */}
         {loading ? (
-          <div className="mt-12 flex flex-col items-center justify-center py-12 text-center text-text-sub">
+          <div className="mt-12 flex flex-col items-center justify-center py-12 text-center text-muted-foreground">
             <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
             <p className="mt-4 text-sm font-semibold">Đang tải bảng tin cộng đồng...</p>
           </div>
@@ -274,15 +274,15 @@ export default function CommunityFeedView() {
             </button>
           </div>
         ) : filteredPosts.length === 0 ? (
-          <div className="mt-8 rounded-2xl border border-dashed border-border-main bg-white p-12 text-center">
+          <div className="mt-8 rounded-2xl border border-dashed border-border bg-card p-12 text-center">
             <Sparkles className="mx-auto text-primary" size={36} />
-            <h3 className="mt-3 text-lg font-bold text-text-main">Chưa có bài viết nào</h3>
-            <p className="mt-1 text-sm text-text-sub">
+            <h3 className="mt-3 text-lg font-bold text-foreground">Chưa có bài viết nào</h3>
+            <p className="mt-1 text-sm text-muted-foreground">
               Hãy là người đầu tiên chia sẻ câu chuyện hành trình hoặc kỷ niệm của bạn!
             </p>
             <button
               onClick={() => setIsComposerOpen(true)}
-              className="mt-4 inline-flex items-center gap-2 rounded-xl bg-primary-strong px-4 py-2 text-sm font-bold text-white hover:bg-primary-strong/90"
+              className="mt-4 inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-white hover:bg-primary/90"
             >
               <Plus size={16} /> Viết bài ngay
             </button>
@@ -292,7 +292,7 @@ export default function CommunityFeedView() {
             {filteredPosts.map((post) => (
               <article
                 key={post.id}
-                className="overflow-hidden rounded-2xl border border-border-main bg-white shadow-sm transition hover:shadow-md"
+                className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition hover:shadow-md"
               >
                 {/* Post Header */}
                 <div className="flex items-start justify-between p-5 pb-3">
@@ -314,10 +314,10 @@ export default function CommunityFeedView() {
                         </div>
                       )}
                       <div>
-                        <div className="font-bold text-text-main group-hover:text-primary transition">
+                        <div className="font-bold text-foreground group-hover:text-primary transition">
                           {post.authorName}
                         </div>
-                        <div className="flex items-center gap-2 text-xs text-text-sub">
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
                           <span>{new Date(post.createdAt).toLocaleDateString("vi-VN")}</span>
                           {post.locationName && (
                             <>
@@ -337,7 +337,7 @@ export default function CommunityFeedView() {
                     <button
                       onClick={() => setReportingTarget({ id: post.id, type: "POST" })}
                       title="Báo cáo vi phạm"
-                      className="rounded-lg p-2 text-text-sub hover:bg-gray-100 hover:text-red-600 transition"
+                      className="rounded-lg p-2 text-muted-foreground hover:bg-gray-100 hover:text-red-600 transition"
                     >
                       <Flag size={16} />
                     </button>
@@ -359,8 +359,8 @@ export default function CommunityFeedView() {
 
                 {/* Post Content */}
                 <div className="px-5 py-2">
-                  <h2 className="text-lg font-bold text-text-main">{post.title}</h2>
-                  <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-text-sub">
+                  <h2 className="text-lg font-bold text-foreground">{post.title}</h2>
+                  <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-muted-foreground">
                     {post.content}
                   </p>
                 </div>
@@ -392,7 +392,7 @@ export default function CommunityFeedView() {
                 )}
 
                 {/* Post Actions Bar */}
-                <div className="mt-4 flex items-center justify-between border-t border-border-main px-5 py-3 text-xs font-semibold text-text-sub">
+                <div className="mt-4 flex items-center justify-between border-t border-border px-5 py-3 text-xs font-semibold text-muted-foreground">
                   <div className="flex items-center gap-4">
                     <button
                       onClick={() => handleToggleLike(post.id)}
@@ -440,12 +440,12 @@ export default function CommunityFeedView() {
 
                 {/* Comments Section Drawer */}
                 {activeCommentsPostId === post.id && (
-                  <div className="border-t border-border-main bg-background-warm/60 p-5">
+                  <div className="border-t border-border bg-muted/60 p-5">
                     <div className="space-y-3">
                       {loadingComments ? (
-                        <p className="text-center text-xs text-text-sub">Đang tải bình luận...</p>
+                        <p className="text-center text-xs text-muted-foreground">Đang tải bình luận...</p>
                       ) : comments.length === 0 ? (
-                        <p className="text-center text-xs text-text-sub italic">
+                        <p className="text-center text-xs text-muted-foreground italic">
                           Chưa có bình luận nào. Hãy là người đầu tiên để lại ý kiến!
                         </p>
                       ) : (
@@ -463,17 +463,17 @@ export default function CommunityFeedView() {
                                 {c.authorName.slice(0, 1).toUpperCase()}
                               </div>
                             )}
-                            <div className="flex-1 rounded-xl bg-white p-3 shadow-xs">
+                            <div className="flex-1 rounded-xl bg-card p-3 shadow-xs">
                               <div className="flex items-center justify-between">
-                                <span className="font-bold text-text-main">{c.authorName}</span>
-                                <span className="text-[10px] text-text-sub">
+                                <span className="font-bold text-foreground">{c.authorName}</span>
+                                <span className="text-[10px] text-muted-foreground">
                                   {new Date(c.createdAt).toLocaleTimeString("vi-VN", {
                                     hour: "2-digit",
                                     minute: "2-digit",
                                   })}
                                 </span>
                               </div>
-                              <p className="mt-1 text-text-sub leading-normal">{c.content}</p>
+                              <p className="mt-1 text-muted-foreground leading-normal">{c.content}</p>
                             </div>
                           </div>
                         ))
@@ -487,12 +487,12 @@ export default function CommunityFeedView() {
                         value={commentInput}
                         onChange={(e) => setCommentInput(e.target.value)}
                         placeholder="Viết bình luận chân thành..."
-                        className="flex-1 rounded-xl border border-border-main bg-white px-3.5 py-2 text-xs text-text-main outline-none focus:border-primary"
+                        className="flex-1 rounded-xl border border-border bg-card px-3.5 py-2 text-xs text-foreground outline-none focus:border-primary"
                       />
                       <button
                         type="submit"
                         disabled={submittingComment || !commentInput.trim()}
-                        className="flex items-center gap-1 rounded-xl bg-primary-strong px-3.5 py-2 text-xs font-bold text-white hover:bg-primary-strong/90 disabled:opacity-50"
+                        className="flex items-center gap-1 rounded-xl bg-primary px-3.5 py-2 text-xs font-bold text-white hover:bg-primary/90 disabled:opacity-50"
                       >
                         <Send size={13} />
                         Gửi
@@ -509,12 +509,12 @@ export default function CommunityFeedView() {
       {/* Composer Modal */}
       {isComposerOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl animate-in fade-in zoom-in-95">
-            <div className="flex items-center justify-between border-b border-border-main pb-4">
-              <h3 className="text-lg font-bold text-text-main">Chia sẻ trải nghiệm hành trình</h3>
+          <div className="w-full max-w-lg rounded-2xl bg-card p-6 shadow-xl animate-in fade-in zoom-in-95">
+            <div className="flex items-center justify-between border-b border-border pb-4">
+              <h3 className="text-lg font-bold text-foreground">Chia sẻ trải nghiệm hành trình</h3>
               <button
                 onClick={() => setIsComposerOpen(false)}
-                className="rounded-lg p-1.5 text-text-sub hover:bg-gray-100"
+                className="rounded-lg p-1.5 text-muted-foreground hover:bg-gray-100"
               >
                 <X size={18} />
               </button>
@@ -522,55 +522,55 @@ export default function CommunityFeedView() {
 
             <form onSubmit={handleCreatePost} className="mt-4 space-y-4">
               <div>
-                <label className="block text-xs font-bold text-text-main">Tiêu đề bài viết *</label>
+                <label className="block text-xs font-bold text-foreground">Tiêu đề bài viết *</label>
                 <input
                   type="text"
                   required
                   placeholder="Ví dụ: 3 ngày 2 đêm săn mây Tà Xùa tuyệt đẹp..."
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
-                  className="mt-1 w-full rounded-xl border border-border-main px-3.5 py-2 text-sm outline-none focus:border-primary"
+                  className="mt-1 w-full rounded-xl border border-border px-3.5 py-2 text-sm outline-none focus:border-primary"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-text-main">Nội dung chia sẻ *</label>
+                <label className="block text-xs font-bold text-foreground">Nội dung chia sẻ *</label>
                 <textarea
                   required
                   rows={4}
                   placeholder="Chia sẻ kinh nghiệm, lưu ý đường xá, quán ăn ngon..."
                   value={newContent}
                   onChange={(e) => setNewContent(e.target.value)}
-                  className="mt-1 w-full rounded-xl border border-border-main px-3.5 py-2 text-sm outline-none focus:border-primary"
+                  className="mt-1 w-full rounded-xl border border-border px-3.5 py-2 text-sm outline-none focus:border-primary"
                 />
               </div>
 
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div>
-                  <label className="block text-xs font-bold text-text-main">Địa điểm check-in</label>
+                  <label className="block text-xs font-bold text-foreground">Địa điểm check-in</label>
                   <input
                     type="text"
                     placeholder="Ví dụ: Tà Xùa, Sơn La"
                     value={newLocation}
                     onChange={(e) => setNewLocation(e.target.value)}
-                    className="mt-1 w-full rounded-xl border border-border-main px-3.5 py-2 text-sm outline-none focus:border-primary"
+                    className="mt-1 w-full rounded-xl border border-border px-3.5 py-2 text-sm outline-none focus:border-primary"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-text-main">URL ảnh đính kèm</label>
+                  <label className="block text-xs font-bold text-foreground">URL ảnh đính kèm</label>
                   <input
                     type="url"
                     placeholder="https://images.unsplash.com/..."
                     value={newMediaUrl}
                     onChange={(e) => setNewMediaUrl(e.target.value)}
-                    className="mt-1 w-full rounded-xl border border-border-main px-3.5 py-2 text-sm outline-none focus:border-primary"
+                    className="mt-1 w-full rounded-xl border border-border px-3.5 py-2 text-sm outline-none focus:border-primary"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-text-main">
+                <label className="block text-xs font-bold text-foreground">
                   ID Chuyến đi đính kèm (nếu có)
                 </label>
                 <input
@@ -578,7 +578,7 @@ export default function CommunityFeedView() {
                   placeholder="UUID chuyến đi của bạn để mọi người có thể xem lộ trình"
                   value={newTripId}
                   onChange={(e) => setNewTripId(e.target.value)}
-                  className="mt-1 w-full rounded-xl border border-border-main px-3.5 py-2 text-sm outline-none focus:border-primary"
+                  className="mt-1 w-full rounded-xl border border-border px-3.5 py-2 text-sm outline-none focus:border-primary"
                 />
               </div>
 
@@ -586,14 +586,14 @@ export default function CommunityFeedView() {
                 <button
                   type="button"
                   onClick={() => setIsComposerOpen(false)}
-                  className="rounded-xl border border-border-main px-4 py-2 text-sm font-semibold text-text-sub hover:bg-gray-50"
+                  className="rounded-xl border border-border px-4 py-2 text-sm font-semibold text-muted-foreground hover:bg-gray-50"
                 >
                   Hủy bỏ
                 </button>
                 <button
                   type="submit"
                   disabled={submitting || !newTitle.trim() || !newContent.trim()}
-                  className="rounded-xl bg-primary-strong px-5 py-2 text-sm font-bold text-white hover:bg-primary-strong/90 disabled:opacity-50"
+                  className="rounded-xl bg-primary px-5 py-2 text-sm font-bold text-white hover:bg-primary/90 disabled:opacity-50"
                 >
                   {submitting ? "Đang đăng..." : "Đăng bài viết"}
                 </button>
@@ -606,12 +606,12 @@ export default function CommunityFeedView() {
       {/* Report Modal */}
       {reportingTarget && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
-            <div className="flex items-center justify-between border-b border-border-main pb-4">
-              <h3 className="text-base font-bold text-text-main">Báo cáo nội dung vi phạm</h3>
+          <div className="w-full max-w-md rounded-2xl bg-card p-6 shadow-xl">
+            <div className="flex items-center justify-between border-b border-border pb-4">
+              <h3 className="text-base font-bold text-foreground">Báo cáo nội dung vi phạm</h3>
               <button
                 onClick={() => setReportingTarget(null)}
-                className="rounded-lg p-1.5 text-text-sub hover:bg-gray-100"
+                className="rounded-lg p-1.5 text-muted-foreground hover:bg-gray-100"
               >
                 <X size={18} />
               </button>
@@ -620,18 +620,18 @@ export default function CommunityFeedView() {
             {reportSuccess ? (
               <div className="py-8 text-center text-emerald-600">
                 <p className="font-bold">Cảm ơn bạn đã phản hồi!</p>
-                <p className="mt-1 text-xs text-text-sub">
+                <p className="mt-1 text-xs text-muted-foreground">
                   Đội ngũ kiểm duyệt Tripz sẽ xem xét báo cáo này sớm nhất.
                 </p>
               </div>
             ) : (
               <form onSubmit={handleSubmitReport} className="mt-4 space-y-4">
                 <div>
-                  <label className="block text-xs font-bold text-text-main">Lý do báo cáo</label>
+                  <label className="block text-xs font-bold text-foreground">Lý do báo cáo</label>
                   <select
                     value={reportReason}
                     onChange={(e) => setReportReason(e.target.value)}
-                    className="mt-1 w-full rounded-xl border border-border-main px-3 py-2 text-sm outline-none focus:border-primary"
+                    className="mt-1 w-full rounded-xl border border-border px-3 py-2 text-sm outline-none focus:border-primary"
                   >
                     <option value="SPAM">Tin rác / Quảng cáo trái phép</option>
                     <option value="INAPPROPRIATE">Nội dung phản cảm / Đồi trụy</option>
@@ -641,13 +641,13 @@ export default function CommunityFeedView() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-text-main">Chi tiết thêm (tuỳ chọn)</label>
+                  <label className="block text-xs font-bold text-foreground">Chi tiết thêm (tuỳ chọn)</label>
                   <textarea
                     rows={3}
                     placeholder="Mô tả cụ thể hành vi vi phạm..."
                     value={reportDetails}
                     onChange={(e) => setReportDetails(e.target.value)}
-                    className="mt-1 w-full rounded-xl border border-border-main px-3.5 py-2 text-sm outline-none focus:border-primary"
+                    className="mt-1 w-full rounded-xl border border-border px-3.5 py-2 text-sm outline-none focus:border-primary"
                   />
                 </div>
 
@@ -655,7 +655,7 @@ export default function CommunityFeedView() {
                   <button
                     type="button"
                     onClick={() => setReportingTarget(null)}
-                    className="rounded-xl border border-border-main px-4 py-2 text-xs font-semibold text-text-sub hover:bg-gray-50"
+                    className="rounded-xl border border-border px-4 py-2 text-xs font-semibold text-muted-foreground hover:bg-gray-50"
                   >
                     Đóng
                   </button>

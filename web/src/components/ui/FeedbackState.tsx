@@ -17,8 +17,8 @@ type FeedbackStateProps = {
 const icons = { empty: Inbox, error: AlertCircle, permission: LockKeyhole };
 const iconStyles = {
   empty: "bg-accent/20 text-warning",
-  error: "bg-danger/10 text-danger",
-  permission: "bg-secondary/10 text-secondary",
+  error: "bg-destructive/10 text-destructive",
+  permission: "bg-muted text-foreground",
 };
 
 export default function FeedbackState({ kind, title, description, actionLabel, onAction, children }: FeedbackStateProps) {
@@ -26,8 +26,8 @@ export default function FeedbackState({ kind, title, description, actionLabel, o
   return (
     <section className="surface-card flex min-h-64 flex-col items-center justify-center px-6 py-10 text-center" role={kind === "error" ? "alert" : undefined}>
       <span className={"flex h-12 w-12 items-center justify-center rounded-2xl " + iconStyles[kind]} aria-hidden="true"><Icon size={24} /></span>
-      <h2 className="mt-5 text-h3 text-text-main">{title}</h2>
-      <p className="mt-2 max-w-md text-sm leading-6 text-text-sub">{description}</p>
+      <h2 className="mt-5 text-h3 text-foreground">{title}</h2>
+      <p className="mt-2 max-w-md text-sm leading-6 text-muted-foreground">{description}</p>
       {children ? <div className="mt-5">{children}</div> : null}
       {actionLabel && onAction ? (
         <CTAButton className="mt-6" variant={kind === "error" ? "secondary" : "primary"} onClick={onAction}>

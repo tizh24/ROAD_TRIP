@@ -123,8 +123,8 @@ export default function CollaborationPanel({ tripId }: { tripId: string }) {
       className="surface-card mt-8 p-6"
       aria-labelledby="collaboration-title"
     >
-      <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-secondary">Cùng lập kế hoạch</p>
-      <h2 id="collaboration-title" className="mt-2 text-h3 text-text-main">
+      <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-foreground">Cùng lập kế hoạch</p>
+      <h2 id="collaboration-title" className="mt-2 text-xl font-semibold text-foreground">
         Cộng tác viên
       </h2>
       {error && <div className="mt-5"><FeedbackState kind="error" title="Không thể cập nhật cộng tác viên" description={error} actionLabel="Thử lại" onAction={() => void load().catch(() => undefined)} /></div>}
@@ -139,21 +139,21 @@ export default function CollaborationPanel({ tripId }: { tripId: string }) {
           required
           value={email}
           onChange={(event) => setEmail(event.target.value)}
-          className="field min-w-0 bg-white sm:flex-1"
+          className="field min-w-0 bg-card sm:flex-1"
           placeholder="email@example.com"
         />
         <select
           aria-label="Quyền lời mời"
           value={permission}
           onChange={(event) => setPermission(event.target.value as "VIEW" | "EDIT")}
-          className="rounded-xl border border-border-main bg-surface px-3 py-3 sm:w-auto"
+          className="rounded-xl border border-border bg-card px-3 py-3 sm:w-auto"
         >
           <option value="VIEW">Chỉ xem</option>
           <option value="EDIT">Có thể sửa</option>
         </select>
         <button
           disabled={pendingAction !== undefined}
-          className="focus-ring w-full rounded-xl bg-primary-strong px-4 py-3 text-sm font-bold text-white shadow-card hover:bg-primary-strong/90 disabled:opacity-50 sm:w-auto"
+          className="focus-ring w-full rounded-xl bg-primary px-4 py-3 text-sm font-bold text-white shadow-xs hover:bg-primary/90 disabled:opacity-50 sm:w-auto"
         >
           {pendingAction === "invite" ? "Đang mời…" : "Mời"}
         </button>
@@ -178,7 +178,7 @@ export default function CollaborationPanel({ tripId }: { tripId: string }) {
             return (
               <li
                 key={member.userId}
-                className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-background-warm p-3 text-sm"
+                className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-muted p-3 text-sm"
               >
                 <span>
                   <strong>{member.role === "OWNER" ? "Chủ chuyến đi" : "Thành viên"}</strong>

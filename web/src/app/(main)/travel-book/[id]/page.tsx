@@ -129,7 +129,7 @@ export default function TravelBookPage({
 
   if (loading) {
     return (
-      <div className="flex min-h-[70vh] items-center justify-center bg-background-warm">
+      <div className="flex min-h-[70vh] items-center justify-center bg-muted">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
       </div>
     );
@@ -137,14 +137,14 @@ export default function TravelBookPage({
 
   if (error || !book) {
     return (
-      <div className="min-h-screen bg-background-warm px-4 py-12 text-center">
-        <div className="mx-auto max-w-md rounded-2xl bg-white p-8 shadow-sm">
+      <div className="min-h-screen bg-muted px-4 py-12 text-center">
+        <div className="mx-auto max-w-md rounded-2xl bg-card p-8 shadow-sm">
           <Book className="mx-auto text-red-500" size={40} />
-          <h2 className="mt-3 text-lg font-bold text-text-main">Không thể mở Travel Book</h2>
-          <p className="mt-1 text-xs text-text-sub">{error || "Hành trình chưa có kỷ niệm để tạo sách."}</p>
+          <h2 className="mt-3 text-lg font-bold text-foreground">Không thể mở Travel Book</h2>
+          <p className="mt-1 text-xs text-muted-foreground">{error || "Hành trình chưa có kỷ niệm để tạo sách."}</p>
           <button
             onClick={() => router.back()}
-            className="mt-6 inline-flex rounded-xl bg-primary-strong px-4 py-2 text-xs font-bold text-white hover:bg-primary-strong/90"
+            className="mt-6 inline-flex rounded-xl bg-primary px-4 py-2 text-xs font-bold text-white hover:bg-primary/90"
           >
             Quay lại
           </button>
@@ -156,13 +156,13 @@ export default function TravelBookPage({
   const selectedPricing = formatPricing[format];
 
   return (
-    <div className="min-h-screen bg-background-warm px-4 py-8 text-text-main sm:px-6 sm:py-12">
+    <div className="min-h-screen bg-muted px-4 py-8 text-foreground sm:px-6 sm:py-12">
       <div className="page-shell max-w-5xl px-0">
         {/* Back Link */}
         <div className="mb-6 flex items-center justify-between">
           <button
             onClick={() => router.back()}
-            className="inline-flex items-center gap-1.5 text-xs font-bold text-text-sub hover:text-text-main transition"
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-muted-foreground hover:text-foreground transition"
           >
             <ArrowLeft size={16} /> Quay lại kỷ niệm chuyến đi
           </button>
@@ -182,10 +182,10 @@ export default function TravelBookPage({
               <Sparkles size={15} />
               <span>TRIPZ TRAVEL BOOK FULFILLMENT</span>
             </div>
-            <h1 className="mt-1 text-2xl font-black text-text-main sm:text-3xl">
+            <h1 className="mt-1 text-2xl font-black text-foreground sm:text-3xl">
               In Ấn Kỷ Niệm Hành Trình
             </h1>
-            <p className="mt-1 text-xs text-text-sub">
+            <p className="mt-1 text-xs text-muted-foreground">
               Biến toàn bộ hình ảnh, toạ độ cung đường và nhật ký thành một cuốn sách ảnh nghệ thuật cầm tay.
             </p>
           </div>
@@ -196,8 +196,8 @@ export default function TravelBookPage({
           {/* Left: Interactive Book Mockup Preview */}
           <div className="lg:col-span-5 space-y-6">
             <div className="sticky top-6">
-              <div className="overflow-hidden rounded-3xl border border-border-main bg-white p-6 shadow-md">
-                <p className="text-[11px] font-extrabold uppercase tracking-wider text-text-sub">
+              <div className="overflow-hidden rounded-3xl border border-border bg-card p-6 shadow-md">
+                <p className="text-[11px] font-extrabold uppercase tracking-wider text-muted-foreground">
                   Mô phỏng bản in thực tế ({format})
                 </p>
 
@@ -217,7 +217,7 @@ export default function TravelBookPage({
                   </div>
 
                   <div className="relative z-10 my-auto text-center">
-                    <h2 className="font-serif text-2xl font-black tracking-tight sm:text-3xl">
+                    <h2 className="text-2xl font-black tracking-tight sm:text-3xl">
                       {title || "Tên Chuyến Đi"}
                     </h2>
                     {subtitle && (
@@ -233,18 +233,18 @@ export default function TravelBookPage({
                 </div>
 
                 {/* Inside details summary */}
-                <div className="mt-5 rounded-2xl bg-background-warm p-4 text-xs space-y-2">
+                <div className="mt-5 rounded-2xl bg-muted p-4 text-xs space-y-2">
                   <div className="flex justify-between">
-                    <span className="text-text-sub">Quy cách in:</span>
-                    <strong className="text-text-main">{selectedPricing.label}</strong>
+                    <span className="text-muted-foreground">Quy cách in:</span>
+                    <strong className="text-foreground">{selectedPricing.label}</strong>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-text-sub">Số trang:</span>
-                    <strong className="text-text-main">{book.pageCount} trang màu cao cấp</strong>
+                    <span className="text-muted-foreground">Số trang:</span>
+                    <strong className="text-foreground">{book.pageCount} trang màu cao cấp</strong>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-text-sub">Đóng gói:</span>
-                    <strong className="text-text-main">Hộp quà tặng Tripz bảo vệ</strong>
+                    <span className="text-muted-foreground">Đóng gói:</span>
+                    <strong className="text-foreground">Hộp quà tặng Tripz bảo vệ</strong>
                   </div>
                 </div>
               </div>
@@ -255,8 +255,8 @@ export default function TravelBookPage({
           <div className="lg:col-span-7">
             <form onSubmit={handleOrder} className="space-y-6">
               {/* Step 1: Format Selector */}
-              <div className="rounded-3xl border border-border-main bg-white p-6 shadow-sm">
-                <h3 className="text-base font-bold text-text-main flex items-center gap-2">
+              <div className="rounded-3xl border border-border bg-card p-6 shadow-sm">
+                <h3 className="text-base font-bold text-foreground flex items-center gap-2">
                   <BookOpen size={18} className="text-primary" />
                   1. Chọn định dạng xuất bản
                 </h3>
@@ -272,17 +272,17 @@ export default function TravelBookPage({
                         className={`cursor-pointer rounded-2xl border p-4 transition ${
                           isSelected
                             ? "border-primary bg-primary/5 ring-2 ring-primary/20"
-                            : "border-border-main hover:border-gray-300"
+                            : "border-border hover:border-gray-300"
                         }`}
                       >
                         <div className="flex items-center justify-between">
-                          <span className="text-xs font-bold text-text-main">{item.label}</span>
+                          <span className="text-xs font-bold text-foreground">{item.label}</span>
                           {isSelected && <CheckCircle2 size={16} className="text-primary" />}
                         </div>
                         <div className="mt-2 text-base font-black text-primary">
                           {new Intl.NumberFormat("vi-VN").format(item.price)} ₫
                         </div>
-                        <p className="mt-1 text-[11px] text-text-sub leading-tight">{item.desc}</p>
+                        <p className="mt-1 text-[11px] text-muted-foreground leading-tight">{item.desc}</p>
                       </div>
                     );
                   })}
@@ -290,99 +290,99 @@ export default function TravelBookPage({
               </div>
 
               {/* Step 2: Book Title and Cover */}
-              <div className="rounded-3xl border border-border-main bg-white p-6 shadow-sm space-y-4">
-                <h3 className="text-base font-bold text-text-main flex items-center gap-2">
+              <div className="rounded-3xl border border-border bg-card p-6 shadow-sm space-y-4">
+                <h3 className="text-base font-bold text-foreground flex items-center gap-2">
                   <FileText size={18} className="text-primary" />
                   2. Tuỳ chỉnh bìa và tiêu đề
                 </h3>
 
                 <div>
-                  <label className="block text-xs font-bold text-text-main">Tên sách in *</label>
+                  <label className="block text-xs font-bold text-foreground">Tên sách in *</label>
                   <input
                     type="text"
                     required
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    className="mt-1 w-full rounded-xl border border-border-main px-3.5 py-2 text-sm outline-none focus:border-primary"
+                    className="mt-1 w-full rounded-xl border border-border px-3.5 py-2 text-sm outline-none focus:border-primary"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-text-main">Tiêu đề phụ / Lời đề tựa</label>
+                  <label className="block text-xs font-bold text-foreground">Tiêu đề phụ / Lời đề tựa</label>
                   <input
                     type="text"
                     placeholder="Ví dụ: Cung đường hạnh phúc 2026..."
                     value={subtitle}
                     onChange={(e) => setSubtitle(e.target.value)}
-                    className="mt-1 w-full rounded-xl border border-border-main px-3.5 py-2 text-sm outline-none focus:border-primary"
+                    className="mt-1 w-full rounded-xl border border-border px-3.5 py-2 text-sm outline-none focus:border-primary"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-text-main">URL ảnh bìa (tuỳ chọn)</label>
+                  <label className="block text-xs font-bold text-foreground">URL ảnh bìa (tuỳ chọn)</label>
                   <input
                     type="url"
                     placeholder="https://..."
                     value={coverPhotoUrl}
                     onChange={(e) => setCoverPhotoUrl(e.target.value)}
-                    className="mt-1 w-full rounded-xl border border-border-main px-3.5 py-2 text-sm outline-none focus:border-primary"
+                    className="mt-1 w-full rounded-xl border border-border px-3.5 py-2 text-sm outline-none focus:border-primary"
                   />
                 </div>
               </div>
 
               {/* Step 3: Shipping Address (if physical book) */}
               {format !== "DIGITAL_PDF" && (
-                <div className="rounded-3xl border border-border-main bg-white p-6 shadow-sm space-y-4">
-                  <h3 className="text-base font-bold text-text-main flex items-center gap-2">
+                <div className="rounded-3xl border border-border bg-card p-6 shadow-sm space-y-4">
+                  <h3 className="text-base font-bold text-foreground flex items-center gap-2">
                     <Truck size={18} className="text-primary" />
                     3. Địa chỉ giao nhận sách in
                   </h3>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-xs font-bold text-text-main">Họ tên người nhận *</label>
+                      <label className="block text-xs font-bold text-foreground">Họ tên người nhận *</label>
                       <input
                         type="text"
                         required
                         placeholder="Nguyễn Văn A"
                         value={recipientName}
                         onChange={(e) => setRecipientName(e.target.value)}
-                        className="mt-1 w-full rounded-xl border border-border-main px-3.5 py-2 text-sm outline-none focus:border-primary"
+                        className="mt-1 w-full rounded-xl border border-border px-3.5 py-2 text-sm outline-none focus:border-primary"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-bold text-text-main">Số điện thoại *</label>
+                      <label className="block text-xs font-bold text-foreground">Số điện thoại *</label>
                       <input
                         type="tel"
                         required
                         placeholder="0912345678"
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
-                        className="mt-1 w-full rounded-xl border border-border-main px-3.5 py-2 text-sm outline-none focus:border-primary"
+                        className="mt-1 w-full rounded-xl border border-border px-3.5 py-2 text-sm outline-none focus:border-primary"
                       />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div className="sm:col-span-2">
-                      <label className="block text-xs font-bold text-text-main">Địa chỉ nhà / số đường *</label>
+                      <label className="block text-xs font-bold text-foreground">Địa chỉ nhà / số đường *</label>
                       <input
                         type="text"
                         required
                         placeholder="Số 45 ngõ 12 Đường Cầu Giấy..."
                         value={address}
                         onChange={(e) => setAddress(e.target.value)}
-                        className="mt-1 w-full rounded-xl border border-border-main px-3.5 py-2 text-sm outline-none focus:border-primary"
+                        className="mt-1 w-full rounded-xl border border-border px-3.5 py-2 text-sm outline-none focus:border-primary"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-bold text-text-main">Tỉnh / Thành phố *</label>
+                      <label className="block text-xs font-bold text-foreground">Tỉnh / Thành phố *</label>
                       <input
                         type="text"
                         required
                         value={city}
                         onChange={(e) => setCity(e.target.value)}
-                        className="mt-1 w-full rounded-xl border border-border-main px-3.5 py-2 text-sm outline-none focus:border-primary"
+                        className="mt-1 w-full rounded-xl border border-border px-3.5 py-2 text-sm outline-none focus:border-primary"
                       />
                     </div>
                   </div>
@@ -390,9 +390,9 @@ export default function TravelBookPage({
               )}
 
               {/* Order Summary & Submit */}
-              <div className="rounded-3xl border border-border-main bg-white p-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="rounded-3xl border border-border bg-card p-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                  <span className="text-xs text-text-sub">Tổng tiền thanh toán:</span>
+                  <span className="text-xs text-muted-foreground">Tổng tiền thanh toán:</span>
                   <div className="text-2xl font-black text-primary">
                     {new Intl.NumberFormat("vi-VN").format(selectedPricing.price)} ₫
                   </div>
@@ -404,7 +404,7 @@ export default function TravelBookPage({
                 <button
                   type="submit"
                   disabled={ordering || !title.trim()}
-                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-primary-strong px-7 py-3.5 text-sm font-bold text-white shadow-md hover:bg-primary-strong/90 active:scale-95 disabled:opacity-50 transition"
+                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-primary px-7 py-3.5 text-sm font-bold text-white shadow-md hover:bg-primary/90 active:scale-95 disabled:opacity-50 transition"
                 >
                   <CreditCard size={18} />
                   {ordering ? "Đang xử lý..." : "Tiến hành thanh toán"}

@@ -60,7 +60,7 @@ function PaymentContent() {
 
   if (loading) {
     return (
-      <div className="flex min-h-[70vh] items-center justify-center bg-background-warm">
+      <div className="flex min-h-[70vh] items-center justify-center bg-muted">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
       </div>
     );
@@ -69,29 +69,29 @@ function PaymentContent() {
   // If no specific orderId, display recent orders
   if (!orderId || !order) {
     return (
-      <div className="min-h-screen bg-background-warm px-4 py-8 text-text-main sm:px-6 sm:py-12">
+      <div className="min-h-screen bg-muted px-4 py-8 text-foreground sm:px-6 sm:py-12">
         <div className="page-shell max-w-4xl px-0">
           <div className="flex items-center gap-2 text-primary font-bold text-xs">
             <Receipt size={16} />
             <span>LỊCH SỬ ĐƠN HÀNG & THANH TOÁN</span>
           </div>
-          <h1 className="mt-1 text-2xl font-black text-text-main sm:text-3xl">
+          <h1 className="mt-1 text-2xl font-black text-foreground sm:text-3xl">
             Các Giao Dịch Của Bạn
           </h1>
-          <p className="mt-1 text-xs text-text-sub">
+          <p className="mt-1 text-xs text-muted-foreground">
             Danh sách các đơn in Travel Book và dịch vụ đối tác bạn đã tạo.
           </p>
 
           {orders.length === 0 ? (
-            <div className="mt-8 rounded-3xl border border-dashed border-border-main bg-white p-12 text-center text-text-sub">
+            <div className="mt-8 rounded-3xl border border-dashed border-border bg-card p-12 text-center text-muted-foreground">
               <Wallet className="mx-auto text-primary" size={40} />
-              <h3 className="mt-3 text-base font-bold text-text-main">Chưa có giao dịch nào</h3>
+              <h3 className="mt-3 text-base font-bold text-foreground">Chưa có giao dịch nào</h3>
               <p className="mt-1 text-xs">
                 Bạn chưa có đơn đặt in Travel Book hoặc thanh toán nào đang chờ.
               </p>
               <Link
                 href="/trips"
-                className="mt-6 inline-flex rounded-xl bg-primary-strong px-4 py-2 text-xs font-bold text-white hover:bg-primary-strong/90"
+                className="mt-6 inline-flex rounded-xl bg-primary px-4 py-2 text-xs font-bold text-white hover:bg-primary/90"
               >
                 Về danh sách chuyến đi
               </Link>
@@ -101,7 +101,7 @@ function PaymentContent() {
               {orders.map((ord) => (
                 <div
                   key={ord.id}
-                  className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-border-main bg-white p-5 shadow-sm"
+                  className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-border bg-card p-5 shadow-sm"
                 >
                   <div>
                     <span
@@ -115,8 +115,8 @@ function PaymentContent() {
                     >
                       {ord.status === "COMPLETED" ? "Đã thanh toán" : "Chờ thanh toán"}
                     </span>
-                    <h3 className="mt-2 text-base font-bold text-text-main">{ord.title}</h3>
-                    <p className="text-xs text-text-sub">
+                    <h3 className="mt-2 text-base font-bold text-foreground">{ord.title}</h3>
+                    <p className="text-xs text-muted-foreground">
                       Ngày tạo: {new Date(ord.createdAt).toLocaleDateString("vi-VN")} • Mã đơn:{" "}
                       <span className="font-mono">{ord.id.slice(0, 8)}</span>
                     </p>
@@ -132,7 +132,7 @@ function PaymentContent() {
                     {ord.status === "PENDING" && (
                       <Link
                         href={`/payment?orderId=${ord.id}`}
-                        className="inline-flex items-center gap-1.5 rounded-xl bg-primary-strong px-4 py-2 text-xs font-bold text-white hover:bg-primary-strong/90"
+                        className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-4 py-2 text-xs font-bold text-white hover:bg-primary/90"
                       >
                         Thanh toán ngay <ArrowRight size={14} />
                       </Link>
@@ -148,41 +148,41 @@ function PaymentContent() {
   }
 
   return (
-    <div className="min-h-screen bg-background-warm px-4 py-8 text-text-main sm:px-6 sm:py-12">
+    <div className="min-h-screen bg-muted px-4 py-8 text-foreground sm:px-6 sm:py-12">
       <div className="mx-auto max-w-2xl">
         {paymentSuccess ? (
           /* Receipt Success State */
-          <div className="rounded-3xl border border-emerald-200 bg-white p-8 text-center shadow-lg animate-in fade-in zoom-in-95">
+          <div className="rounded-3xl border border-emerald-200 bg-card p-8 text-center shadow-lg animate-in fade-in zoom-in-95">
             <CheckCircle2 className="mx-auto text-emerald-600" size={56} />
-            <h1 className="mt-4 text-2xl font-black text-text-main">
+            <h1 className="mt-4 text-2xl font-black text-foreground">
               Thanh Toán Thành Công!
             </h1>
-            <p className="mt-1 text-xs text-text-sub">
+            <p className="mt-1 text-xs text-muted-foreground">
               Cảm ơn bạn. Đơn hàng đã được thanh toán và chuyển sang bộ phận in ấn & hoàn thiện.
             </p>
 
-            <div className="mt-6 rounded-2xl bg-background-warm p-5 text-left text-xs space-y-2.5 border border-border-main">
+            <div className="mt-6 rounded-2xl bg-muted p-5 text-left text-xs space-y-2.5 border border-border">
               <div className="flex justify-between">
-                <span className="text-text-sub">Mã đơn hàng:</span>
-                <span className="font-mono font-bold text-text-main">{order.id}</span>
+                <span className="text-muted-foreground">Mã đơn hàng:</span>
+                <span className="font-mono font-bold text-foreground">{order.id}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-text-sub">Nội dung:</span>
-                <span className="font-bold text-text-main">{order.title}</span>
+                <span className="text-muted-foreground">Nội dung:</span>
+                <span className="font-bold text-foreground">{order.title}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-text-sub">Số tiền đã trả:</span>
+                <span className="text-muted-foreground">Số tiền đã trả:</span>
                 <span className="font-bold text-emerald-700">
                   {new Intl.NumberFormat("vi-VN").format(order.amount)} ₫
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-text-sub">Phương thức:</span>
-                <span className="font-bold text-text-main">{order.paymentMethod || selectedMethod}</span>
+                <span className="text-muted-foreground">Phương thức:</span>
+                <span className="font-bold text-foreground">{order.paymentMethod || selectedMethod}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-text-sub">Mã giao dịch:</span>
-                <span className="font-mono text-text-sub">{order.paymentRef || "Chưa được cung cấp"}</span>
+                <span className="text-muted-foreground">Mã giao dịch:</span>
+                <span className="font-mono text-muted-foreground">{order.paymentRef || "Chưa được cung cấp"}</span>
               </div>
             </div>
 
@@ -190,14 +190,14 @@ function PaymentContent() {
               {order.itemType === "TRAVEL_BOOK" && order.itemId && (
                 <Link
                   href={`/travel-book/${order.itemId}`}
-                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary-strong px-5 py-2.5 text-xs font-bold text-white hover:bg-primary-strong/90 shadow-md"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-xs font-bold text-white hover:bg-primary/90 shadow-md"
                 >
                   <Book size={15} /> Xem trạng thái Travel Book
                 </Link>
               )}
               <Link
                 href="/dashboard"
-                className="inline-flex items-center justify-center rounded-xl border border-border-main bg-white px-5 py-2.5 text-xs font-semibold text-text-main hover:bg-gray-50"
+                className="inline-flex items-center justify-center rounded-xl border border-border bg-card px-5 py-2.5 text-xs font-semibold text-foreground hover:bg-gray-50"
               >
                 Về bảng điều khiển
               </Link>
@@ -205,9 +205,9 @@ function PaymentContent() {
           </div>
         ) : (
           /* Checkout Payment Form */
-          <div className="overflow-hidden rounded-3xl border border-border-main bg-white shadow-md">
+          <div className="overflow-hidden rounded-3xl border border-border bg-card shadow-md">
             {/* Order Header */}
-            <div className="border-b border-border-main bg-secondary p-6 text-white sm:p-8">
+            <div className="border-b border-border bg-primary p-6 text-white sm:p-8">
               <span className="rounded-full bg-primary/20 px-3 py-1 text-[10px] font-extrabold uppercase tracking-wider text-[#f2c369]">
                 Cổng Thanh Toán An Toàn
               </span>
@@ -223,7 +223,7 @@ function PaymentContent() {
             <div className="p-6 sm:p-8 space-y-6">
               {/* Payment Methods */}
               <div>
-                <label className="block text-xs font-bold text-text-main uppercase tracking-wider">
+                <label className="block text-xs font-bold text-foreground uppercase tracking-wider">
                   Chọn phương thức thanh toán
                 </label>
 
@@ -234,7 +234,7 @@ function PaymentContent() {
                     className={`cursor-pointer rounded-2xl border p-4 transition ${
                       selectedMethod === "VIETQR"
                         ? "border-primary bg-primary/5 ring-2 ring-primary/20"
-                        : "border-border-main hover:bg-gray-50"
+                        : "border-border hover:bg-gray-50"
                     }`}
                   >
                     <div className="flex items-center justify-between">
@@ -243,10 +243,10 @@ function PaymentContent() {
                           <QrCode size={20} />
                         </div>
                         <div>
-                          <div className="font-bold text-xs text-text-main">
+                          <div className="font-bold text-xs text-foreground">
                             Chuyển khoản VietQR (Mọi ngân hàng 24/7)
                           </div>
-                          <div className="text-[11px] text-text-sub">
+                          <div className="text-[11px] text-muted-foreground">
                             Quét mã QR tự động điền số tiền và nội dung
                           </div>
                         </div>
@@ -260,7 +260,7 @@ function PaymentContent() {
                     </div>
 
                     {selectedMethod === "VIETQR" && (
-                      <p className="mt-3 rounded-xl border border-dashed border-border-main p-3 text-[11px] text-text-sub">
+                      <p className="mt-3 rounded-xl border border-dashed border-border p-3 text-[11px] text-muted-foreground">
                         Thông tin chuyển khoản sẽ hiển thị khi cổng thanh toán được kết nối.
                       </p>
                     )}
@@ -272,7 +272,7 @@ function PaymentContent() {
                     className={`cursor-pointer rounded-2xl border p-4 transition ${
                       selectedMethod === "MOMO"
                         ? "border-primary bg-primary/5 ring-2 ring-primary/20"
-                        : "border-border-main hover:bg-gray-50"
+                        : "border-border hover:bg-gray-50"
                     }`}
                   >
                     <div className="flex items-center justify-between">
@@ -281,8 +281,8 @@ function PaymentContent() {
                           <Smartphone size={20} />
                         </div>
                         <div>
-                          <div className="font-bold text-xs text-text-main">Ví MoMo</div>
-                          <div className="text-[11px] text-text-sub">
+                          <div className="font-bold text-xs text-foreground">Ví MoMo</div>
+                          <div className="text-[11px] text-muted-foreground">
                             Thanh toán nhanh qua ứng dụng MoMo
                           </div>
                         </div>
@@ -302,7 +302,7 @@ function PaymentContent() {
                     className={`cursor-pointer rounded-2xl border p-4 transition ${
                       selectedMethod === "CREDIT_CARD"
                         ? "border-primary bg-primary/5 ring-2 ring-primary/20"
-                        : "border-border-main hover:bg-gray-50"
+                        : "border-border hover:bg-gray-50"
                     }`}
                   >
                     <div className="flex items-center justify-between">
@@ -311,10 +311,10 @@ function PaymentContent() {
                           <CreditCard size={20} />
                         </div>
                         <div>
-                          <div className="font-bold text-xs text-text-main">
+                          <div className="font-bold text-xs text-foreground">
                             Thẻ Quốc Tế (Visa / Mastercard / JCB)
                           </div>
-                          <div className="text-[11px] text-text-sub">
+                          <div className="text-[11px] text-muted-foreground">
                             Bảo mật tiêu chuẩn PCI-DSS
                           </div>
                         </div>
@@ -340,7 +340,7 @@ function PaymentContent() {
                   <ShieldCheck size={18} />
                   Chờ cổng thanh toán được kết nối
                 </button>
-                <p className="mt-2 text-center text-[11px] text-text-sub">
+                <p className="mt-2 text-center text-[11px] text-muted-foreground">
                   Đơn chỉ được hoàn tất sau webhook có chữ ký hợp lệ từ nhà cung cấp thanh toán.
                 </p>
               </div>
@@ -356,7 +356,7 @@ export default function PaymentPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-[70vh] items-center justify-center bg-background-warm">
+        <div className="flex min-h-[70vh] items-center justify-center bg-muted">
           <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
         </div>
       }

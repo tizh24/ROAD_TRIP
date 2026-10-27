@@ -27,25 +27,25 @@ export default function MapMarker({ marker, onClick, className = "" }: MapMarker
     switch (marker.type) {
       case "stop":
         return (
-          <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-primary-strong text-xs font-black text-white shadow-card">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-primary text-xs font-black text-white shadow-xs">
             {marker.label || "•"}
           </div>
         );
       case "gem":
         return (
-          <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-amber-200 text-sm font-black text-secondary shadow-card">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-amber-200 text-sm font-black text-foreground shadow-xs">
             ★
           </div>
         );
       case "danger":
         return (
-          <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-danger text-sm font-bold text-white shadow-card animate-bounce">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-destructive text-sm font-bold text-white shadow-xs animate-bounce">
             ⚠️
           </div>
         );
       case "partner":
         return (
-          <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-primary bg-white text-sm font-bold text-primary shadow-card">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-primary bg-white text-sm font-bold text-primary shadow-xs">
             👑
           </div>
         );
@@ -57,7 +57,7 @@ export default function MapMarker({ marker, onClick, className = "" }: MapMarker
       onClick={() => onClick?.(marker.id)}
       onMouseEnter={() => setShowTooltip(true)}
       onMouseLeave={() => setShowTooltip(false)}
-      className={`absolute cursor-pointer select-none smooth-transition hover:scale-110 -translate-x-1/2 -translate-y-1/2 ${className}`}
+      className={`absolute cursor-pointer select-none transition-colors hover:scale-110 -translate-x-1/2 -translate-y-1/2 ${className}`}
       style={{ left: `${marker.x}%`, top: `${marker.y}%`, zIndex: marker.isActive || showTooltip ? 50 : 20 }}
     >
       {/* Active Pulse Animation */}
@@ -70,12 +70,12 @@ export default function MapMarker({ marker, onClick, className = "" }: MapMarker
 
       {/* Tooltip Hover Overlay */}
       {showTooltip && (
-        <div className="pointer-events-none absolute left-1/2 top-[36px] z-[100] w-44 -translate-x-1/2 animate-slide-in rounded-lg bg-secondary p-2.5 text-[11px] text-white shadow-float">
+        <div className="pointer-events-none absolute left-1/2 top-[36px] z-[100] w-44 -translate-x-1/2 animate-slide-in rounded-lg bg-primary p-2.5 text-[11px] text-white shadow-lg">
           <div className="font-extrabold pb-0.5 truncate text-[11.5px]">{marker.name}</div>
           {marker.description && (
             <div className="mt-0.5 leading-snug text-white/70">{marker.description}</div>
           )}
-          <div className="absolute -top-1 left-1/2 h-2.5 w-2.5 -translate-x-1/2 rotate-45 bg-secondary" />
+          <div className="absolute -top-1 left-1/2 h-2.5 w-2.5 -translate-x-1/2 rotate-45 bg-primary" />
         </div>
       )}
     </div>
