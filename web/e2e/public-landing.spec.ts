@@ -85,8 +85,10 @@ test.describe("public landing page", () => {
   test("shows no invented metrics, testimonials or AI claims", async ({ page }) => {
     await page.goto("/");
     const text = await page.locator("main").innerText();
-    for (const banned of ["50.000+", "4.9/5.0", "63/63", "AI ", "Founder @"]) {
+    for (const banned of ["50.000+", "4.9/5.0", "63/63", "Founder @"]) {
       expect(text).not.toContain(banned);
     }
+    // The standalone word "AI", not letters inside another word (for example "KHAI" in uppercase labels).
+    expect(text).not.toMatch(/(^|[^\p{L}])AI([^\p{L}]|$)/u);
   });
 });

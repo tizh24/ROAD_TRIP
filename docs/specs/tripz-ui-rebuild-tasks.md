@@ -15,7 +15,7 @@ Spec: `./tripz-ui-rebuild-spec.md`. Plan: `./tripz-ui-rebuild-plan.md`.
 - [ ] Write the landing argument (claim and proof per section).
 - [ ] Draw three page directions and three app directions.
 - [ ] Mock one screen per direction and present to the owner.
-- [ ] Owner chooses a direction. **(gate)**
+- [x] Palette and type taken from the reference sources (owner decision 2026-10-27). Composition direction still to be dealt with `--keep palette,type`. **(gate for composition)**
 - [ ] Save the direction sheet in `docs/design/direction.md`; replace `DESIGN.md`.
 
 ## 2. Foundation
@@ -47,7 +47,7 @@ Spec: `./tripz-ui-rebuild-spec.md`. Plan: `./tripz-ui-rebuild-plan.md`.
 
 ## 4. Shell and auth
 
-- [ ] Login on the owner's Beam stage-and-card layout (see spec): existing server action kept, Vietnamese copy, no social buttons, CSS-only reduced-motion-safe wash using the chosen palette.
+- [x] Login on the owner's Beam stage-and-card layout (see spec): existing server action kept, Vietnamese copy, Google/Facebook/Apple buttons (not wired yet), original framer-motion wash, new palette.
 - [ ] Signup, forgot-password, reset-password and recovery use the same layout.
 - [ ] Shared shell with traveler, partner and admin navigation; skip link and `id="main-content"` on each.
 - [ ] Role navigation and guest redirect checks; BFF auth e2e still green.

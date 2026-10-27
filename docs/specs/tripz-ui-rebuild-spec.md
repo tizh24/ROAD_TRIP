@@ -17,7 +17,7 @@ Third-party code is adapted, not pasted wholesale: only the pieces a route needs
 ## Decisions (approved 2026-10-27)
 
 1. **Component base: Radix.** The shadcn `radix-vega` primitives already in `web/src/components/ui/` are kept. Dashboard components are ported to Radix.
-2. **Palette and type: chosen from the taste-skill draw.** `draw.mjs` presents three directions with mock screenshots; the owner picks one. `DESIGN.md` is replaced by the chosen direction.
+2. **Palette and type come from the three reference sources, not from the previous design.** Neutral scale and chart colors (`--chart-1..5`) from the dashboard template, Inter from the landing reference, taste-skill's one-accent rule. The old orange/off-white palette and Be Vietnam Pro/Playfair are removed. taste-skill's `draw.mjs` is run with `--keep palette,type` so it only deals composition. `DESIGN.md` is replaced accordingly.
 3. **No invented content.** Fake statistics, testimonials, prices, ratings, traveler counts and stock claims from the reference landing are not reproduced. Only its layout is used. Sections appear only when backed by real content or real data.
 4. **Light theme only.** No dark mode, no theme switcher. It can be added later as its own spec.
 
@@ -50,10 +50,10 @@ No component may keep a legacy class, token or color from the retired system (`b
 The login page is rebuilt on the owner's "Beam" layout: a full-screen stage with a slowly rotating multi-color wash and a fine grid behind a single centered card (title, short subtitle, form, link to sign-up and password reset). Adaptations required so it fits this product:
 
 - **Behavior is unchanged:** the form keeps the existing `login` server action (`useActionState`, Gateway cookies, `next` return path, existing error messages). The sample's `react-hook-form`, `zod` resolver and `@/app/actions/auth` are not used.
-- **No social buttons.** The Gateway has no Google/GitHub sign-in endpoint and the web removed direct OAuth, so those buttons would be non-functional controls. They are omitted until a provider flow is specified; the layout leaves room for them.
+- **Social buttons: Google, Facebook, Apple are present now** (owner decision, OAuth is added later by the owner). They are not wired: `startOAuth()` in `web/src/features/auth/oauth-providers.ts` shows a toast that the provider is not enabled yet, and is the single seam to replace with the Gateway OAuth redirect.
 - **Vietnamese copy** replaces the English text; labels, `autocomplete`, `spellcheck`, error `role="alert"` and the "Quên mật khẩu?" link are kept.
-- **Colors come from the chosen direction.** The wash uses the direction's palette tokens, not the sample's `--chart-*` values, and must keep card text at AA contrast.
-- **Motion:** CSS keyframes (no new `framer-motion` dependency), disabled under `prefers-reduced-motion`, slower than the 5 s sample loop, `will-change`/blur limited so it stays cheap on low-end phones, and paused when the tab is hidden.
+- **Colors:** the wash uses the dashboard template's `--chart-1..5`, which the new palette adopts; card text stays AA.
+- **Motion kept exactly as in the owner's sample:** `framer-motion`, 5 s linear infinite rotation of the blurred conic wash, grid overlay; disabled under `prefers-reduced-motion`. (`framer-motion` is an approved dependency.)
 - **Light theme only** (no dark variant), 320 px to 1920 px without overflow, one `h1`, one `main`.
 - The same stage-and-card layout is applied to signup, forgot-password and reset-password so the auth routes stay consistent.
 

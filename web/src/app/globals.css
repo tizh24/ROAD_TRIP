@@ -3,59 +3,65 @@
 @import "shadcn/tailwind.css";
 
 :root {
-  --font-plus-jakarta-sans: var(--font-inter-loaded), "Inter", "Be Vietnam Pro", "Aptos", "Segoe UI", sans-serif;
-  --font-be-vietnam-pro: var(--font-be-vietnam-pro-loaded), "Be Vietnam Pro", "Aptos Display", "Segoe UI", sans-serif;
-  /* shadcn/ui semantic variables, mapped to the DESIGN.md palette. */
-  --background: #FAF9F6;
-  --foreground: #1B1B1B;
-  --card: #FFFFFF;
-  --card-foreground: #1B1B1B;
-  --popover: #FFFFFF;
-  --popover-foreground: #1B1B1B;
-  --primary: #E87535;
-  --primary-foreground: #FFFFFF;
-  --secondary: #1B1B1B;
-  --secondary-foreground: #FFFFFF;
-  --muted: #F0EDE8;
-  --muted-foreground: #6E665E;
-  --accent: #FFF1E6;
-  --accent-foreground: #1B1B1B;
-  --destructive: #B9382B;
-  --border: #EAE7E2;
-  --input: #EAE7E2;
-  --ring: #E87535;
+  /* Fonts: Inter (landing reference) for everything while the old type system is retired. */
+  --font-plus-jakarta-sans: var(--font-inter-loaded), "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-be-vietnam-pro: var(--font-inter-loaded), "Inter", ui-sans-serif, system-ui, sans-serif;
+  /* Palette from the shadcn dashboard template: neutral scale plus its chart colors. */
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.205 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
   --radius: 0.625rem;
 }
 
 @theme {
-  --color-primary: #E87535;
-  --color-primary-hover: #C95C24;
-  --color-primary-strong: #B84E1B; /* 5.1:1 with white text */
-  --color-secondary: #1B1B1B;
-  --color-accent: #FFF1E6;
-  --color-accent-sub: #F8DDC9;
-  --color-success: #46705A;
-  --color-warning: #A35E00;
-  --color-danger: #B9382B;
-  --color-info: #0369A1;
-  --color-background: #FAF9F6;
-  --color-background-warm: #FFF1E6;
-  --color-surface: #FFFFFF;
-  --color-surface-tint: #F8E6D8;
-  --color-text-main: #1B1B1B;
-  --color-text-sub: #6E665E;
-  --color-border-main: #EAE7E2;
-  --color-border-light: #F0EDE8;
-  /* Legacy brand-* names now alias the canonical tokens above. */
-  --color-brand-orange: var(--color-primary);
-  --color-brand-orange-hover: var(--color-primary-hover);
-  --color-brand-orange-light: rgba(232, 117, 53, 0.08);
-  --color-brand-offwhite: var(--color-background);
-  --color-brand-cream: var(--color-border-light);
-  --color-brand-charcoal: var(--color-text-main);
-  --color-brand-slate: #2C2A29;
-  --color-brand-muted: var(--color-text-sub);
-  --color-brand-border: var(--color-border-main);
+  /* Legacy token names now resolve to the new palette; they are deleted in the foundation phase. */
+  --color-primary: var(--primary);
+  --color-primary-hover: oklch(0.269 0 0);
+  --color-primary-strong: var(--primary);
+  --color-secondary: var(--secondary);
+  --color-accent: var(--accent);
+  --color-accent-sub: oklch(0.922 0 0);
+  --color-success: #2f7d4f;
+  --color-warning: #a35e00;
+  --color-danger: var(--destructive);
+  --color-info: #0369a1;
+  --color-background: var(--background);
+  --color-background-warm: oklch(0.97 0 0);
+  --color-surface: var(--card);
+  --color-surface-tint: oklch(0.97 0 0);
+  --color-text-main: var(--foreground);
+  --color-text-sub: var(--muted-foreground);
+  --color-border-main: var(--border);
+  --color-border-light: oklch(0.955 0 0);
+  --color-brand-orange: var(--primary);
+  --color-brand-orange-hover: oklch(0.269 0 0);
+  --color-brand-orange-light: oklch(0.97 0 0);
+  --color-brand-offwhite: var(--background);
+  --color-brand-cream: oklch(0.97 0 0);
+  --color-brand-charcoal: var(--foreground);
+  --color-brand-slate: oklch(0.269 0 0);
+  --color-brand-muted: var(--muted-foreground);
+  --color-brand-border: var(--border);
   --font-serif: var(--font-playfair-loaded), "Playfair Display", Georgia, serif;
   --font-sans: var(--font-plus-jakarta-sans), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-be-vietnam-pro), var(--font-plus-jakarta-sans), ui-sans-serif, system-ui, sans-serif;
@@ -79,9 +85,9 @@
   --text-h3--line-height: 1.4;
   --text-h3--font-weight: 700;
 
-  --shadow-card: 0 1px 2px rgba(56, 42, 29, 0.04), 0 8px 22px -16px rgba(56, 42, 29, 0.18);
-  --shadow-card-hover: 0 12px 28px -17px rgba(56, 42, 29, 0.26);
-  --shadow-float: 0 16px 34px -19px rgba(56, 42, 29, 0.28);
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 22px -16px rgba(0, 0, 0, 0.18);
+  --shadow-card-hover: 0 12px 28px -17px rgba(0, 0, 0, 0.26);
+  --shadow-float: 0 16px 34px -19px rgba(0, 0, 0, 0.28);
 
   --radius-chip: 9999px;
   --radius-card: 0.875rem;
@@ -249,6 +255,11 @@ h1, h2, h3, h4, h5, h6 {
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
   --color-foreground: var(--foreground);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
 }
 
 @layer base {

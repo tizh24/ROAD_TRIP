@@ -8,6 +8,8 @@ const nextConfig: NextConfig = {
   // Next.js 16 trace file.
   ...(process.env.VERCEL ? {} : { output: "standalone" }),
   images: {
+    // AVIF encoding of large PNGs stalls the standalone image optimizer; WebP is fast and widely supported.
+    formats: ["image/webp"],
     remotePatterns: [
       {
         protocol: "https",
