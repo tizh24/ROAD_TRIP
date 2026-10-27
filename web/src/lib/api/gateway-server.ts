@@ -8,7 +8,9 @@ type GatewayEnvelope<T> = {
 };
 
 function gatewayBaseUrl() {
-  return process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:4100";
+  // NEXT_PUBLIC_API_URL is inlined at build time for the browser. Server actions in a container
+  // need the gateway address on the internal network, supplied at runtime.
+  return process.env.GATEWAY_INTERNAL_URL ?? process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:4100";
 }
 
 export async function gatewayPublic<T>(path: string): Promise<GatewayEnvelope<T>> {

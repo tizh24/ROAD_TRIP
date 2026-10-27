@@ -101,8 +101,23 @@ async function saveStorageState(user, filename) {
     await page.goto(new URL('/login', baseUrl).href);
     await page.getByLabel('Email').fill(user.email);
     await page.getByLabel('Mật khẩu').fill(user.password);
+    const seen = [];
+    page.on('response', (response) => {
+      if (response.request().method() === 'POST') seen.push(`${response.status()} ${new URL(response.url()).pathname}`);
+    });
     await page.getByRole('button', { name: 'Đăng nhập' }).click();
-    await page.waitForURL((url) => url.pathname !== '/login', { timeout: 30_000 });
+    try {
+      await page.waitForURL((url) => url.pathname !== '/login', { timeout: 30_000 });
+    } catch (cause) {
+      const alert = await page.getByRole('alert').allTextContents().catch(() => []);
+      throw new Error(
+        `Login did not leave /login (now ${page.url()}). POST responses: ${seen.join(', ') || 'none'}. Form alert: ${alert.join(' | ') || 'none'}.`,
+        { cause },
+      );
+    }
+    if (!(await context.cookies()).some((cookie) => cookie.name === 'rt_access')) {
+      throw new Error(`Login reached ${page.url()} but no rt_access cookie was stored.`);
+    }
     await context.storageState({ path: resolve(outputDir, filename) });
   } finally {
     await context.close();

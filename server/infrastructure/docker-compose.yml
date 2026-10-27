@@ -222,6 +222,7 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3000
+      GATEWAY_INTERNAL_URL: http://api-gateway:4100
       SUPABASE_URL: ${SUPABASE_URL:-http://host.docker.internal:54321}
       NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:-}
     extra_hosts:
