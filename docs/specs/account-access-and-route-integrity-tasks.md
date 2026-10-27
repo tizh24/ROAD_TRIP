@@ -25,4 +25,5 @@
 - [x] Run focused auth/route tests and validate migration syntax/constraints by review. Hosted deployment remains intentionally pending.
 - [x] Run lint, typecheck, full tests, and production build.
 - [x] Run available browser checks for auth views, unauthenticated redirects, and responsive desktop/mobile layout.
-- [ ] Review changed files, audit `git diff --check`, then report limitations and commit only after all checks pass.
+- [x] Review changed files, audit `git diff --check`, then report limitations and commit only after all checks pass.
+  - 2026-10-27: `git diff --check` clean apart from CRLF notices; hosted deployment of the migration was done separately by Codex.
