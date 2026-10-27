@@ -3,16 +3,10 @@ import { toast } from "@/components/ui/sonner";
 
 import { useRouter } from "next/navigation";
 import { use, useCallback, useEffect, useState } from "react";
-import {
-  ArrowLeft,
-  Book,
-  BookOpen,
-  CheckCircle2,
-  CreditCard,
-  FileText,
-  Sparkles,
-  Truck,
-} from "lucide-react";
+import { ArrowLeft, CheckCircle2, CreditCard } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   createBillingOrder,
   getOrCreateTravelBook,
@@ -129,290 +123,166 @@ export default function TravelBookPage({
 
   if (loading) {
     return (
-      <div className="flex min-h-[70vh] items-center justify-center bg-muted">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+      <div className="page-shell max-w-5xl px-4 py-10 sm:px-6" aria-busy="true" aria-label="Đang tải">
+        <Skeleton className="h-9 w-72" />
+        <div className="mt-8 grid gap-8 lg:grid-cols-12">
+          <Skeleton className="aspect-[3/4] rounded-xl lg:col-span-5" />
+          <Skeleton className="h-96 rounded-xl lg:col-span-7" />
+        </div>
       </div>
     );
   }
 
   if (error || !book) {
     return (
-      <div className="min-h-screen bg-muted px-4 py-12 text-center">
-        <div className="mx-auto max-w-md rounded-2xl bg-card p-8 shadow-sm">
-          <Book className="mx-auto text-red-500" size={40} />
-          <h2 className="mt-3 text-lg font-bold text-foreground">Không thể mở Travel Book</h2>
-          <p className="mt-1 text-xs text-muted-foreground">{error || "Hành trình chưa có kỷ niệm để tạo sách."}</p>
-          <button
-            onClick={() => router.back()}
-            className="mt-6 inline-flex rounded-xl bg-primary px-4 py-2 text-xs font-bold text-white hover:bg-primary/90"
-          >
-            Quay lại
-          </button>
-        </div>
+      <div className="page-shell max-w-md px-4 py-20 text-center">
+        <h2 className="text-xl font-medium">Không thể mở Travel Book</h2>
+        <p className="mt-2 text-sm text-muted-foreground">{error || "Hành trình chưa có kỷ niệm để tạo sách."}</p>
+        <Button type="button" className="mt-6 min-h-11" onClick={() => router.back()}>
+          Quay lại
+        </Button>
       </div>
     );
   }
 
   const selectedPricing = formatPricing[format];
+  const money = (value: number) => `${new Intl.NumberFormat("vi-VN").format(value)} ₫`;
 
   return (
-    <div className="min-h-screen bg-muted px-4 py-8 text-foreground sm:px-6 sm:py-12">
-      <div className="page-shell max-w-5xl px-0">
-        {/* Back Link */}
-        <div className="mb-6 flex items-center justify-between">
-          <button
-            onClick={() => router.back()}
-            className="inline-flex items-center gap-1.5 text-xs font-bold text-muted-foreground hover:text-foreground transition"
-          >
-            <ArrowLeft size={16} /> Quay lại kỷ niệm chuyến đi
-          </button>
+    <div className="page-shell max-w-5xl px-4 py-8 sm:px-6 sm:py-10">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <button
+          type="button"
+          onClick={() => router.back()}
+          className="focus-ring inline-flex min-h-11 items-center gap-1.5 rounded text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+        >
+          <ArrowLeft className="size-4" aria-hidden="true" /> Quay lại kỷ niệm chuyến đi
+        </button>
+        {book.status !== "DRAFT" && (
+          <p className="inline-flex items-center gap-2 text-sm text-success">
+            <CheckCircle2 className="size-4" aria-hidden="true" />
+            Trạng thái: Đã đặt in ({book.status})
+          </p>
+        )}
+      </div>
 
-          {book.status !== "DRAFT" && (
-            <div className="flex items-center gap-2 rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-800">
-              <CheckCircle2 size={14} />
-              <span>Trạng thái: Đã đặt in ({book.status})</span>
-            </div>
-          )}
-        </div>
+      <header className="mt-4">
+        <h1 className="text-3xl font-medium tracking-tight sm:text-4xl">In ấn kỷ niệm hành trình</h1>
+        <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+          Biến toàn bộ hình ảnh, toạ độ cung đường và nhật ký thành một cuốn sách ảnh cầm tay.
+        </p>
+      </header>
 
-        {/* Top Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <div className="inline-flex items-center gap-2 text-primary font-bold text-xs">
-              <Sparkles size={15} />
-              <span>TRIPZ TRAVEL BOOK FULFILLMENT</span>
-            </div>
-            <h1 className="mt-1 text-2xl font-black text-foreground sm:text-3xl">
-              In Ấn Kỷ Niệm Hành Trình
-            </h1>
-            <p className="mt-1 text-xs text-muted-foreground">
-              Biến toàn bộ hình ảnh, toạ độ cung đường và nhật ký thành một cuốn sách ảnh nghệ thuật cầm tay.
-            </p>
-          </div>
-        </div>
-
-        {/* Main Grid: Preview on Left, Customizer on Right */}
-        <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-12">
-          {/* Left: Interactive Book Mockup Preview */}
-          <div className="lg:col-span-5 space-y-6">
-            <div className="sticky top-6">
-              <div className="overflow-hidden rounded-3xl border border-border bg-card p-6 shadow-md">
-                <p className="text-[11px] font-extrabold uppercase tracking-wider text-muted-foreground">
-                  Mô phỏng bản in thực tế ({format})
-                </p>
-
-                {/* Hardcover book visual */}
-                <div className="mt-4 flex aspect-[3/4] w-full flex-col justify-between rounded-2xl bg-gradient-to-br from-[#1d2a23] to-[#0f1712] p-6 text-white shadow-xl relative overflow-hidden">
-                  {coverPhotoUrl && (
-                    // eslint-disable-next-line @next/next/no-img-element -- a travel-book cover can reference user-uploaded media from variable hosts.
-                    <img
-                      src={coverPhotoUrl}
-                      alt="Cover"
-                      className="absolute inset-0 h-full w-full object-cover opacity-35 mix-blend-overlay"
-                    />
-                  )}
-                  <div className="relative z-10 flex items-center justify-between text-xs font-bold text-[#f2c369]">
-                    <span className="tracking-widest">TRIPZ EDITION</span>
-                    <span>{book.pageCount} PAGES</span>
-                  </div>
-
-                  <div className="relative z-10 my-auto text-center">
-                    <h2 className="text-2xl font-black tracking-tight sm:text-3xl">
-                      {title || "Tên Chuyến Đi"}
-                    </h2>
-                    {subtitle && (
-                      <p className="mt-2 text-xs italic text-white/80 max-w-xs mx-auto">
-                        {subtitle}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="relative z-10 border-t border-white/20 pt-3 text-center text-[10px] text-white/60 uppercase tracking-widest">
-                    Tuyển tập kỷ niệm phượt
-                  </div>
-                </div>
-
-                {/* Inside details summary */}
-                <div className="mt-5 rounded-2xl bg-muted p-4 text-xs space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Quy cách in:</span>
-                    <strong className="text-foreground">{selectedPricing.label}</strong>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Số trang:</span>
-                    <strong className="text-foreground">{book.pageCount} trang màu cao cấp</strong>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Đóng gói:</span>
-                    <strong className="text-foreground">Hộp quà tặng Tripz bảo vệ</strong>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Right: Customization Form & Checkout CTA */}
-          <div className="lg:col-span-7">
-            <form onSubmit={handleOrder} className="space-y-6">
-              {/* Step 1: Format Selector */}
-              <div className="rounded-3xl border border-border bg-card p-6 shadow-sm">
-                <h3 className="text-base font-bold text-foreground flex items-center gap-2">
-                  <BookOpen size={18} className="text-primary" />
-                  1. Chọn định dạng xuất bản
-                </h3>
-
-                <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
-                  {(Object.keys(formatPricing) as Array<keyof typeof formatPricing>).map((fmtKey) => {
-                    const item = formatPricing[fmtKey];
-                    const isSelected = format === fmtKey;
-                    return (
-                      <div
-                        key={fmtKey}
-                        onClick={() => setFormat(fmtKey)}
-                        className={`cursor-pointer rounded-2xl border p-4 transition ${
-                          isSelected
-                            ? "border-primary bg-primary/5 ring-2 ring-primary/20"
-                            : "border-border hover:border-gray-300"
-                        }`}
-                      >
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs font-bold text-foreground">{item.label}</span>
-                          {isSelected && <CheckCircle2 size={16} className="text-primary" />}
-                        </div>
-                        <div className="mt-2 text-base font-black text-primary">
-                          {new Intl.NumberFormat("vi-VN").format(item.price)} ₫
-                        </div>
-                        <p className="mt-1 text-[11px] text-muted-foreground leading-tight">{item.desc}</p>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Step 2: Book Title and Cover */}
-              <div className="rounded-3xl border border-border bg-card p-6 shadow-sm space-y-4">
-                <h3 className="text-base font-bold text-foreground flex items-center gap-2">
-                  <FileText size={18} className="text-primary" />
-                  2. Tuỳ chỉnh bìa và tiêu đề
-                </h3>
-
-                <div>
-                  <label className="block text-xs font-bold text-foreground">Tên sách in *</label>
-                  <input
-                    type="text"
-                    required
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    className="mt-1 w-full rounded-xl border border-border px-3.5 py-2 text-sm outline-none focus:border-primary"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-foreground">Tiêu đề phụ / Lời đề tựa</label>
-                  <input
-                    type="text"
-                    placeholder="Ví dụ: Cung đường hạnh phúc 2026..."
-                    value={subtitle}
-                    onChange={(e) => setSubtitle(e.target.value)}
-                    className="mt-1 w-full rounded-xl border border-border px-3.5 py-2 text-sm outline-none focus:border-primary"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-foreground">URL ảnh bìa (tuỳ chọn)</label>
-                  <input
-                    type="url"
-                    placeholder="https://..."
-                    value={coverPhotoUrl}
-                    onChange={(e) => setCoverPhotoUrl(e.target.value)}
-                    className="mt-1 w-full rounded-xl border border-border px-3.5 py-2 text-sm outline-none focus:border-primary"
-                  />
-                </div>
-              </div>
-
-              {/* Step 3: Shipping Address (if physical book) */}
-              {format !== "DIGITAL_PDF" && (
-                <div className="rounded-3xl border border-border bg-card p-6 shadow-sm space-y-4">
-                  <h3 className="text-base font-bold text-foreground flex items-center gap-2">
-                    <Truck size={18} className="text-primary" />
-                    3. Địa chỉ giao nhận sách in
-                  </h3>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-xs font-bold text-foreground">Họ tên người nhận *</label>
-                      <input
-                        type="text"
-                        required
-                        placeholder="Nguyễn Văn A"
-                        value={recipientName}
-                        onChange={(e) => setRecipientName(e.target.value)}
-                        className="mt-1 w-full rounded-xl border border-border px-3.5 py-2 text-sm outline-none focus:border-primary"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-bold text-foreground">Số điện thoại *</label>
-                      <input
-                        type="tel"
-                        required
-                        placeholder="0912345678"
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        className="mt-1 w-full rounded-xl border border-border px-3.5 py-2 text-sm outline-none focus:border-primary"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div className="sm:col-span-2">
-                      <label className="block text-xs font-bold text-foreground">Địa chỉ nhà / số đường *</label>
-                      <input
-                        type="text"
-                        required
-                        placeholder="Số 45 ngõ 12 Đường Cầu Giấy..."
-                        value={address}
-                        onChange={(e) => setAddress(e.target.value)}
-                        className="mt-1 w-full rounded-xl border border-border px-3.5 py-2 text-sm outline-none focus:border-primary"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-bold text-foreground">Tỉnh / Thành phố *</label>
-                      <input
-                        type="text"
-                        required
-                        value={city}
-                        onChange={(e) => setCity(e.target.value)}
-                        className="mt-1 w-full rounded-xl border border-border px-3.5 py-2 text-sm outline-none focus:border-primary"
-                      />
-                    </div>
-                  </div>
-                </div>
+      <div className="mt-10 grid grid-cols-1 gap-10 lg:grid-cols-12">
+        <aside className="lg:col-span-5">
+          <div className="lg:sticky lg:top-6">
+            <p className="text-sm text-muted-foreground">Mô phỏng bản in thực tế ({format})</p>
+            <div className="relative mt-3 flex aspect-[3/4] w-full flex-col justify-between overflow-hidden rounded-xl bg-primary p-6 text-primary-foreground">
+              {coverPhotoUrl && (
+                // eslint-disable-next-line @next/next/no-img-element -- a travel-book cover can reference user-uploaded media from variable hosts.
+                <img src={coverPhotoUrl} alt="Cover" className="absolute inset-0 h-full w-full object-cover opacity-35 mix-blend-overlay" />
               )}
-
-              {/* Order Summary & Submit */}
-              <div className="rounded-3xl border border-border bg-card p-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                  <span className="text-xs text-muted-foreground">Tổng tiền thanh toán:</span>
-                  <div className="text-2xl font-black text-primary">
-                    {new Intl.NumberFormat("vi-VN").format(selectedPricing.price)} ₫
-                  </div>
-                  <span className="text-[11px] text-emerald-600 font-semibold">
-                    Miễn phí vận chuyển toàn quốc
-                  </span>
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={ordering || !title.trim()}
-                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-primary px-7 py-3.5 text-sm font-bold text-white shadow-md hover:bg-primary/90 active:scale-95 disabled:opacity-50 transition"
-                >
-                  <CreditCard size={18} />
-                  {ordering ? "Đang xử lý..." : "Tiến hành thanh toán"}
-                </button>
+              <div className="relative z-10 flex items-center justify-between text-xs opacity-80">
+                <span className="tracking-widest">TRIPZ EDITION</span>
+                <span className="tabular-nums">{book.pageCount} PAGES</span>
               </div>
-            </form>
+              <div className="relative z-10 my-auto text-center">
+                <h2 className="text-3xl font-medium tracking-tight">{title || "Tên chuyến đi"}</h2>
+                {subtitle && <p className="mx-auto mt-2 max-w-xs text-sm italic opacity-80">{subtitle}</p>}
+              </div>
+              <div className="relative z-10 border-t border-primary-foreground/20 pt-3 text-center text-xs opacity-60">Tuyển tập kỷ niệm phượt</div>
+            </div>
+
+            <dl className="mt-4 grid gap-1 text-sm">
+              {[
+                ["Quy cách in", selectedPricing.label],
+                ["Số trang", `${book.pageCount} trang màu cao cấp`],
+                ["Đóng gói", "Hộp quà tặng Tripz bảo vệ"],
+              ].map(([label, value], index) => (
+                <div key={label} className={`flex justify-between gap-4 rounded-lg px-4 py-3 ${index % 2 === 0 ? "bg-muted" : "bg-muted/50"}`}>
+                  <dt className="text-muted-foreground">{label}</dt>
+                  <dd className="text-right font-medium">{value}</dd>
+                </div>
+              ))}
+            </dl>
           </div>
-        </div>
+        </aside>
+
+        <form onSubmit={handleOrder} className="space-y-10 lg:col-span-7">
+          <fieldset>
+            <legend className="text-lg font-medium">1. Chọn định dạng xuất bản</legend>
+            <div className="mt-4 grid grid-cols-1 gap-1 sm:grid-cols-3 sm:gap-2">
+              {(Object.keys(formatPricing) as Array<keyof typeof formatPricing>).map((fmtKey) => {
+                const item = formatPricing[fmtKey];
+                return (
+                  <label
+                    key={fmtKey}
+                    className="flex cursor-pointer flex-col rounded-lg bg-muted p-4 transition-colors hover:bg-border has-[:checked]:bg-primary has-[:checked]:text-primary-foreground has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-ring"
+                  >
+                    <input type="radio" name="book-format" value={fmtKey} checked={format === fmtKey} onChange={() => setFormat(fmtKey)} className="sr-only" />
+                    <span className="text-sm font-medium">{item.label}</span>
+                    <span className="mt-2 text-xl tabular-nums">{money(item.price)}</span>
+                    <span className="mt-1 text-xs leading-snug opacity-70">{item.desc}</span>
+                  </label>
+                );
+              })}
+            </div>
+          </fieldset>
+
+          <fieldset className="space-y-4">
+            <legend className="text-lg font-medium">2. Tuỳ chỉnh bìa và tiêu đề</legend>
+            <div className="pt-1">
+              <label htmlFor="tb-title" className="block text-sm font-medium">Tên sách in *</label>
+              <Input id="tb-title" type="text" required value={title} onChange={(e) => setTitle(e.target.value)} className="mt-2 h-11" />
+            </div>
+            <div>
+              <label htmlFor="tb-subtitle" className="block text-sm font-medium">Tiêu đề phụ / Lời đề tựa</label>
+              <Input id="tb-subtitle" type="text" placeholder="Ví dụ: Cung đường hạnh phúc 2026..." value={subtitle} onChange={(e) => setSubtitle(e.target.value)} className="mt-2 h-11" />
+            </div>
+            <div>
+              <label htmlFor="tb-cover" className="block text-sm font-medium">URL ảnh bìa (tuỳ chọn)</label>
+              <Input id="tb-cover" type="url" placeholder="https://..." value={coverPhotoUrl} onChange={(e) => setCoverPhotoUrl(e.target.value)} className="mt-2 h-11" />
+            </div>
+          </fieldset>
+
+          {format !== "DIGITAL_PDF" && (
+            <fieldset className="space-y-4">
+              <legend className="text-lg font-medium">3. Địa chỉ giao nhận sách in</legend>
+              <div className="grid grid-cols-1 gap-4 pt-1 sm:grid-cols-2">
+                <div>
+                  <label htmlFor="tb-name" className="block text-sm font-medium">Họ tên người nhận *</label>
+                  <Input id="tb-name" type="text" required placeholder="Nguyễn Văn A" value={recipientName} onChange={(e) => setRecipientName(e.target.value)} className="mt-2 h-11" />
+                </div>
+                <div>
+                  <label htmlFor="tb-phone" className="block text-sm font-medium">Số điện thoại *</label>
+                  <Input id="tb-phone" type="tel" required placeholder="0912345678" value={phone} onChange={(e) => setPhone(e.target.value)} className="mt-2 h-11" />
+                </div>
+              </div>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                <div className="sm:col-span-2">
+                  <label htmlFor="tb-address" className="block text-sm font-medium">Địa chỉ nhà / số đường *</label>
+                  <Input id="tb-address" type="text" required placeholder="Số 45 ngõ 12 Đường Cầu Giấy..." value={address} onChange={(e) => setAddress(e.target.value)} className="mt-2 h-11" />
+                </div>
+                <div>
+                  <label htmlFor="tb-city" className="block text-sm font-medium">Tỉnh / Thành phố *</label>
+                  <Input id="tb-city" type="text" required value={city} onChange={(e) => setCity(e.target.value)} className="mt-2 h-11" />
+                </div>
+              </div>
+            </fieldset>
+          )}
+
+          <div className="flex flex-col justify-between gap-4 rounded-xl bg-muted p-5 sm:flex-row sm:items-center">
+            <div>
+              <p className="text-sm text-muted-foreground">Tổng tiền thanh toán</p>
+              <p className="text-3xl font-medium tabular-nums tracking-tight">{money(selectedPricing.price)}</p>
+              <p className="text-sm text-success">Miễn phí vận chuyển toàn quốc</p>
+            </div>
+            <Button type="submit" size="lg" disabled={ordering || !title.trim()} className="min-h-12">
+              <CreditCard aria-hidden="true" />
+              {ordering ? "Đang xử lý..." : "Tiến hành thanh toán"}
+            </Button>
+          </div>
+        </form>
       </div>
     </div>
   );
