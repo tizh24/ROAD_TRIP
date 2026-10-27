@@ -48,9 +48,34 @@ No testimonials, press, traveler counts, ratings or prices.
 | `achromatic-ledger` | Chrome without colour; one chart hue marks the main data; near-black primary action; hue only where a figure changed | **Recommended.** Matches the dashboard template's neutral palette and suits partner and admin tables, finance and moderation. |
 | `editorial-greeting` | Typeset greeting as the h1, regular-weight figures on tonal panels, centered 1100px column | Good for the traveler home only; a centered column is wrong for the planner, tables and admin. |
 
-## Owner choice (pending)
+## Owner choice (2026-10-27): follow the recommendations
 
-- Landing: `product-performs` / `split-stage` / `borrowed-category`
-- App: `achromatic-ledger` / `editorial-greeting`
+- Landing: **`product-performs`**, seed 1001830175. Sheet: hero "Column on one line", showcase "Live demo with controls", features "Fixed output, live controls", how-it-works "Call and response column", list "Day tabs, banded agenda", cta "A sentence with a blank", footer "A single quiet line", motion "Slow crossfade".
+- App: **`achromatic-ledger`**, seed 1718194201, kind `workspace`. Chrome has no colour, near-black primary, one chart hue on the main data element, a small signal only where a figure changed.
 
-After the choice: deal the full sheet with `--direction` / `--style`, mock one screen of each, then replace `DESIGN.md`.
+Full sheets are reproducible with the commands in `.taste-skill/` (ignored by git); the decisions below are the durable record.
+
+## How each dealt section maps to real Tripz content
+
+| Dealt section | Tripz content (all real) |
+| --- | --- |
+| Hero: column on one line, peeking panel | Headline about planning a road trip on one map; the peeking panel is two real itinerary rows (day, stop, distance) built as the product's own HTML fragment (`data-ui`) |
+| Showcase: live demo with controls | The planner fragment: change vehicle (motorbike / car / camper), days, stops and the route and budget summary respond. Numbers are computed, labelled as an example trip |
+| Features: fixed output, live controls | Fixed output = one trip sheet; controls = companions, stops order, visibility (public/private). Operating a control changes the sheet |
+| How it works: call and response | Call = what the traveler enters (a destination, a day); response = the itinerary row returned. Three exchanges, last one the finished route |
+| List: day tabs, banded agenda | Day tabs = trip days; bands = stops of that day (time, place, note). No portraits (no people shown) |
+| CTA: sentence with a blank | Adjusted: no email capture exists, so the blank is a destination field that opens `/signup?next=` or the planner; button is the last word |
+| Footer: single quiet line | Real routes only |
+
+## Redraws and adjustments (recorded as the sheet requires)
+
+1. **Pictures floor (four real pictures).** The sheet asks for at least four real pictures. Only one credited photograph exists today, so the plan is to gather three to five credited images of Vietnamese roads and places with `assets.mjs`, stored with `CREDITS.md`. If honest pictures cannot be found, the shortfall is listed as a deviation, not filled with stock.
+2. **App shell: icon rail becomes a collapsible labelled sidebar.** The dealt shell is an unlabelled icon rail, which suits few destinations. Traveler has about ten destinations and admin about six with sub-sections, so a rail would hide labels people need. We keep the dashboard template's sidebar (labelled by default, collapsible to an icon rail with tooltips) and the style's flat, neutral treatment of it. Mobile uses the bottom bar the style prescribes.
+3. **Chart hue.** The style's `#1d5fbf` is replaced by the template's `--chart-3` (blue-slate) which already belongs to the kept palette, only where a main data element exists. It must reach 3:1 on white.
+4. **Figures.** Regular-weight tabular figures in Inter (`font-variant-numeric: tabular-nums`). Geist Mono is not used.
+5. **Greeting home (traveler).** The traveler dashboard borrows the style's "home" screen (greeting as h1 in the sans at 24/400, four count tiles, panels) but uses the full content width of the shell, not a centred 1100 px column, so the planner and tables share one frame.
+6. **Login and other auth pages.** Owner-specified Beam stage with gradient wash is an explicit exception to the no-gradient rule.
+
+## Type and palette (kept, from the reference sources)
+
+Inter. Neutral oklch scale and `--chart-1..5` from the dashboard template (already in `web/src/app/globals.css`). Primary action near-black. One accent rule: color only on data and on one signal per screen.

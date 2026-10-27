@@ -14,9 +14,9 @@ Spec: `./tripz-ui-rebuild-spec.md`. Plan: `./tripz-ui-rebuild-plan.md`.
 - [x] Inventory the subject (8 to 12 Tripz-specific items).
 - [x] Write the landing argument (claim and proof per section).
 - [x] Draw three page directions and three app directions.
-- [ ] Mock one screen per direction and present to the owner.
+- [x] Owner chose the recommended directions (2026-10-27); separate mocks skipped, the real landing and shell are built and reviewed in the browser instead.
 - [x] Palette and type taken from the reference sources (owner decision 2026-10-27). Composition direction still to be dealt with `--keep palette,type`. **(gate for composition)**
-- [ ] Save the direction sheet in `docs/design/direction.md`; replace `DESIGN.md`.
+- [x] Save the direction sheet in `docs/design/direction.md`; replace `DESIGN.md`.
 
 ## 2. Foundation
 
