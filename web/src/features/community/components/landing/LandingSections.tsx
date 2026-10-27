@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, CalendarDays, MapPin, Wallet } from "lucide-react";
-import heroImage from "@/assets/images/roadtrip-hero.png";
+import heroImage from "@/assets/images/roadtrip-hero.webp";
 import type { PublicTrip } from "@/features/trip-planning/api/public-trips";
 import { destinations, landingRoutes, planSteps, valueItems } from "./content";
 

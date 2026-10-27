@@ -48,7 +48,7 @@ Spec: `./tripz-ui-rebuild-spec.md`. Plan: `./tripz-ui-rebuild-plan.md`.
 ## 4. Shell and auth
 
 - [x] Login on the owner's Beam stage-and-card layout (see spec): existing server action kept, Vietnamese copy, Google/Facebook/Apple buttons (not wired yet), original framer-motion wash, new palette.
-- [ ] Signup, forgot-password, reset-password and recovery use the same layout.
+- [x] Signup, forgot-password, reset-password and recovery use the same layout (shared `AuthStage` component in `web/src/features/auth/components/`).
 - [ ] Shared shell with traveler, partner and admin navigation; skip link and `id="main-content"` on each.
 - [ ] Role navigation and guest redirect checks; BFF auth e2e still green.
 

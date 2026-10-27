@@ -3,10 +3,10 @@
 import React, { useActionState } from "react";
 import { useFormStatus } from "react-dom";
 import Link from "next/link";
-import { motion, useReducedMotion } from "framer-motion";
-import { ArrowLeft, LoaderCircle } from "lucide-react";
+import { LoaderCircle } from "lucide-react";
 import { login, type LoginState } from "@/features/auth/actions";
 import { oauthProviders, startOAuth, type OAuthProvider } from "@/features/auth/oauth-providers";
+import AuthStage from "@/features/auth/components/AuthStage";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -82,43 +82,11 @@ interface LoginViewProps {
 }
 
 export default function LoginView({ authError, nextPath }: LoginViewProps) {
-  const reduceMotion = useReducedMotion();
   const [state, action] = useActionState(login, initialState);
   const activeError = state.error ?? (authError ? errorMessages[authError] : null);
 
   return (
-    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background p-6">
-      {/* Full-bleed rotating multi-color wash, sized past the container so it reads as motion */}
-      <motion.div
-        className="pointer-events-none absolute -inset-1/2 opacity-60 blur-3xl"
-        style={{
-          background:
-            "conic-gradient(from 0deg, var(--chart-1), var(--chart-4), var(--chart-2), var(--chart-5), var(--chart-1))",
-        }}
-        animate={reduceMotion ? undefined : { rotate: 360 }}
-        transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
-        aria-hidden="true"
-      />
-
-      {/* Grid layered on top of the color wash */}
-      <div
-        className="absolute inset-0 opacity-40"
-        style={{
-          backgroundImage:
-            "linear-gradient(to right, var(--border) 1px, transparent 1px), linear-gradient(to bottom, var(--border) 1px, transparent 1px)",
-          backgroundSize: "24px 24px",
-        }}
-        aria-hidden="true"
-      />
-
-      <Link
-        href="/"
-        className="absolute left-6 top-6 z-10 inline-flex min-h-11 items-center gap-2 rounded-md bg-card/80 px-3 text-sm font-medium text-foreground backdrop-blur hover:bg-card"
-      >
-        <ArrowLeft className="size-4" aria-hidden="true" />
-        Về trang chủ
-      </Link>
-
+    <AuthStage>
       <Card className="relative z-10 w-full max-w-sm gap-6 p-8 shadow-lg">
         <div className="space-y-1">
           <h1 className="text-xl font-semibold">Chào mừng trở lại</h1>
@@ -212,6 +180,6 @@ export default function LoginView({ authError, nextPath }: LoginViewProps) {
           </Link>
         </p>
       </Card>
-    </main>
+    </AuthStage>
   );
 }
