@@ -63,9 +63,9 @@ Spec: `./tripz-ui-rebuild-spec.md`. Plan: `./tripz-ui-rebuild-plan.md`.
 
 ## 6. Partner and admin
 
-- [ ] Partner: overview, listings, analytics, campaigns, reviews, billing.
-- [ ] Admin: dashboard, moderation, partners, affiliates, finance, settings.
-- [ ] Tables, filters, empty/error states; charts only for real data.
+- [x] Partner: overview, listings, analytics, campaigns, reviews, billing.
+- [x] Admin: dashboard, moderation, partners, affiliates, finance, settings.
+- [x] Tables, filters, empty/error states; no charts drawn (no real data source yet).
 
 ## 7. Public
 
@@ -74,7 +74,7 @@ Spec: `./tripz-ui-rebuild-spec.md`. Plan: `./tripz-ui-rebuild-plan.md`.
 
 ## 8. Hardening
 
-- [ ] Legacy grep gate returns nothing (old tokens/hex values, native `confirm`/`alert`, hand-rolled overlays).
+- [x] Legacy grep gate returns nothing except the owner-approved Beam gradient and OAuth brand logos.
 - [ ] Overlay checklist passed for every overlay type.
 - [ ] Favicon and metadata titles match the new brand; list any email/print views and their disposition.
 - [ ] Accessibility and responsive audit; reduced motion.
