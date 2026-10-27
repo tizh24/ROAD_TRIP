@@ -27,5 +27,22 @@ export default function PlaceSearch({ tripId, dayId, stopCount, onAdded }: { tri
     catch (error) { setMessage(error instanceof GatewayApiError ? error.message : "Không thể thêm điểm dừng."); }
     finally { setBusy(false); }
   }
-  return <div className="mt-6 rounded-xl border border-dashed border-primary/40 bg-primary/5 p-4"><label htmlFor="place-search" className="block text-sm font-bold text-gray-800">Thêm điểm dừng</label><input id="place-search" role="combobox" aria-expanded={places.length > 0} aria-controls="place-search-results" aria-autocomplete="list" value={query} onChange={(event) => updateQuery(event.target.value)} placeholder="Tìm địa điểm…" className="field mt-2 bg-card" />{busy && <p role="status" aria-live="polite" className="mt-2 text-sm text-gray-600">Đang tìm…</p>}{message && <p role="alert" className="mt-2 text-sm text-red-700">{message} <button type="button" onClick={() => updateQuery(query)} className="font-bold underline">Thử lại</button></p>}<ul id="place-search-results" role="listbox" className={`mt-2 overflow-hidden rounded-lg border border-gray-200 bg-card ${places.length === 0 ? "hidden" : ""}`}>{places.map((place) => <li key={place.id}><button role="option" aria-selected="false" type="button" disabled={busy} onClick={() => void select(place)} className="w-full px-3 py-3 text-left hover:bg-gray-50 disabled:opacity-60"><strong className="block text-sm">{place.name}</strong><span className="text-xs text-gray-600">{place.address}</span></button></li>)}</ul></div>;
+  return (
+    <div className="mt-6 rounded-xl border border-dashed border-border p-4">
+      <label htmlFor="place-search" className="block text-sm font-medium">Thêm điểm dừng</label>
+      <input id="place-search" role="combobox" aria-expanded={places.length > 0} aria-controls="place-search-results" aria-autocomplete="list" value={query} onChange={(event) => updateQuery(event.target.value)} placeholder="Tìm địa điểm…" className="field mt-2 min-h-11 bg-card" />
+      {busy && <p role="status" aria-live="polite" className="mt-2 text-sm text-muted-foreground">Đang tìm…</p>}
+      {message && <p role="alert" className="mt-2 text-sm text-destructive">{message} <button type="button" onClick={() => updateQuery(query)} className="focus-ring rounded font-medium underline">Thử lại</button></p>}
+      <ul id="place-search-results" role="listbox" className={`mt-2 overflow-hidden rounded-lg bg-muted ${places.length === 0 ? "hidden" : ""}`}>
+        {places.map((place) => (
+          <li key={place.id}>
+            <button role="option" aria-selected="false" type="button" disabled={busy} onClick={() => void select(place)} className="focus-ring min-h-12 w-full px-3 py-3 text-left hover:bg-border disabled:opacity-60">
+              <strong className="block text-sm font-medium">{place.name}</strong>
+              <span className="text-xs text-muted-foreground">{place.address}</span>
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
 }

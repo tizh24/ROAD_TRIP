@@ -12,6 +12,8 @@ import {
 import type { Invitation, Member } from "../api/trip-model";
 import { trackAnalytics } from "@/lib/analytics/analytics";
 import FeedbackState from "@/components/ui/FeedbackState";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 type PendingAction = "invite" | `member:${string}` | `invitation:${string}`;
 
@@ -119,50 +121,44 @@ export default function CollaborationPanel({ tripId }: { tripId: string }) {
   const activeMembers = members.filter((member) => member.status === "ACTIVE");
 
   return (
-    <section
-      className="surface-card mt-8 p-6"
-      aria-labelledby="collaboration-title"
-    >
-      <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-foreground">Cùng lập kế hoạch</p>
-      <h2 id="collaboration-title" className="mt-2 text-xl font-semibold text-foreground">
+    <section aria-labelledby="collaboration-title">
+      <h2 id="collaboration-title" className="text-2xl font-medium tracking-tight">
         Cộng tác viên
       </h2>
+      <p className="mt-1 text-sm text-muted-foreground">Cùng lập kế hoạch với bạn đồng hành.</p>
       {error && <div className="mt-5"><FeedbackState kind="error" title="Không thể cập nhật cộng tác viên" description={error} actionLabel="Thử lại" onAction={() => void load().catch(() => undefined)} /></div>}
 
-      <form onSubmit={(event) => void invite(event)} className="mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+      <form onSubmit={(event) => void invite(event)} className="mt-5 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
         <label className="sr-only" htmlFor="invite-email">
           Email người được mời
         </label>
-        <input
+        <Input
           id="invite-email"
           type="email"
           required
           value={email}
           onChange={(event) => setEmail(event.target.value)}
-          className="field min-w-0 bg-card sm:flex-1"
+          className="h-11 min-w-0 sm:flex-1"
           placeholder="email@example.com"
         />
         <select
           aria-label="Quyền lời mời"
           value={permission}
           onChange={(event) => setPermission(event.target.value as "VIEW" | "EDIT")}
-          className="rounded-xl border border-border bg-card px-3 py-3 sm:w-auto"
+          className="field min-h-11 bg-card sm:w-auto"
         >
           <option value="VIEW">Chỉ xem</option>
           <option value="EDIT">Có thể sửa</option>
         </select>
-        <button
-          disabled={pendingAction !== undefined}
-          className="focus-ring w-full rounded-xl bg-primary px-4 py-3 text-sm font-bold text-white shadow-xs hover:bg-primary/90 disabled:opacity-50 sm:w-auto"
-        >
+        <Button type="submit" disabled={pendingAction !== undefined} className="min-h-11">
           {pendingAction === "invite" ? "Đang mời…" : "Mời"}
-        </button>
+        </Button>
       </form>
 
       {shareLink && (
-        <div className="mt-3 rounded-xl bg-success/10 p-3 text-sm text-success" role="status">
+        <div className="mt-3 rounded-lg bg-muted p-3 text-sm text-success" role="status">
           Đã tạo lời mời. Liên kết có thể đã được sao chép; bạn cũng có thể{" "}
-          <a className="font-bold underline" href={shareLink}>
+          <a className="font-medium underline" href={shareLink}>
             mở liên kết mời
           </a>
           .
@@ -170,19 +166,19 @@ export default function CollaborationPanel({ tripId }: { tripId: string }) {
       )}
 
       {loading ? (
-        <p className="mt-6 text-sm text-gray-600">Đang tải thành viên…</p>
+        <p className="mt-6 text-sm text-muted-foreground">Đang tải thành viên…</p>
       ) : (
-        <ul className="mt-6 space-y-3" aria-label="Thành viên chuyến đi">
-          {activeMembers.map((member) => {
+        <ul className="mt-6 grid gap-1" aria-label="Thành viên chuyến đi">
+          {activeMembers.map((member, index) => {
             const memberBusy = pendingAction === `member:${member.userId}`;
             return (
               <li
                 key={member.userId}
-                className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-muted p-3 text-sm"
+                className={`flex min-h-14 flex-wrap items-center justify-between gap-3 rounded-lg px-4 py-2 text-sm ${index % 2 === 0 ? "bg-muted" : "bg-muted/50"}`}
               >
-                <span>
-                  <strong>{member.role === "OWNER" ? "Chủ chuyến đi" : "Thành viên"}</strong>
-                  <span className="ml-2 text-gray-600">{member.userId}</span>
+                <span className="min-w-0">
+                  <strong className="font-medium">{member.role === "OWNER" ? "Chủ chuyến đi" : "Thành viên"}</strong>
+                  <span className="ml-2 text-muted-foreground">{member.userId}</span>
                 </span>
                 {member.role === "MEMBER" && (
                   <span className="flex gap-2">
@@ -196,19 +192,21 @@ export default function CollaborationPanel({ tripId }: { tripId: string }) {
                           event.target.value as "VIEW" | "EDIT",
                         )
                       }
-                      className="rounded border px-2"
+                      className="field min-h-9 w-auto bg-card py-1"
                     >
                       <option value="VIEW">Chỉ xem</option>
                       <option value="EDIT">Có thể sửa</option>
                     </select>
-                    <button
+                    <Button
                       type="button"
+                      variant="outline"
+                      size="sm"
                       disabled={memberBusy}
                       onClick={() => void remove(member.userId)}
-                      className="rounded border border-red-200 px-2 text-red-700 disabled:opacity-50"
+                      className="text-destructive hover:text-destructive"
                     >
                       {memberBusy ? "Đang xử lý…" : "Gỡ"}
-                    </button>
+                    </Button>
                   </span>
                 )}
               </li>
@@ -218,25 +216,27 @@ export default function CollaborationPanel({ tripId }: { tripId: string }) {
       )}
 
       {invitations.length > 0 && (
-        <div className="mt-6">
-          <h3 className="font-bold">Lời mời</h3>
-          <ul className="mt-2 space-y-2">
+        <div className="mt-8">
+          <h3 className="text-lg font-medium">Lời mời</h3>
+          <ul className="mt-2 divide-y divide-border">
             {invitations.map((invitation) => {
               const invitationBusy = pendingAction === `invitation:${invitation.id}`;
               return (
-                <li key={invitation.id} className="flex flex-wrap justify-between gap-2 text-sm">
+                <li key={invitation.id} className="flex min-h-12 flex-wrap items-center justify-between gap-2 text-sm">
                   <span>
                     {invitation.inviteeEmail} · {invitation.permission} · {invitation.status}
                   </span>
                   {invitation.status === "PENDING" && (
-                    <button
+                    <Button
                       type="button"
+                      variant="ghost"
+                      size="sm"
                       disabled={invitationBusy}
                       onClick={() => void revoke(invitation.id)}
-                      className="font-bold text-red-700 underline disabled:opacity-50"
+                      className="text-destructive hover:text-destructive"
                     >
                       {invitationBusy ? "Đang thu hồi…" : "Thu hồi"}
-                    </button>
+                    </Button>
                   )}
                 </li>
               );

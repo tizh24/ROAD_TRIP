@@ -4,22 +4,9 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useState, type ReactNode } from "react";
-import {
-  CalendarDays,
-  Check,
-  ChevronDown,
-  ChevronUp,
-  Compass,
-  Copy,
-  Globe,
-  Lock,
-  MapPinned,
-  Navigation,
-  Pencil,
-  Share2,
-  Trash2,
-  Wallet,
-} from "lucide-react";
+import { Check, ChevronDown, ChevronUp, Copy, Navigation, Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import { GatewayApiError } from "@/features/trip-planning/api/gateway-request";
 import {
   getTrip,
@@ -35,7 +22,7 @@ import CollaborationPanel from "./CollaborationPanel";
 import { trackAnalytics } from "@/lib/analytics/analytics";
 import FeedbackState from "@/components/ui/FeedbackState";
 
-const RouteMap = dynamic(() => import("./RouteMap"), { ssr: false, loading: () => <div className="surface-card h-[22rem] animate-pulse p-6 text-sm text-muted-foreground">Đang tải bản đồ…</div> });
+const RouteMap = dynamic(() => import("./RouteMap"), { ssr: false, loading: () => <div className="h-[22rem] animate-pulse rounded-xl bg-muted p-6 text-sm text-muted-foreground">Đang tải bản đồ…</div> });
 type State = { kind: "loading" } | { kind: "ready"; trip: TripDetail } | { kind: "missing" } | { kind: "forbidden" } | { kind: "error"; message: string };
 
 export default function TripEditorView({ tripId }: { tripId: string }) {
@@ -59,7 +46,7 @@ export default function TripEditorView({ tripId }: { tripId: string }) {
   useEffect(() => { queueMicrotask(() => { void load(); }); }, [load]);
   useEffect(() => { if (state.kind === "ready") trackAnalytics("trip_edit_resumed", { role: state.trip.role, permission: state.trip.permission }, { dedupeKey: state.trip.id }); }, [state]);
 
-  if (state.kind === "loading") return <div className="page-shell w-full py-12" aria-busy="true"><div className="h-10 w-72 animate-pulse rounded bg-border" /><div className="surface-card mt-8 h-80 animate-pulse" /></div>;
+  if (state.kind === "loading") return <div className="page-shell w-full py-12" aria-busy="true"><div className="h-10 w-72 animate-pulse rounded bg-muted" /><div className="mt-8 h-80 animate-pulse rounded-xl bg-muted" /></div>;
   if (state.kind === "missing" || state.kind === "forbidden") return <div className="page-shell py-16"><FeedbackState kind={state.kind === "missing" ? "empty" : "permission"} title={state.kind === "missing" ? "Không tìm thấy chuyến đi" : "Bạn không có quyền truy cập"} description={state.kind === "missing" ? "Chuyến đi có thể đã bị xóa hoặc không còn tồn tại." : "Bạn cần lời mời hợp lệ để xem lịch trình này."}><Link href="/dashboard" className="focus-ring text-sm font-bold text-primary hover:underline">Về danh sách chuyến đi</Link></FeedbackState></div>;
   if (state.kind === "error") return <div className="page-shell py-16"><FeedbackState kind="error" title="Không thể tải lịch trình" description={state.message} actionLabel="Thử lại" onAction={() => void load()} /></div>;
   const { trip } = state;
@@ -141,82 +128,60 @@ export default function TripEditorView({ tripId }: { tripId: string }) {
     }
   }
 
-  return <div className="min-h-screen bg-muted pb-16">
-    <section className="relative isolate overflow-hidden bg-primary px-4 py-8 text-white sm:px-6 lg:py-12">
-      <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_8%_10%,rgba(239,177,91,.32),transparent_28%),radial-gradient(circle_at_86%_80%,rgba(217,101,50,.35),transparent_30%)]" />
-      <div className="page-shell px-0">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <Link href="/dashboard" className="focus-ring inline-flex rounded-full bg-card/10 px-3 py-2 text-sm font-bold text-white/90 hover:bg-card/20">
-            ← Chuyến đi của bạn
-          </Link>
-          <Link
-            href={`/road/${trip.id}`}
-            className="focus-ring inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-extrabold text-white shadow-xs hover:bg-primary/90 transition"
-          >
-            <Navigation size={16} />
-            <span>Bắt đầu chuyến đi</span>
-          </Link>
-        </div>
+  const visibilityLabel = trip.visibility === "PUBLISHED" ? "Công khai" : trip.visibility === "UNLISTED" ? "Có liên kết" : "Riêng tư";
+  const roleLabel = trip.role === "OWNER" ? "Chủ chuyến đi" : canEdit ? "Thành viên có thể chỉnh sửa" : "Thành viên chỉ xem";
 
-        <div className="mt-8 flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
-          <div className="max-w-3xl">
-            <div className="flex flex-wrap items-center gap-2">
-              <p className="inline-flex items-center gap-2 rounded-full bg-card/10 px-3 py-1.5 text-xs font-bold">
-                <Compass size={14} /> {trip.role === "OWNER" ? "Chủ chuyến đi" : canEdit ? "Thành viên có thể chỉnh sửa" : "Thành viên chỉ xem"}
-              </p>
-              <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold ${
-                trip.visibility === "PUBLISHED" ? "bg-emerald-500/25 text-emerald-200" :
-                trip.visibility === "UNLISTED" ? "bg-amber-500/25 text-amber-200" :
-                "bg-card/10 text-white/80"
-              }`}>
-                {trip.visibility === "PUBLISHED" ? <Globe size={13} /> : trip.visibility === "UNLISTED" ? <Share2 size={13} /> : <Lock size={13} />}
-                {trip.visibility === "PUBLISHED" ? "Công khai" : trip.visibility === "UNLISTED" ? "Có liên kết" : "Riêng tư"}
-              </span>
-            </div>
-            <h1 className="mt-4 text-3xl font-extrabold tracking-tight sm:text-5xl">{trip.title}</h1>
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-white/75 sm:text-base">{trip.description || "Thêm các điểm dừng để biến ý tưởng thành một hành trình rõ ràng."}</p>
-          </div>
-          <div className="grid grid-cols-3 gap-3 sm:min-w-[27rem]">
-            <Fact icon={<CalendarDays size={16} />} label="Thời gian" value={`${trip.days.length} ngày`} />
-            <Fact icon={<MapPinned size={16} />} label="Điểm dừng" value={`${totalStops} nơi`} />
-            <Fact icon={<Wallet size={16} />} label="Ngân sách" value={`${trip.budgetAmount.toLocaleString("vi-VN")} ${trip.currency}`} />
-          </div>
-        </div>
+  return (
+    <div className="page-shell px-4 py-8 sm:px-6 sm:py-10">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <Link href="/dashboard" className="focus-ring inline-flex min-h-11 items-center rounded text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline">
+          ← Chuyến đi của bạn
+        </Link>
+        <Button asChild className="min-h-11">
+          <Link href={`/road/${trip.id}`}>
+            <Navigation aria-hidden="true" /> Bắt đầu chuyến đi
+          </Link>
+        </Button>
       </div>
-    </section>
 
-    <div className="page-shell px-4 sm:px-6">
+      <header className="mt-6">
+        <p className="text-sm text-muted-foreground">
+          {roleLabel} · {visibilityLabel}
+        </p>
+        <h1 className="mt-2 text-3xl font-medium tracking-tight sm:text-4xl">{trip.title}</h1>
+        <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
+          {trip.description || "Thêm các điểm dừng để biến ý tưởng thành một hành trình rõ ràng."}
+        </p>
+        <dl className="mt-8 grid grid-cols-2 gap-x-6 gap-y-5 sm:grid-cols-4">
+          <Fact label="Thời gian" value={`${trip.days.length} ngày`} />
+          <Fact label="Điểm dừng" value={`${totalStops} nơi`} />
+          <Fact label="Ngân sách" value={`${trip.budgetAmount.toLocaleString("vi-VN")} ${trip.currency}`} />
+          <Fact label="Hoàn thiện" value={`${completion}%`} note={`${trip.days.filter((day) => day.stops.length > 0).length}/${trip.days.length} ngày có điểm dừng`} />
+        </dl>
+      </header>
+
       {conflictNotice && (
-        <div role="alert" className="mt-4 flex items-center justify-between rounded-2xl border border-amber-300 bg-amber-50 p-4 text-sm font-semibold text-amber-900 shadow-sm">
+        <div role="alert" className="mt-6 flex items-center justify-between gap-3 rounded-lg bg-muted p-4 text-sm">
           <span>{conflictNotice}</span>
-          <button type="button" onClick={() => setConflictNotice(undefined)} className="ml-3 text-xs underline font-bold">Đóng</button>
+          <Button type="button" variant="ghost" size="sm" onClick={() => setConflictNotice(undefined)}>
+            Đóng
+          </Button>
         </div>
       )}
 
-      <section className="surface-card -mt-5 grid gap-4 p-4 sm:-mt-7 sm:grid-cols-[1fr_auto] sm:items-center sm:p-5">
-        <div>
-          <div className="flex items-center justify-between gap-4">
-            <p className="text-sm font-extrabold text-foreground">Mức độ hoàn thiện hành trình</p>
-            <span className="text-sm font-extrabold text-primary">{completion}%</span>
-          </div>
-          <div className="mt-3 h-2 overflow-hidden rounded-full bg-muted">
-            <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${completion}%` }} />
-          </div>
-          <p className="mt-2 text-xs text-muted-foreground">{trip.days.filter((day) => day.stops.length > 0).length}/{trip.days.length} ngày đã có điểm dừng</p>
-        </div>
-        {canEdit && <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-2 text-xs font-bold text-primary"><Pencil size={14} /> Chế độ chỉnh sửa</span>}
-      </section>
-
       {trip.role === "OWNER" && (
-        <section className="surface-card mt-6 p-5 sm:p-6" aria-labelledby="visibility-controls-title">
+        <section className="mt-10 rounded-xl bg-muted p-5 sm:p-6" aria-labelledby="visibility-controls-title">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-foreground">Quyền hiển thị chuyến đi</p>
-              <h2 id="visibility-controls-title" className="mt-1 text-xl font-extrabold text-foreground">Chế độ chia sẻ</h2>
-              <p className="mt-1 text-sm text-muted-foreground">
-                {trip.visibility === "PUBLISHED" ? "Chuyến đi đang hiển thị công khai trên Khám phá cộng đồng. Bất kỳ ai cũng có thể xem và nhân bản." :
-                 trip.visibility === "UNLISTED" ? "Chuyến đi không xuất hiện công khai nhưng bất kỳ ai có đường liên kết đều xem được." :
-                 "Chuyến đi hoàn toàn riêng tư. Chỉ bạn và thành viên được mời mới có quyền truy cập."}
+              <h2 id="visibility-controls-title" className="text-lg font-medium">
+                Chế độ chia sẻ
+              </h2>
+              <p className="mt-1 max-w-xl text-sm text-muted-foreground">
+                {trip.visibility === "PUBLISHED"
+                  ? "Chuyến đi đang hiển thị công khai trên Khám phá cộng đồng. Bất kỳ ai cũng có thể xem và nhân bản."
+                  : trip.visibility === "UNLISTED"
+                    ? "Chuyến đi không xuất hiện công khai nhưng bất kỳ ai có đường liên kết đều xem được."
+                    : "Chuyến đi hoàn toàn riêng tư. Chỉ bạn và thành viên được mời mới có quyền truy cập."}
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-2">
@@ -225,120 +190,99 @@ export default function TripEditorView({ tripId }: { tripId: string }) {
                 disabled={visibilitySaving}
                 value={trip.visibility ?? "PRIVATE"}
                 onChange={(e) => void handleVisibilityChange(e.target.value as "PRIVATE" | "UNLISTED" | "PUBLISHED")}
-                className="field min-w-44 bg-card font-semibold"
+                className="field min-h-11 min-w-44 bg-card"
               >
-                <option value="PRIVATE">🔒 Riêng tư</option>
-                <option value="UNLISTED">🔗 Có liên kết</option>
-                <option value="PUBLISHED">🌐 Công khai cộng đồng</option>
+                <option value="PRIVATE">Riêng tư</option>
+                <option value="UNLISTED">Có liên kết</option>
+                <option value="PUBLISHED">Công khai cộng đồng</option>
               </select>
               {(trip.visibility === "UNLISTED" || trip.visibility === "PUBLISHED") && (
-                <button
-                  type="button"
-                  onClick={() => void copyShareLink()}
-                  className="focus-ring inline-flex items-center gap-1.5 rounded-xl border border-border bg-card px-3 py-2 text-xs font-bold text-foreground hover:bg-muted"
-                >
-                  {copiedLink ? <Check size={14} className="text-emerald-600" /> : <Copy size={14} />}
-                  <span>{copiedLink ? "Đã sao chép!" : "Sao chép liên kết"}</span>
-                </button>
+                <Button type="button" variant="outline" className="min-h-11" onClick={() => void copyShareLink()}>
+                  {copiedLink ? <Check aria-hidden="true" /> : <Copy aria-hidden="true" />}
+                  {copiedLink ? "Đã sao chép!" : "Sao chép liên kết"}
+                </Button>
               )}
             </div>
           </div>
           {visibilityError && (
-            <p role="alert" className="mt-3 rounded-xl bg-destructive/10 p-3 text-sm font-semibold text-destructive">
+            <p role="alert" className="mt-3 text-sm text-destructive">
               {visibilityError}
             </p>
           )}
         </section>
       )}
 
-      <div className="mt-8 grid gap-6 xl:grid-cols-[17rem_minmax(0,1fr)]">
-        <nav aria-label="Các ngày trong chuyến đi" className="surface-card h-fit p-3 xl:sticky xl:top-5">
-          <p className="px-2 pb-3 text-xs font-extrabold uppercase tracking-[.14em] text-muted-foreground">Lịch trình</p>
-          <div className="flex gap-2 overflow-x-auto xl:block xl:space-y-2">
+      <div className="mt-10 grid gap-8 xl:grid-cols-[15rem_minmax(0,1fr)]">
+        <nav aria-label="Các ngày trong chuyến đi" className="h-fit xl:sticky xl:top-6">
+          <h2 className="pb-3 text-sm text-muted-foreground">Lịch trình</h2>
+          <div className="flex gap-1.5 overflow-x-auto xl:flex-col xl:overflow-visible">
             {trip.days.map((day, index) => (
               <button
                 type="button"
                 key={day.id}
                 aria-pressed={index === dayIndex}
                 onClick={() => setDayIndex(index)}
-                className={`focus-ring min-w-36 rounded-2xl px-4 py-3 text-left transition xl:block xl:w-full ${index === dayIndex ? "bg-primary text-white shadow-xs" : "bg-muted text-foreground hover:bg-primary/10"}`}
+                className={`focus-ring flex min-h-16 min-w-32 shrink-0 flex-col items-start justify-center rounded-md px-4 text-left transition-colors xl:w-full ${index === dayIndex ? "bg-primary text-primary-foreground" : "bg-muted hover:bg-border"}`}
               >
-                <span className="block text-sm font-extrabold">Ngày {day.dayIndex}</span>
-                <span className="mt-1 block text-xs opacity-75">{day.date}</span>
-                <span className="mt-2 inline-block rounded-full bg-current/10 text-[11px] font-bold opacity-85">{day.stops.length} điểm dừng</span>
+                <span className="text-base">Ngày {day.dayIndex}</span>
+                <span className="text-sm tabular-nums opacity-80">
+                  {day.date} · {day.stops.length} điểm
+                </span>
               </button>
             ))}
           </div>
         </nav>
 
-        <section className="min-w-0 space-y-6">
-          <div className="surface-card overflow-hidden">
-            <div className="flex flex-wrap items-start justify-between gap-3 border-b border-border p-5 sm:p-6">
-              <div>
-                <p className="text-xs font-extrabold uppercase tracking-[.14em] text-primary">Ngày {activeDay.dayIndex}</p>
-                <h2 className="mt-1 text-2xl font-extrabold text-foreground">{activeDay.date}</h2>
-              </div>
-              {canEdit && <span className="rounded-full bg-muted px-3 py-2 text-xs font-bold text-foreground">Có thể thêm và sắp xếp điểm dừng</span>}
+        <div className="min-w-0 space-y-10">
+          <section aria-labelledby="day-title">
+            <div className="flex flex-wrap items-baseline justify-between gap-3">
+              <h2 id="day-title" className="text-2xl font-medium tracking-tight">
+                Ngày {activeDay.dayIndex}
+                <span className="ml-3 text-base font-normal tabular-nums text-muted-foreground">{activeDay.date}</span>
+              </h2>
+              {canEdit && <span className="text-sm text-muted-foreground">Có thể thêm và sắp xếp điểm dừng</span>}
             </div>
-            <div className="p-4 sm:p-6">
+            <div className="mt-5">
               {mutationError && (
-                <p role="alert" className="mb-4 rounded-xl bg-destructive/10 p-3 text-sm text-destructive">
-                  {mutationError} <button type="button" onClick={() => void load()} className="font-bold underline">Tải lại</button>
+                <p role="alert" className="mb-4 text-sm text-destructive">
+                  {mutationError}{" "}
+                  <button type="button" onClick={() => void load()} className="focus-ring rounded font-medium underline">
+                    Tải lại
+                  </button>
                 </p>
               )}
               {activeDay.stops.length === 0 ? (
-                <div className="rounded-2xl border border-dashed border-primary/40 bg-primary/5 p-6 text-center">
-                  <MapPinned className="mx-auto text-primary" />
-                  <h3 className="mt-3 font-extrabold text-foreground">Ngày này chưa có điểm dừng</h3>
+                <div className="rounded-xl border border-dashed border-border px-6 py-10 text-center">
+                  <h3 className="text-lg font-medium">Ngày này chưa có điểm dừng</h3>
                   <p className="mt-1 text-sm text-muted-foreground">{canEdit ? "Tìm địa điểm bên dưới để bắt đầu xây hành trình." : "Chủ chuyến đi chưa thêm địa điểm nào."}</p>
                 </div>
               ) : (
-                <ol className="space-y-3">
+                <ol className="grid gap-1">
                   {activeDay.stops.map((stop, index) => (
                     <StopCard
                       key={stop.id}
                       stop={stop}
+                      striped={index % 2 === 0}
                       editable={canEdit}
                       onRefresh={load}
                       controls={
                         <>
-                          <button
-                            type="button"
-                            aria-label={`Đưa ${stop.name} lên`}
-                            disabled={index === 0}
-                            onClick={() => void reorder(stop.id, -1)}
-                            className="focus-ring inline-flex items-center gap-1 rounded-lg border border-border px-2.5 py-2 text-xs font-bold hover:bg-muted disabled:opacity-40"
-                          >
-                            <ChevronUp size={14} /> Lên
-                          </button>
-                          <button
-                            type="button"
-                            aria-label={`Đưa ${stop.name} xuống`}
-                            disabled={index === activeDay.stops.length - 1}
-                            onClick={() => void reorder(stop.id, 1)}
-                            className="focus-ring inline-flex items-center gap-1 rounded-lg border border-border px-2.5 py-2 text-xs font-bold hover:bg-muted disabled:opacity-40"
-                          >
-                            <ChevronDown size={14} /> Xuống
-                          </button>
-                          {trip.days.filter((day) => day.id !== activeDay.id).map((day) => (
-                            <button
-                              type="button"
-                              aria-label={`Chuyển ${stop.name} sang ngày ${day.dayIndex}`}
-                              key={day.id}
-                              onClick={() => void move(stop.id, day.id)}
-                              className="focus-ring rounded-lg border border-border px-2.5 py-2 text-xs font-bold hover:bg-muted"
-                            >
-                              Sang ngày {day.dayIndex}
-                            </button>
-                          ))}
-                          <button
-                            type="button"
-                            aria-label={`Xóa ${stop.name}`}
-                            onClick={() => void remove(stop.id)}
-                            className="focus-ring inline-flex items-center gap-1 rounded-lg border border-destructive/30 px-2.5 py-2 text-xs font-bold text-destructive hover:bg-destructive/10"
-                          >
-                            <Trash2 size={14} /> Xóa
-                          </button>
+                          <Button type="button" variant="outline" size="sm" aria-label={`Đưa ${stop.name} lên`} disabled={index === 0} onClick={() => void reorder(stop.id, -1)}>
+                            <ChevronUp aria-hidden="true" /> Lên
+                          </Button>
+                          <Button type="button" variant="outline" size="sm" aria-label={`Đưa ${stop.name} xuống`} disabled={index === activeDay.stops.length - 1} onClick={() => void reorder(stop.id, 1)}>
+                            <ChevronDown aria-hidden="true" /> Xuống
+                          </Button>
+                          {trip.days
+                            .filter((day) => day.id !== activeDay.id)
+                            .map((day) => (
+                              <Button key={day.id} type="button" variant="outline" size="sm" aria-label={`Chuyển ${stop.name} sang ngày ${day.dayIndex}`} onClick={() => void move(stop.id, day.id)}>
+                                Sang ngày {day.dayIndex}
+                              </Button>
+                            ))}
+                          <Button type="button" variant="outline" size="sm" aria-label={`Xóa ${stop.name}`} className="text-destructive hover:text-destructive" onClick={() => void remove(stop.id)}>
+                            <Trash2 aria-hidden="true" /> Xóa
+                          </Button>
                         </>
                       }
                     />
@@ -347,33 +291,79 @@ export default function TripEditorView({ tripId }: { tripId: string }) {
               )}
               {canEdit && <PlaceSearch tripId={trip.id} dayId={activeDay.id} stopCount={activeDay.stops.length} onAdded={() => void load()} />}
             </div>
-          </div>
-
-          <section className="surface-card overflow-hidden p-3 sm:p-4">
-            <div className="mb-3 flex items-center justify-between px-2">
-              <div>
-                <p className="text-xs font-extrabold uppercase tracking-[.14em] text-primary">Tuyến đường</p>
-                <h2 className="mt-1 font-extrabold text-foreground">Bản đồ ngày {activeDay.dayIndex}</h2>
-              </div>
-              <span className="rounded-full bg-muted px-3 py-1.5 text-xs font-bold text-muted-foreground">{activeDay.stops.length} điểm</span>
-            </div>
-            <RouteMap stops={activeDay.stops} />
           </section>
-        </section>
+
+          <section aria-labelledby="map-title">
+            <div className="mb-3 flex items-baseline justify-between">
+              <h2 id="map-title" className="text-lg font-medium">
+                Bản đồ ngày {activeDay.dayIndex}
+              </h2>
+              <span className="text-sm tabular-nums text-muted-foreground">{activeDay.stops.length} điểm</span>
+            </div>
+            <div className="overflow-hidden rounded-xl bg-muted">
+              <RouteMap stops={activeDay.stops} />
+            </div>
+          </section>
+        </div>
       </div>
 
       {trip.role === "OWNER" && (
-        <div className="mt-8">
+        <div className="mt-12">
           <CollaborationPanel tripId={trip.id} />
         </div>
       )}
     </div>
-  </div>;
+  );
 }
 
-function Fact({ icon, label, value }: { icon: ReactNode; label: string; value: string }) { return <div className="rounded-2xl border border-white/15 bg-card/10 p-3 backdrop-blur-sm"><span className="flex items-center gap-1 text-[11px] font-bold text-white/60">{icon}{label}</span><strong className="mt-1 block truncate text-sm sm:text-base">{value}</strong></div>; }
-function StopCard({ stop, editable, controls, onRefresh }: { stop: TripDetail["days"][number]["stops"][number]; editable: boolean; controls: ReactNode; onRefresh: () => Promise<void> }) {
-  const { tripId } = useParams<{ tripId: string }>(); const [notes, setNotes] = useState(stop.notes ?? ""); const [status, setStatus] = useState<"saved" | "saving" | "failed">("saved");
-  useEffect(() => { if (!editable || notes === (stop.notes ?? "")) return; const timer = window.setTimeout(async () => { setStatus("saving"); try { await updateStop(tripId, { ...stop, notes: notes || null }); setStatus("saved"); await onRefresh(); } catch { setStatus("failed"); } }, 600); return () => window.clearTimeout(timer); }, [editable, notes, onRefresh, stop, tripId]);
-  return <li className="relative rounded-2xl border border-border bg-card p-4 shadow-sm"><div className="absolute left-0 top-5 h-8 w-1 rounded-r-full bg-primary" /><div className="flex gap-3"><span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-extrabold text-white">{stop.stopIndex}</span><div className="min-w-0 flex-1"><h3 className="font-extrabold text-foreground">{stop.name}</h3><p className="mt-1 text-sm text-muted-foreground">{stop.address}</p>{editable ? <label className="mt-4 block text-sm font-bold text-foreground">Ghi chú<textarea value={notes} onChange={(event) => setNotes(event.target.value)} className="field mt-1 min-h-20 bg-background" aria-describedby={`${stop.id}-save`} placeholder="Mẹo đường đi, thời điểm phù hợp…" /></label> : stop.notes && <p className="mt-3 rounded-xl bg-muted p-3 text-sm text-muted-foreground">{stop.notes}</p>}<p id={`${stop.id}-save`} role="status" aria-live="polite" className={`mt-2 text-xs ${status === "failed" ? "text-destructive" : "text-muted-foreground"}`}>{status === "saving" ? "Đang lưu ghi chú…" : status === "failed" ? "Không thể lưu. Chỉnh sửa vẫn được giữ ở đây; hãy thử lại hoặc tải lại." : "Đã lưu"}</p>{editable && <div className="mt-3 flex flex-wrap gap-2">{controls}</div>}</div></div></li>;
+function Fact({ label, value, note }: { label: string; value: string; note?: string }) {
+  return (
+    <div className="min-w-0">
+      <dt className="text-sm text-muted-foreground">{label}</dt>
+      <dd className="mt-1 truncate text-2xl font-medium tabular-nums tracking-tight">{value}</dd>
+      {note && <p className="mt-0.5 text-xs text-muted-foreground">{note}</p>}
+    </div>
+  );
+}
+
+function StopCard({ stop, striped, editable, controls, onRefresh }: { stop: TripDetail["days"][number]["stops"][number]; striped: boolean; editable: boolean; controls: ReactNode; onRefresh: () => Promise<void> }) {
+  const { tripId } = useParams<{ tripId: string }>();
+  const [notes, setNotes] = useState(stop.notes ?? "");
+  const [status, setStatus] = useState<"saved" | "saving" | "failed">("saved");
+  useEffect(() => {
+    if (!editable || notes === (stop.notes ?? "")) return;
+    const timer = window.setTimeout(async () => {
+      setStatus("saving");
+      try {
+        await updateStop(tripId, { ...stop, notes: notes || null });
+        setStatus("saved");
+        await onRefresh();
+      } catch {
+        setStatus("failed");
+      }
+    }, 600);
+    return () => window.clearTimeout(timer);
+  }, [editable, notes, onRefresh, stop, tripId]);
+
+  return (
+    <li className={`flex gap-4 rounded-lg px-4 py-4 sm:px-5 ${striped ? "bg-muted" : "bg-muted/50"}`}>
+      <span className="w-7 shrink-0 pt-0.5 text-xl tabular-nums">{stop.stopIndex}</span>
+      <div className="min-w-0 flex-1">
+        <h3 className="text-lg font-medium">{stop.name}</h3>
+        <p className="mt-0.5 text-sm text-muted-foreground">{stop.address}</p>
+        {editable ? (
+          <label className="mt-4 block text-sm font-medium">
+            Ghi chú
+            <Textarea value={notes} onChange={(event) => setNotes(event.target.value)} className="mt-1 min-h-20 bg-card" aria-describedby={`${stop.id}-save`} placeholder="Mẹo đường đi, thời điểm phù hợp…" />
+          </label>
+        ) : (
+          stop.notes && <p className="mt-3 text-sm text-muted-foreground">{stop.notes}</p>
+        )}
+        <p id={`${stop.id}-save`} role="status" aria-live="polite" className={`mt-2 text-xs ${status === "failed" ? "text-destructive" : "text-muted-foreground"}`}>
+          {status === "saving" ? "Đang lưu ghi chú…" : status === "failed" ? "Không thể lưu. Chỉnh sửa vẫn được giữ ở đây; hãy thử lại hoặc tải lại." : "Đã lưu"}
+        </p>
+        {editable && <div className="mt-3 flex flex-wrap gap-2">{controls}</div>}
+      </div>
+    </li>
+  );
 }
