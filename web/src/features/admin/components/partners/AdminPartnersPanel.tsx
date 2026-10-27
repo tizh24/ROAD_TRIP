@@ -17,6 +17,7 @@ import {
   reviewAdminPartnerApplication,
   type PartnerApplication,
 } from "@/features/partner/api/partner";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 export default function AdminPartnersPanel() {
   const [applications, setApplications] = useState<PartnerApplication[]>([]);
@@ -248,34 +249,26 @@ export default function AdminPartnersPanel() {
       )}
 
       {/* Review Confirmation Modal */}
-      {reviewingApp && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-md rounded-2xl bg-card p-6 shadow-xl animate-in fade-in zoom-in-95">
-            <div className="flex items-center justify-between border-b border-border pb-4">
-              <h3 className="text-base font-bold text-foreground">
-                {reviewAction === "APPROVE" ? "Xác nhận Phê duyệt Đối tác" : "Từ chối Hồ sơ Đối tác"}
-              </h3>
-              <button
-                onClick={() => setReviewingApp(null)}
-                className="rounded-lg p-1.5 text-muted-foreground hover:bg-gray-100"
-              >
-                <X size={18} />
-              </button>
-            </div>
+      <Dialog open={!!reviewingApp} onOpenChange={(open) => { if (!open) setReviewingApp(null); }}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>{reviewAction === "APPROVE" ? "Xác nhận Phê duyệt Đối tác" : "Từ chối Hồ sơ Đối tác"}</DialogTitle>
+            <DialogDescription className="sr-only">Biểu mẫu trong hộp thoại</DialogDescription>
+          </DialogHeader>
 
             <form onSubmit={handleConfirmReview} className="mt-4 space-y-4">
               <div className="rounded-xl bg-muted p-4 text-xs space-y-1">
                 <div>
                   <span className="text-muted-foreground">Doanh nghiệp:</span>{" "}
-                  <strong>{reviewingApp.businessName}</strong>
+                  <strong>{reviewingApp?.businessName}</strong>
                 </div>
                 <div>
                   <span className="text-muted-foreground">Loại hình:</span>{" "}
-                  <strong>{reviewingApp.businessType}</strong>
+                  <strong>{reviewingApp?.businessType}</strong>
                 </div>
                 <div>
                   <span className="text-muted-foreground">Email:</span>{" "}
-                  <strong>{reviewingApp.contactEmail}</strong>
+                  <strong>{reviewingApp?.contactEmail}</strong>
                 </div>
               </div>
 
@@ -327,9 +320,8 @@ export default function AdminPartnersPanel() {
                 </button>
               </div>
             </form>
-          </div>
-        </div>
-      )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

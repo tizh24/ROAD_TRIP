@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import CTAButton from "./CTAButton";
+import { Button } from "./button";
 import SearchBar from "./SearchBar";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -59,15 +59,11 @@ export default function Navbar({ user }: { user?: NavbarUser }) {
 
         {/* Right Side: CTA Button */}
         <div className="flex items-center gap-4">
-          <Link href="/planner/new">
-            <CTAButton 
-              variant="primary" 
-              size="sm" 
-              className="hidden items-center gap-2 py-2.5 sm:flex"
-            >
-              <Plus size={16} /> Tạo Lộ Trình
-            </CTAButton>
-          </Link>
+          <Button asChild className="hidden min-h-11 sm:inline-flex">
+            <Link href="/planner/new">
+              <Plus aria-hidden="true" /> Tạo lộ trình
+            </Link>
+          </Button>
           
           {user ? (
             <>

@@ -31,12 +31,12 @@ Spec: `./tripz-ui-rebuild-spec.md`. Plan: `./tripz-ui-rebuild-plan.md`.
 ## 2b. Overlays and shared states
 
 - [ ] Restyle Dialog, AlertDialog, Sheet, Dropdown Menu, Select, Popover, Tooltip, Calendar and Toast.
-- [ ] Rebuild `ConfirmDialog`, `BottomSheet` and the mobile navigation drawers (landing, traveler, partner, admin).
-- [ ] Rebuild `FeedbackState` and empty, error and loading blocks; skeletons match the new system.
-- [ ] Rebuild 401, 403, 404 and global error pages.
-- [ ] Replace hand-written modals in `AdminPartnersPanel`, `CommunityFeedView` and `PartnerOverviewPanel` with shared Dialog/Sheet.
+- [x] Rebuild `ConfirmDialog`, `BottomSheet` and the app-shell mobile drawer (traveler, partner, admin). The landing menu is rebuilt in Phase 3.
+- [x] Rebuild `FeedbackState` (flat, dashed frame, no tinted icon tile). Route-level loading skeletons are reviewed per route group.
+- [x] Rebuild 401, 403, 404 and add the missing `error.tsx` and `global-error.tsx` (shared `StatusPage`).
+- [x] Replace hand-written modals in `AdminPartnersPanel`, `CommunityFeedView` and `PartnerOverviewPanel` with shared Dialog (4 modals). Their inner form fields are restyled with each page in Phases 5 to 7.
 - [ ] Rebuild form field, validation message, disabled and busy states.
-- [ ] Review all overlays in a temporary local route (deleted before commit): focus trap, Escape, focus return, scroll lock, mobile width.
+- [ ] Review all overlays in a temporary local route (deleted before commit): focus trap, Escape, focus return, scroll lock, mobile width. Done for Dialog, AlertDialog (`ConfirmDialog`) and Sheet (`BottomSheet`) at 1280 and 390 px (36 automated checks pass); Dropdown Menu, Select, Popover, Tooltip, Calendar and Toast still to review.
 
 ## 3. Landing
 

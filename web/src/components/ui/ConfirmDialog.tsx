@@ -2,13 +2,14 @@
 
 import {
   AlertDialog,
+  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
 } from "./alert-dialog";
-import CTAButton from "./CTAButton";
+import { Button } from "./button";
 
 type ConfirmDialogProps = {
   open: boolean;
@@ -40,10 +41,10 @@ export default function ConfirmDialog({
           <AlertDialogDescription>{description}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <CTAButton disabled={busy} variant="secondary" onClick={onClose}>{cancelLabel}</CTAButton>
-          <CTAButton disabled={busy} variant="danger" onClick={onConfirm}>
+          <AlertDialogCancel className="min-h-11" disabled={busy}>{cancelLabel}</AlertDialogCancel>
+          <Button type="button" variant="destructive" className="min-h-11" disabled={busy} onClick={onConfirm}>
             {busy ? "Đang xử lý…" : confirmLabel}
-          </CTAButton>
+          </Button>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

@@ -42,10 +42,10 @@ export default function BottomSheet({
                 aria-pressed={state === size.id}
                 onClick={() => setState(size.id)}
                 className={cn(
-                  "min-h-8 rounded-full px-3 text-xs font-semibold transition-colors",
+                  "min-h-11 rounded-md px-3 text-xs font-medium transition-colors sm:min-h-8",
                   state === size.id
-                    ? "bg-primary text-white"
-                    : "border border-border bg-white text-muted-foreground hover:text-foreground",
+                    ? "bg-primary text-primary-foreground"
+                    : "border border-border bg-card text-muted-foreground hover:text-foreground",
                 )}
               >
                 {size.label}

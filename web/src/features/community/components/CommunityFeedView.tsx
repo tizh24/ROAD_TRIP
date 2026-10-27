@@ -14,7 +14,7 @@ import {
   Send,
   Sparkles,
   UsersRound,
-  X,
+
 } from "lucide-react";
 import {
   createCommunityPost,
@@ -27,6 +27,7 @@ import {
   type CommunityComment,
   type CommunityPost,
 } from "../api/community";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 export default function CommunityFeedView() {
   const [posts, setPosts] = useState<CommunityPost[]>([]);
@@ -507,18 +508,12 @@ export default function CommunityFeedView() {
       </div>
 
       {/* Composer Modal */}
-      {isComposerOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-lg rounded-2xl bg-card p-6 shadow-xl animate-in fade-in zoom-in-95">
-            <div className="flex items-center justify-between border-b border-border pb-4">
-              <h3 className="text-lg font-bold text-foreground">Chia sẻ trải nghiệm hành trình</h3>
-              <button
-                onClick={() => setIsComposerOpen(false)}
-                className="rounded-lg p-1.5 text-muted-foreground hover:bg-gray-100"
-              >
-                <X size={18} />
-              </button>
-            </div>
+      <Dialog open={!!isComposerOpen} onOpenChange={(open) => { if (!open) setIsComposerOpen(false); }}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Chia sẻ trải nghiệm hành trình</DialogTitle>
+            <DialogDescription className="sr-only">Biểu mẫu trong hộp thoại</DialogDescription>
+          </DialogHeader>
 
             <form onSubmit={handleCreatePost} className="mt-4 space-y-4">
               <div>
@@ -599,23 +594,16 @@ export default function CommunityFeedView() {
                 </button>
               </div>
             </form>
-          </div>
-        </div>
-      )}
+        </DialogContent>
+      </Dialog>
 
       {/* Report Modal */}
-      {reportingTarget && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-md rounded-2xl bg-card p-6 shadow-xl">
-            <div className="flex items-center justify-between border-b border-border pb-4">
-              <h3 className="text-base font-bold text-foreground">Báo cáo nội dung vi phạm</h3>
-              <button
-                onClick={() => setReportingTarget(null)}
-                className="rounded-lg p-1.5 text-muted-foreground hover:bg-gray-100"
-              >
-                <X size={18} />
-              </button>
-            </div>
+      <Dialog open={!!reportingTarget} onOpenChange={(open) => { if (!open) setReportingTarget(null); }}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Báo cáo nội dung vi phạm</DialogTitle>
+            <DialogDescription className="sr-only">Biểu mẫu trong hộp thoại</DialogDescription>
+          </DialogHeader>
 
             {reportSuccess ? (
               <div className="py-8 text-center text-emerald-600">
@@ -669,9 +657,8 @@ export default function CommunityFeedView() {
                 </div>
               </form>
             )}
-          </div>
-        </div>
-      )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

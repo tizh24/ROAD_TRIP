@@ -16,7 +16,7 @@ import {
   Store,
   Trash2,
   Wallet,
-  X,
+
 } from "lucide-react";
 import {
   createPartnerListing,
@@ -25,6 +25,7 @@ import {
   updatePartnerListing,
   type PartnerListing,
 } from "@/features/partner/api/partner";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 const areas = [
   {
@@ -324,18 +325,12 @@ export default function PartnerOverviewPanel() {
       </div>
 
       {/* Create Listing Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-lg rounded-2xl bg-card p-6 shadow-xl animate-in fade-in zoom-in-95">
-            <div className="flex items-center justify-between border-b border-border pb-4">
-              <h3 className="text-lg font-bold text-foreground">Thêm dịch vụ / gói tour mới</h3>
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="rounded-lg p-1.5 text-muted-foreground hover:bg-gray-100"
-              >
-                <X size={18} />
-              </button>
-            </div>
+      <Dialog open={!!isModalOpen} onOpenChange={(open) => { if (!open) setIsModalOpen(false); }}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Thêm dịch vụ / gói tour mới</DialogTitle>
+            <DialogDescription className="sr-only">Biểu mẫu trong hộp thoại</DialogDescription>
+          </DialogHeader>
 
             <form onSubmit={handleCreateListing} className="mt-4 space-y-4">
               <div>
@@ -432,9 +427,8 @@ export default function PartnerOverviewPanel() {
                 </button>
               </div>
             </form>
-          </div>
-        </div>
-      )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
