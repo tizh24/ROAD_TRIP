@@ -45,6 +45,18 @@ The rebuild is complete only when **every** visible surface follows the new syst
 
 No component may keep a legacy class, token or color from the retired system (`brand-*`, `bg-primary-strong` experiments, `.field`, `.skip-link` styling from the old palette and similar). A grep gate enforces this (see acceptance criteria).
 
+## Login layout (owner-specified, 2026-10-27)
+
+The login page is rebuilt on the owner's "Beam" layout: a full-screen stage with a slowly rotating multi-color wash and a fine grid behind a single centered card (title, short subtitle, form, link to sign-up and password reset). Adaptations required so it fits this product:
+
+- **Behavior is unchanged:** the form keeps the existing `login` server action (`useActionState`, Gateway cookies, `next` return path, existing error messages). The sample's `react-hook-form`, `zod` resolver and `@/app/actions/auth` are not used.
+- **No social buttons.** The Gateway has no Google/GitHub sign-in endpoint and the web removed direct OAuth, so those buttons would be non-functional controls. They are omitted until a provider flow is specified; the layout leaves room for them.
+- **Vietnamese copy** replaces the English text; labels, `autocomplete`, `spellcheck`, error `role="alert"` and the "Quên mật khẩu?" link are kept.
+- **Colors come from the chosen direction.** The wash uses the direction's palette tokens, not the sample's `--chart-*` values, and must keep card text at AA contrast.
+- **Motion:** CSS keyframes (no new `framer-motion` dependency), disabled under `prefers-reduced-motion`, slower than the 5 s sample loop, `will-change`/blur limited so it stays cheap on low-end phones, and paused when the tab is hidden.
+- **Light theme only** (no dark variant), 320 px to 1920 px without overflow, one `h1`, one `main`.
+- The same stage-and-card layout is applied to signup, forgot-password and reset-password so the auth routes stay consistent.
+
 ## Must remain unchanged
 
 - Routes and URLs, auth guards and role boundaries, API calls and payloads, server actions, Gateway cookie/CSRF behavior, data types and domain workflows.

@@ -52,7 +52,7 @@ Write the three documents, mark `tripz-cross-surface-editorial-ui-*`, `web-exper
 
 ### Phase 4 — Shell and auth
 
-- Auth pages from the template layouts (login, signup, forgot, reset, recovery) in the new system.
+- Login on the owner's Beam stage-and-card layout; signup, forgot, reset and recovery share it. Template auth layouts are only a fallback for pieces the Beam layout does not cover. Existing `login` server action is reused as is.
 - One shell, three navigation sets: traveler, partner, admin. Skip link and `id="main-content"` on all shells (closes the admin/partner gap).
 - Gate: BFF auth e2e, guest redirects, role navigation checks.
 
