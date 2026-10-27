@@ -24,7 +24,7 @@ export default function Navbar({ user }: { user?: NavbarUser }) {
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border bg-background">
-      <div className="page-shell mx-auto flex min-h-16 items-center justify-between gap-4">
+      <div className="page-shell mx-auto flex min-h-16 px-4 sm:px-6 items-center justify-between gap-4">
         <Link href="/" className="focus-ring shrink-0 rounded text-lg font-semibold tracking-tight">
           Tripz
         </Link>

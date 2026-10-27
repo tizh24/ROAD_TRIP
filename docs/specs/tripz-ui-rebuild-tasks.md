@@ -69,7 +69,7 @@ Spec: `./tripz-ui-rebuild-spec.md`. Plan: `./tripz-ui-rebuild-plan.md`.
 
 ## 7. Public
 
-- [ ] Explore, public trip, community feed, public profile.
+- [x] Explore, public trip, community feed, public profile; shared Navbar on `Sheet` for mobile.
 - [ ] Viewport matrix across nine widths for every no-login route.
 
 ## 8. Hardening
