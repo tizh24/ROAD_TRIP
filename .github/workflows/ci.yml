@@ -122,10 +122,11 @@ jobs:
           set -euo pipefail
 
           # A stalled mirror download must fail fast and retry instead of hanging the job.
-          printf 'Acquire::http::Timeout "20";
-Acquire::https::Timeout "20";
-Acquire::Retries "3";
-' | sudo tee /etc/apt/apt.conf.d/99ci-timeouts >/dev/null
+          {
+            echo 'Acquire::http::Timeout "20";'
+            echo 'Acquire::https::Timeout "20";'
+            echo 'Acquire::Retries "3";'
+          } | sudo tee /etc/apt/apt.conf.d/99ci-timeouts >/dev/null
 
           for attempt in 1 2 3; do
             if timeout -k 10 240 npx playwright install --with-deps chromium; then
