@@ -26,6 +26,14 @@ import type {
 } from "@/features/trip-planning/api/trip-model";
 import FeedbackState from "@/components/ui/FeedbackState";
 
+const expenseCategoryLabels: Record<string, string> = {
+  FOOD: "Ăn uống",
+  STAY: "Lưu trú",
+  FUEL: "Xăng xe, cầu đường",
+  ACTIVITY: "Vé, trải nghiệm",
+  OTHER: "Khác",
+};
+
 export default function TripMemoryView({ tripId }: { tripId: string }) {
   const [trip, setTrip] = useState<TripDetail>();
   const [memory, setMemory] = useState<TripMemory>();
@@ -337,7 +345,7 @@ export default function TripMemoryView({ tripId }: { tripId: string }) {
               <tbody>
                 {expenses.map((exp, index) => (
                   <tr key={exp.id} className={index % 2 === 0 ? "bg-muted" : "bg-muted/50"}>
-                    <td className="rounded-l-lg px-4 py-3">{exp.category}</td>
+                    <td className="rounded-l-lg px-4 py-3">{expenseCategoryLabels[exp.category] ?? exp.category}</td>
                     <td className="px-4 py-3">{exp.description}</td>
                     <td className="px-4 py-3 text-right tabular-nums">
                       {exp.amount.toLocaleString("vi-VN")} {exp.currency}

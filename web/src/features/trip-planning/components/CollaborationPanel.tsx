@@ -178,7 +178,7 @@ export default function CollaborationPanel({ tripId }: { tripId: string }) {
               >
                 <span className="min-w-0">
                   <strong className="font-medium">{member.role === "OWNER" ? "Chủ chuyến đi" : "Thành viên"}</strong>
-                  <span className="ml-2 text-muted-foreground">{member.userId}</span>
+                  {member.role !== "OWNER" && <span className="ml-2 text-muted-foreground">{member.userId}</span>}
                 </span>
                 {member.role === "MEMBER" && (
                   <span className="flex gap-2">

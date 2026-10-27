@@ -19,6 +19,14 @@ import {
 } from "@/features/partner/api/partner";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
+const listingCategoryLabels: Record<string, string> = {
+  STAY: "Lưu trú",
+  FOOD: "Ẩm thực",
+  EXPERIENCE: "Trải nghiệm",
+  TRANSPORT: "Thuê xe, đưa đón",
+  EQUIPMENT: "Thuê đồ dã ngoại",
+};
+
 const areas = [
   {
     href: "/partner/campaigns",
@@ -197,7 +205,7 @@ export default function PartnerOverviewPanel() {
                 )}
                 <div className="min-w-0 flex-1">
                   <p className="text-sm text-muted-foreground">
-                    {item.category} · <span className={item.status === "ACTIVE" ? "text-success" : ""}>{item.status === "ACTIVE" ? "Đang mở" : "Tạm dừng"}</span>
+                    {listingCategoryLabels[item.category] ?? item.category} · <span className={item.status === "ACTIVE" ? "text-success" : ""}>{item.status === "ACTIVE" ? "Đang mở" : "Tạm dừng"}</span>
                   </p>
                   <h3 className="mt-0.5 line-clamp-1 text-lg font-medium">{item.title}</h3>
                   <p className="mt-0.5 line-clamp-2 text-sm text-muted-foreground">{item.description}</p>
