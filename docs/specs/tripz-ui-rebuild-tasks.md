@@ -54,11 +54,12 @@ Spec: `./tripz-ui-rebuild-spec.md`. Plan: `./tripz-ui-rebuild-plan.md`.
 
 ## 5. Traveler
 
-- [ ] Dashboard and trips (list, new, detail).
-- [ ] Planner and road mode (map-first).
-- [ ] Memory and invitations.
-- [ ] Profile (settings, billing, collections), payment, travel book, partner registration.
-- [ ] Journey e2e updated; visual review with mock data.
+- [x] Dashboard and trips (list, new). Public trip detail (`TripDetailView`) moves to Phase 7.
+- [x] Planner (editor, place search, collaboration) and road mode (map-first).
+- [x] Memory and invitations.
+- [x] Profile (settings, billing), payment, travel book, partner registration.
+- [x] Journey e2e green on a production build (37 passed, 2 skipped).
+- [ ] Visual review with mock data (authenticated screens cannot be opened without an account).
 
 ## 6. Partner and admin
 
