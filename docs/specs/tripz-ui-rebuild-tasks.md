@@ -20,11 +20,11 @@ Spec: `./tripz-ui-rebuild-spec.md`. Plan: `./tripz-ui-rebuild-plan.md`.
 
 ## 2. Foundation
 
-- [ ] Read the installed Next.js docs relevant to layouts, fonts and `next/image`.
+- [x] Read the installed Next.js docs relevant to layouts, fonts and `next/image`.
 - [ ] Rewrite tokens, fonts and base CSS from the chosen direction.
 - [ ] Adapt existing Radix primitives to the new tokens.
-- [ ] Add Sidebar, Card, Table, Breadcrumb, Dropdown Menu, Tooltip, Avatar, Popover/Calendar and Chart primitives (Radix).
-- [ ] Port dashboard shell (sidebar, header, content frame, error boundary, loading) with Radix.
+- [x] Add Sidebar, Card, Table, Breadcrumb, Dropdown Menu, Tooltip, Avatar, Popover/Calendar and Chart primitives (Radix).
+- [x] Port dashboard shell (sidebar, header, content frame, error boundary, loading) with Radix.
 - [ ] Replace legacy shared components and delete dead code and `brand-*` tokens.
 - [ ] Gate: typecheck, lint, build.
 
@@ -49,7 +49,7 @@ Spec: `./tripz-ui-rebuild-spec.md`. Plan: `./tripz-ui-rebuild-plan.md`.
 
 - [x] Login on the owner's Beam stage-and-card layout (see spec): existing server action kept, Vietnamese copy, Google/Facebook/Apple buttons (not wired yet), original framer-motion wash, new palette.
 - [x] Signup, forgot-password, reset-password and recovery use the same layout (shared `AuthStage` component in `web/src/features/auth/components/`).
-- [ ] Shared shell with traveler, partner and admin navigation; skip link and `id="main-content"` on each.
+- [x] Shared shell with traveler, partner and admin navigation; skip link and `id="main-content"` on each.
 - [ ] Role navigation and guest redirect checks; BFF auth e2e still green.
 
 ## 5. Traveler

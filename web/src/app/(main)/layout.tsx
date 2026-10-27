@@ -1,5 +1,5 @@
 import React from "react";
-import Navbar from "@/components/ui/Navbar";
+import AppShell from "@/components/shell/AppShell";
 import { gatewayCurrentSession } from "@/lib/api/gateway-server";
 import { hasGatewayAuthCookie } from "@/lib/auth/route-protection";
 import { cookies } from "next/headers";
@@ -21,12 +21,8 @@ export default async function MainLayout({ children }: { children: React.ReactNo
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <a href="#main-content" className="skip-link">Bỏ qua đến nội dung chính</a>
-      <Navbar user={session.data} />
-      <main id="main-content" tabIndex={-1} className="flex flex-1 flex-col">
-        {children}
-      </main>
-    </div>
+    <AppShell variant="traveler" user={session.data}>
+      {children}
+    </AppShell>
   );
 }
