@@ -10,10 +10,10 @@ Spec: `./tripz-ui-rebuild-spec.md`. Plan: `./tripz-ui-rebuild-plan.md`.
 
 ## 1. Direction
 
-- [ ] Install taste-skill as a project skill and verify `draw.mjs`/`inspect.mjs` run (Node 22, Edge).
-- [ ] Inventory the subject (8 to 12 Tripz-specific items).
-- [ ] Write the landing argument (claim and proof per section).
-- [ ] Draw three page directions and three app directions.
+- [x] Install taste-skill as a project skill and verify `draw.mjs`/`inspect.mjs` run (Node 22, Edge).
+- [x] Inventory the subject (8 to 12 Tripz-specific items).
+- [x] Write the landing argument (claim and proof per section).
+- [x] Draw three page directions and three app directions.
 - [ ] Mock one screen per direction and present to the owner.
 - [x] Palette and type taken from the reference sources (owner decision 2026-10-27). Composition direction still to be dealt with `--keep palette,type`. **(gate for composition)**
 - [ ] Save the direction sheet in `docs/design/direction.md`; replace `DESIGN.md`.
