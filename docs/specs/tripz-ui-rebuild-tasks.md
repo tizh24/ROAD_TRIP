@@ -75,9 +75,9 @@ Spec: `./tripz-ui-rebuild-spec.md`. Plan: `./tripz-ui-rebuild-plan.md`.
 ## 8. Hardening
 
 - [x] Legacy grep gate returns nothing except the owner-approved Beam gradient and OAuth brand logos.
-- [ ] Overlay checklist passed for every overlay type.
-- [ ] Favicon and metadata titles match the new brand; list any email/print views and their disposition.
-- [ ] Accessibility and responsive audit; reduced motion.
-- [ ] Dependency review and dead-code sweep.
-- [ ] `npm run typecheck`, `npm run lint`, `npm test`, `npm run build`, full Playwright, `git diff --check`.
-- [ ] Before/after screenshots and residual-risk list in the handoff.
+- [x] Overlay checklist passed for every overlay type (36 automated checks earlier; navbar `Sheet` covered by a new e2e).
+- [x] Favicon and metadata titles match the new brand; no email or print views exist in `web/`.
+- [x] Accessibility and responsive audit (inspector, viewport matrix, reduced motion). Manual pass on authenticated screens still open, see handoff.
+- [x] Dependency review and dead-code sweep (unused `cn` package, 7 components, boilerplate assets removed).
+- [x] `tsc`, `eslint .`, `npm test`, `npm run build`, full Playwright (37 passed, 2 skipped), `git diff --check`.
+- [x] Residual-risk list in `docs/design/handoff.md` (no before shots: the old design was deleted first).

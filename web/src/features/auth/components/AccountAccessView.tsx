@@ -132,7 +132,7 @@ export default function AccountAccessView({ mode, nextPath }: { mode: AccessMode
       backHref={mode === "reset-password" ? "/login" : "/"}
       backLabel={mode === "reset-password" ? "Về đăng nhập" : "Về trang chủ"}
     >
-      <Card className="relative z-10 w-full max-w-sm gap-6 p-8 shadow-lg">
+      <Card className="relative z-10 w-full max-w-sm gap-6 p-8 shadow-sm">
         <div className="space-y-1">
           <h1 className="text-xl font-semibold">{title}</h1>
           <p className="text-sm text-muted-foreground">{description}</p>

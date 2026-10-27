@@ -87,7 +87,7 @@ export default function LoginView({ authError, nextPath }: LoginViewProps) {
 
   return (
     <AuthStage>
-      <Card className="relative z-10 w-full max-w-sm gap-6 p-8 shadow-lg">
+      <Card className="relative z-10 w-full max-w-sm gap-6 p-8 shadow-sm">
         <div className="space-y-1">
           <h1 className="text-xl font-semibold">Chào mừng trở lại</h1>
           <p className="text-sm text-muted-foreground">Chọn cách đăng nhập để truy cập hành trình của bạn</p>
