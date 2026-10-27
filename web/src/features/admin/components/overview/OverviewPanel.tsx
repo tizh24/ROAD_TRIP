@@ -1,5 +1,32 @@
 "use client";
 import Link from "next/link";
-import { ArrowUpRight, Building2, Landmark, ShieldCheck, Settings, Users } from "lucide-react";
-const areas = [{ href: "/admin/moderation", icon: ShieldCheck, name: "Kiểm duyệt", text: "Xem hàng đợi nội dung và xử lý theo quyền quản trị." }, { href: "/admin/partners", icon: Building2, name: "Đối tác", text: "Quản lý không gian và trạng thái đối tác." }, { href: "/admin/affiliates", icon: Users, name: "Affiliates", text: "Theo dõi chương trình liên kết khi dữ liệu có sẵn." }, { href: "/admin/finance", icon: Landmark, name: "Tài chính", text: "Xem dữ liệu tài chính theo quyền truy cập." }] as const;
-export default function OverviewPanel() { return <div className="min-h-full bg-[#f4f6f3] p-4 sm:p-8"><div className="mx-auto max-w-6xl"><header className="border-b border-border pb-8"><p className="text-xs font-extrabold uppercase tracking-[.16em] text-foreground">Operations</p><h1 className="mt-3 text-4xl font-extrabold tracking-[-.04em] text-foreground">Bảng điều hành</h1><p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground">Đi tới đúng không gian tác nghiệp. Chỉ dữ liệu được kết nối và được cấp quyền mới hiển thị tại từng khu vực.</p></header><section className="mt-8 grid gap-4 sm:grid-cols-2">{areas.map(({ href, icon: Icon, name, text }) => <Link key={href} href={href} className="group rounded-2xl border border-border bg-card p-6 shadow-xs transition hover:-translate-y-1 hover:shadow-sm"><Icon className="text-foreground" size={22} /><h2 className="mt-8 flex items-center justify-between text-xl font-extrabold">{name}<ArrowUpRight size={18} className="text-foreground transition group-hover:-translate-y-1 group-hover:translate-x-1" /></h2><p className="mt-3 text-sm leading-6 text-muted-foreground">{text}</p></Link>)}</section><div className="mt-8 flex gap-3 rounded-2xl border border-border bg-card p-5 text-sm text-muted-foreground"><Settings className="shrink-0 text-foreground" size={18} />Cấu hình vận hành và quyền truy cập nằm trong Settings.</div></div></div>; }
+import { ArrowUpRight } from "lucide-react";
+import { WorkspacePage } from "@/components/shell/WorkspacePage";
+
+const areas = [
+  { href: "/admin/moderation", name: "Kiểm duyệt", text: "Xem hàng đợi nội dung và xử lý theo quyền quản trị." },
+  { href: "/admin/partners", name: "Đối tác", text: "Quản lý không gian và trạng thái đối tác." },
+  { href: "/admin/affiliates", name: "Affiliates", text: "Theo dõi chương trình liên kết khi dữ liệu có sẵn." },
+  { href: "/admin/finance", name: "Tài chính", text: "Xem dữ liệu tài chính theo quyền truy cập." },
+] as const;
+
+export default function OverviewPanel() {
+  return (
+    <WorkspacePage title="Bảng điều hành" description="Đi tới đúng không gian tác nghiệp. Chỉ dữ liệu được kết nối và được cấp quyền mới hiển thị tại từng khu vực.">
+      <ul className="grid gap-1">
+        {areas.map(({ href, name, text }, index) => (
+          <li key={href} className={`rounded-lg ${index % 2 === 0 ? "bg-muted" : "bg-muted/50"}`}>
+            <Link href={href} className="focus-ring flex min-h-20 items-center justify-between gap-6 rounded-lg px-5 py-4 transition-colors hover:bg-border/60">
+              <span>
+                <span className="block text-lg font-medium">{name}</span>
+                <span className="block text-sm text-muted-foreground">{text}</span>
+              </span>
+              <ArrowUpRight className="size-5 shrink-0" aria-hidden="true" />
+            </Link>
+          </li>
+        ))}
+      </ul>
+      <p className="mt-8 text-sm text-muted-foreground">Cấu hình vận hành và quyền truy cập nằm trong Settings.</p>
+    </WorkspacePage>
+  );
+}
