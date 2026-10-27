@@ -40,10 +40,10 @@ Spec: `./tripz-ui-rebuild-spec.md`. Plan: `./tripz-ui-rebuild-plan.md`.
 
 ## 3. Landing
 
-- [ ] Gather real photographs with credits (`assets.mjs`); store with `CREDITS.md`.
-- [ ] Build sections from the argument; header, hero, content sections, newsletter, closing call to action, footer.
-- [ ] Run `inspect.mjs`; screenshots at 320/768/1440; fix and re-look.
-- [ ] Update `public-landing` and `navigation-responsive` e2e.
+- [x] Gather real photographs with credits (`assets.mjs`); stored in `web/src/assets/landing/` with `CREDITS.md`. Four found photographs (Wikimedia Commons); no AI images were needed.
+- [x] Build sections from the argument: top bar, hero, live planner demo, destinations crossfade, pinned features, call-and-response, public-trip agenda, closing sentence, footer with credits. The newsletter is dropped because no newsletter backend exists.
+- [x] Run `inspect.mjs`: 0 FAIL at 1440, 768 and 390. Three WARNs kept on purpose: hero void (dealt hero leaves the right half blank), below-fold (app-screen heuristic), panel void in the demo card. Screenshots reviewed at three widths; one more look round after fixes is still advisable.
+- [x] Update `public-landing` and `navigation-responsive` e2e (live demo, pinned sheet and closing search covered).
 
 ## 4. Shell and auth
 

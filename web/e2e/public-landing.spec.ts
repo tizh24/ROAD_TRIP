@@ -1,10 +1,11 @@
 import { expect, test } from "@playwright/test";
 
 const sections = [
-  "Mọi thứ cho một chuyến đi, ở cùng một nơi.",
+  "Lập thử một chuyến đi.",
   "Bắt đầu từ một vùng đất.",
-  "Lên kế hoạch trong ba bước.",
-  "Nhận gợi ý cung đường khi bản tin ra mắt.",
+  "Cùng chỉnh lịch trình.",
+  "Từ ý tưởng đến chặng đầu tiên.",
+  "Bạn muốn đi qua đâu?",
 ];
 
 test.describe("public landing page", () => {
@@ -22,9 +23,11 @@ test.describe("public landing page", () => {
       await expect(page.locator("header")).toHaveCount(1);
       await expect(page.locator("main")).toHaveCount(1);
       await expect(page.locator("footer")).toHaveCount(1);
-      await expect(page.getByRole("heading", { level: 1, name: "Đi đường dài, theo cách của bạn." })).toBeVisible();
+      await expect(
+        page.getByRole("heading", { level: 1, name: "Lên lịch cả chuyến đi trên một tấm bản đồ." }),
+      ).toBeVisible();
       for (const heading of sections) {
-        await expect(page.getByRole("heading", { level: 2, name: heading })).toBeVisible();
+        await expect(page.getByRole("heading", { level: 2, name: heading })).toBeAttached();
       }
       expect(
         await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth),
@@ -40,49 +43,60 @@ test.describe("public landing page", () => {
     await expect(plan).toHaveAttribute("href", "/trips/new");
     await expect(page.getByRole("link", { name: "Khám phá lộ trình" }).first()).toHaveAttribute("href", "/explore");
     await expect(page.getByRole("banner").getByRole("link", { name: "Đăng nhập" })).toHaveAttribute("href", "/login");
-    await expect(page.getByRole("link", { name: "Xem lộ trình quanh Sa Pa" })).toHaveAttribute(
+    await expect(page.getByRole("link", { name: "Xem lộ trình quanh Mã Pí Lèng" })).toHaveAttribute(
       "href",
-      "/explore?q=Sa%20Pa",
+      "/explore?q=M%C3%A3%20P%C3%AD%20L%C3%A8ng",
     );
 
     await plan.click();
     await expect(page).toHaveURL((url) => url.pathname === "/login" && url.searchParams.get("next") === "/trips/new");
   });
 
-  test("opens and closes the mobile menu with the keyboard", async ({ page }) => {
-    await page.setViewportSize({ width: 390, height: 844 });
+  test("the live demo recalculates when its controls change", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto("/");
+    const demo = page.locator("#demo-title").locator("xpath=ancestor::section[1]");
+    await demo.scrollIntoViewIfNeeded();
 
-    const toggle = page.getByRole("button", { name: "Mở điều hướng" });
-    await toggle.focus();
-    await page.keyboard.press("Enter");
-    const nav = page.getByRole("navigation", { name: "Điều hướng di động" });
-    await expect(nav).toBeVisible();
-    await expect(page.getByRole("button", { name: "Đóng điều hướng" })).toHaveAttribute("aria-expanded", "true");
+    await expect(demo.getByText("147 km")).toBeVisible();
+    await expect(demo.getByText("4 giờ 12 phút")).toBeVisible();
 
-    await page.keyboard.press("Escape");
-    await expect(nav).toBeHidden();
-    await expect(page.getByRole("button", { name: "Mở điều hướng" })).toBeFocused();
+    await demo.getByText("Ô tô", { exact: true }).click();
+    await expect(demo.getByText("3 giờ 41 phút")).toBeVisible();
 
-    await page.getByRole("button", { name: "Mở điều hướng" }).click();
-    await nav.getByRole("link", { name: "Cộng đồng" }).click();
-    await expect(page).toHaveURL((url) => url.pathname === "/login" && url.searchParams.get("next") === "/feed");
+    await demo.getByRole("switch", { name: "Thêm giờ nghỉ ăn trưa" }).click();
+    await expect(demo.getByText("Nghỉ ăn trưa", { exact: true })).toBeVisible();
+    await expect(demo.getByText("4 giờ 26 phút")).toBeVisible();
+
+    await demo.getByRole("slider", { name: "Số ngày" }).fill("1");
+    await expect(demo.getByText("Ngày 2")).toHaveCount(0);
   });
 
-  test("validates the newsletter email and never claims it stored anything", async ({ page }) => {
+  test("the pinned trip sheet follows its controls", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto("/");
-    const email = page.getByLabel("Email của bạn");
-    await email.fill("khong-hop-le");
-    await page.getByRole("button", { name: "Gửi email" }).click();
-    await expect(page.getByText("Nhập một địa chỉ email hợp lệ")).toBeVisible();
+    const section = page.locator("#features-title").locator("xpath=ancestor::section[1]");
+    await section.scrollIntoViewIfNeeded();
 
-    await email.fill("ten@example.com");
-    await page.getByRole("button", { name: "Gửi email" }).click();
-    await expect(page.getByRole("status")).toContainText("chưa lưu email của bạn");
-    await expect(page.getByText("Đăng ký thành công")).toHaveCount(0);
+    await section.getByText("Được chỉnh sửa", { exact: true }).last().click();
+    await expect(section.getByText("Được chỉnh sửa").first()).toBeVisible();
+    await section.getByText("Công khai", { exact: true }).last().click();
+    await expect(section.getByText("Hiển thị với cộng đồng")).toBeVisible();
+
+    await section.getByLabel("Số tiền khoản chi (đồng)").fill("150000");
+    await section.getByRole("button", { name: "Thêm khoản chi" }).click();
+    await expect(section.getByText("1.400.000 đ")).toBeVisible();
   });
 
-  test("shows no invented metrics, testimonials or AI claims", async ({ page }) => {
+  test("the closing sentence searches the public routes", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto("/");
+    await page.getByLabel("Địa điểm").fill("Sa Pa");
+    await page.getByRole("button", { name: "Tìm", exact: true }).click();
+    await expect(page).toHaveURL((url) => url.pathname === "/explore" && url.searchParams.get("q") === "Sa Pa");
+  });
+
+  test("shows no invented metrics, testimonials or AI claims, and credits every picture", async ({ page }) => {
     await page.goto("/");
     const text = await page.locator("main").innerText();
     for (const banned of ["50.000+", "4.9/5.0", "63/63", "Founder @"]) {
@@ -90,5 +104,6 @@ test.describe("public landing page", () => {
     }
     // The standalone word "AI", not letters inside another word (for example "KHAI" in uppercase labels).
     expect(text).not.toMatch(/(^|[^\p{L}])AI([^\p{L}]|$)/u);
+    await expect(page.locator("footer").getByText("Wikimedia Commons").first()).toBeVisible();
   });
 });

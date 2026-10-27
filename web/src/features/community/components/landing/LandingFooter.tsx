@@ -1,46 +1,35 @@
 import Link from "next/link";
-import { Compass } from "lucide-react";
-import { footerLinks } from "./content";
+import { footerLinks, photoCredits } from "./content";
 
-const columns = [
-  { title: "Sản phẩm", links: footerLinks.product },
-  { title: "Tài khoản", links: footerLinks.account },
-  { title: "Hỗ trợ khi đi đường", links: footerLinks.roadside },
-] as const;
-
+/** A single quiet line, with the picture credits above it in small type. */
 export default function LandingFooter() {
   return (
-    <footer className="border-t border-border bg-background">
-      <div className="page-shell grid gap-10 py-12 md:grid-cols-[1.4fr_repeat(3,1fr)]">
-        <div>
-          <Link href="/" className="focus-ring inline-flex items-center gap-3 rounded-lg" aria-label="Tripz, về trang chủ">
-            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-white">
-              <Compass size={20} aria-hidden="true" />
+    <footer className="mt-[10svh]">
+      <div className="mx-auto w-full max-w-[88rem] px-6 md:px-12">
+        <p className="pb-8 text-[13px] leading-relaxed text-muted-foreground">
+          Ảnh:{" "}
+          {photoCredits.map((credit, index) => (
+            <span key={credit.page}>
+              <a href={credit.page} className="underline underline-offset-2 hover:text-foreground" rel="noreferrer">
+                {credit.title}
+              </a>{" "}
+              của {credit.creator} ({credit.licence}, qua Wikimedia Commons)
+              {index < photoCredits.length - 1 ? "; " : "."}
             </span>
-            <span className="text-xl font-extrabold tracking-[-0.04em] text-foreground">Tripz</span>
-          </Link>
-          <p className="mt-4 max-w-xs text-sm leading-7 text-muted-foreground">
-            Công cụ lên kế hoạch và lưu lại những chuyến đi đường dài ở Việt Nam.
-          </p>
-        </div>
-        {columns.map((column) => (
-          <nav key={column.title} aria-label={column.title}>
-            <h2 className="text-sm font-extrabold text-foreground">{column.title}</h2>
-            <ul className="mt-3 grid gap-1">
-              {column.links.map((link) => (
-                <li key={link.href}>
-                  <Link href={link.href} className="focus-ring inline-flex min-h-11 items-center rounded text-sm text-muted-foreground hover:text-foreground">
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+          ))}
+        </p>
+        <div className="grid gap-2 pb-6 text-sm md:grid-cols-[1fr_auto_1fr] md:items-baseline">
+          <p className="text-muted-foreground">Lên kế hoạch đi đường dài</p>
+          <nav aria-label="Liên kết chính" className="flex flex-wrap gap-x-6 gap-y-1">
+            {footerLinks.map((link) => (
+              <Link key={link.href} href={link.href} className="focus-ring inline-flex min-h-11 items-center hover:underline">
+                {link.label}
+              </Link>
+            ))}
           </nav>
-        ))}
+          <p className="text-muted-foreground md:text-right">© 2026 Tripz</p>
+        </div>
       </div>
-      <p className="page-shell border-t border-border py-6 text-xs text-muted-foreground">
-        © 2026 Tripz. Thông tin tuyến đường chỉ mang tính tham khảo; hãy kiểm tra điều kiện đường trước khi khởi hành.
-      </p>
     </footer>
   );
 }

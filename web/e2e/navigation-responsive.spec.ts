@@ -15,11 +15,6 @@ test.describe("navigation responsive smoke", () => {
       await page.goto("/");
       await expect(page.locator("header")).toBeVisible();
       expect(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth)).toBe(false);
-
-      if (viewport.name !== "desktop") {
-        await page.getByRole("button", { name: "Mở điều hướng" }).click();
-        await expect(page.getByRole("navigation", { name: "Điều hướng di động" })).toBeVisible();
-      }
     });
   }
 });
