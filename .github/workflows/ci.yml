@@ -90,6 +90,7 @@ jobs:
         working-directory: server
         run: pnpm install --frozen-lockfile
       - name: Start Supabase with retry
+        timeout-minutes: 15
         working-directory: server
         shell: bash
         run: |
@@ -101,7 +102,7 @@ jobs:
             fi
 
             echo "Supabase startup failed; retrying in $((attempt * 15)) seconds"
-            pnpm exec supabase stop || true
+            timeout -k 10 120 pnpm exec supabase stop || true
             if [ "$attempt" -lt 5 ]; then
               sleep $((attempt * 15))
             fi
@@ -109,9 +110,29 @@ jobs:
 
           echo "Supabase failed to start after five attempts"
           exit 1
-      - working-directory: web
-        run: npm ci && npx playwright install --with-deps chromium
+      - name: Install web dependencies
+        timeout-minutes: 10
+        working-directory: web
+        run: npm ci
+      - name: Install Playwright browser
+        timeout-minutes: 10
+        working-directory: web
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          for attempt in 1 2 3; do
+            if timeout -k 10 240 npx playwright install --with-deps chromium; then
+              exit 0
+            fi
+            echo "Playwright install attempt $attempt failed or timed out"
+            sleep $((attempt * 10))
+          done
+
+          echo "Playwright install failed after three attempts"
+          exit 1
       - name: Build stack and run isolated matrix
+        timeout-minutes: 25
         working-directory: server
         shell: bash
         run: |
@@ -136,8 +157,8 @@ jobs:
 
             if [ "$ready" != true ]; then
               echo "Service did not become ready: $url"
-              docker compose -f infrastructure/docker-compose.yml ps
-              docker compose -f infrastructure/docker-compose.yml logs --no-color --tail=200
+              timeout -k 5 60 docker compose -f infrastructure/docker-compose.yml ps || true
+              timeout -k 5 60 docker compose -f infrastructure/docker-compose.yml logs --no-color --tail=200 || true
               exit 1
             fi
           done
@@ -149,12 +170,16 @@ jobs:
           pnpm test:matrix
       - name: Collect service diagnostics
         if: failure()
+        timeout-minutes: 3
+        continue-on-error: true
         working-directory: server
+        shell: bash
         run: |
-          docker compose -f infrastructure/docker-compose.yml ps
-          docker compose -f infrastructure/docker-compose.yml logs --no-color --tail=300
+          timeout -k 5 60 docker compose -f infrastructure/docker-compose.yml ps || true
+          timeout -k 5 90 docker compose -f infrastructure/docker-compose.yml logs --no-color --tail=300 || true
       - name: Upload Playwright failure artifacts
         if: failure()
+        timeout-minutes: 5
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: playwright-results
@@ -163,7 +188,11 @@ jobs:
           retention-days: 7
       - name: Stop services
         if: always()
+        timeout-minutes: 6
+        continue-on-error: true
         working-directory: server
+        shell: bash
         run: |
-          pnpm platform:down || true
-          pnpm exec supabase stop || true
+          # Cleanup is best effort and must never keep the run open.
+          timeout -k 10 150 pnpm platform:down || echo "platform:down did not finish cleanly"
+          timeout -k 10 150 pnpm exec supabase stop || echo "supabase stop did not finish cleanly"
