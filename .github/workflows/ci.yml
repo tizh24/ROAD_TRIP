@@ -210,6 +210,13 @@ jobs:
             fi
           done
 
+          # Prove the gateway can reach Supabase Auth, JWKS and the profile table with its own
+          # credentials before seeding; AUTH_UNAVAILABLE otherwise surfaces as an opaque 503.
+          docker compose -f infrastructure/docker-compose.yml exec -T api-gateway node --input-type=module - < scripts/ci-gateway-auth-preflight.mjs || {
+            echo "::error::Gateway cannot reach Supabase Auth dependencies (see FAIL lines above)"
+            exit 1
+          }
+
           node ../web/scripts/prepare-local-e2e.mjs || {
             echo "::error::E2E fixture preparation failed; service warnings and errors follow"
             docker compose -f infrastructure/docker-compose.yml logs --no-color 2>&1 | grep -E '"level":(40|50)' | tail -n 60 || true

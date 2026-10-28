@@ -91,7 +91,29 @@ async function createUser(role) {
     user_metadata: { full_name: `E2E ${role}` },
   });
   if (error || !data.user) throw new Error(`Could not create local ${role} user: ${error?.message ?? 'missing response user'}`);
+  await waitForProfile(role, data.user.id);
   return user;
+}
+
+// The gateway rejects every request with AUTH_UNAVAILABLE unless the user's profile row is
+// readable with the service key, so prove that before any fixture request is made.
+async function waitForProfile(role, userId) {
+  let detail = 'not checked';
+  for (let attempt = 1; attempt <= 15; attempt += 1) {
+    const { data, error } = await admin
+      .from('user_profiles')
+      .select('id,role,status')
+      .eq('id', userId)
+      .maybeSingle();
+    if (!error && data) {
+      process.stdout.write(`Profile ready for ${role}: role=${data.role} status=${data.status}
+`);
+      return;
+    }
+    detail = error ? `${error.code ?? ''} ${error.message}` : 'row missing (profile trigger did not run)';
+    await new Promise((done) => setTimeout(done, 2000));
+  }
+  throw new Error(`Profile for ${role} was not readable with the service key: ${detail}`);
 }
 
 async function saveStorageState(user, filename) {
