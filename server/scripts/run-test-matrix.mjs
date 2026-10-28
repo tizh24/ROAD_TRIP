@@ -92,10 +92,32 @@ const phases = [
     serverRoot,
   ],
   [
-    'Backend HTTP and service contract E2E',
+    'API Gateway E2E',
     executable('pnpm'),
-    ['test:e2e'],
+    ['--filter', 'api-gateway', 'test:e2e'],
     serverRoot,
+    5 * 60_000,
+  ],
+  [
+    'Core Trip Service E2E',
+    executable('pnpm'),
+    ['--filter', 'core-trip-service', 'test:e2e'],
+    serverRoot,
+    5 * 60_000,
+  ],
+  [
+    'Geo Location Service E2E',
+    executable('pnpm'),
+    ['--filter', 'geo-location-service', 'test:e2e'],
+    serverRoot,
+    5 * 60_000,
+  ],
+  [
+    'Notification Worker E2E',
+    executable('pnpm'),
+    ['--filter', 'notification-worker', 'test:e2e'],
+    serverRoot,
+    5 * 60_000,
   ],
   [
     'Web auth, API contract and analytics',
@@ -111,15 +133,22 @@ const phases = [
   ],
 ];
 
-for (const [label, command, args, cwd] of phases) {
+for (const [label, command, args, cwd, timeout] of phases) {
   process.stdout.write(`\n=== ${label} ===\n`);
   const result = spawnSync(command, args, {
     cwd,
     env: process.env,
     stdio: 'inherit',
     shell: process.platform === 'win32' && command.endsWith('.cmd'),
+    ...(timeout ? { timeout } : {}),
   });
   if (result.error) throw result.error;
+  if (result.signal) {
+    process.stderr.write(
+      `${label} timed out after ${timeout / 60_000} minutes.\n`,
+    );
+    process.exit(1);
+  }
   if (result.status !== 0) process.exit(result.status ?? 1);
 }
 
