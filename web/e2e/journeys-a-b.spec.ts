@@ -82,20 +82,33 @@ test.describe("Journeys A and B — persisted trip planning", () => {
       "the UI create request should be observable",
     ).toBeDefined();
 
-    const retryResponse = await page.request.fetch(createRequest!.url, {
-      method: "POST",
-      headers: pickRetryHeaders(createRequest!.headers),
-      data: createRequest!.body,
-    });
-    expect(retryResponse.ok()).toBe(true);
-    const retryBody = (await retryResponse.json()) as {
+    const retry = await page.evaluate(
+      async ({ url, headers, body }) => {
+        const response = await fetch(url, {
+          method: "POST",
+          headers,
+          body,
+          credentials: "include",
+        });
+        return { ok: response.ok, body: await response.json() };
+      },
+      {
+        url: createRequest!.url,
+        headers: pickRetryHeaders(createRequest!.headers),
+        body: createRequest!.body,
+      },
+    );
+    expect(retry.ok).toBe(true);
+    const retryBody = retry.body as {
       data?: { id?: string };
     };
     expect(retryBody.data?.id).toBe(page.url().split("/").at(-1));
 
     await addPlace(page, "Hà Nội", places.hanoi.name);
     await addPlace(page, "Ninh Bình", places.ninhBinh.name);
-    const stops = page.getByRole("list", { name: "Điểm dừng ngày hiện tại" }).getByRole("listitem");
+    const stops = page
+      .getByRole("list", { name: "Điểm dừng ngày hiện tại" })
+      .getByRole("listitem");
     await expect(stops).toHaveCount(2);
     await expect(stops.nth(0)).toContainText(places.hanoi.name);
     await page
@@ -188,7 +201,9 @@ test.describe("Journeys A and B — persisted trip planning", () => {
 
 async function addPlace(page: Page, query: string, expectedName: string) {
   const search = page.getByRole("combobox", { name: "Thêm điểm dừng" });
-  const stops = page.getByRole("list", { name: "Điểm dừng ngày hiện tại" }).getByRole("listitem");
+  const stops = page
+    .getByRole("list", { name: "Điểm dừng ngày hiện tại" })
+    .getByRole("listitem");
   const previousStopCount = await stops.count();
   await search.fill(query);
   const addResponse = page.waitForResponse(
