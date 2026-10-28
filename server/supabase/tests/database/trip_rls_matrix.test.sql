@@ -118,7 +118,8 @@ SELECT set_config(
 SET LOCAL ROLE authenticated;
 
 SELECT is(
-  (SELECT count(*) FROM trip_schema.trips),
+  (SELECT count(*) FROM trip_schema.trips
+   WHERE id = 'b1b2c3d4-e5f6-4a5b-8c9d-0123456789ab'),
   1::bigint,
   'owner can read the trip'
 );
@@ -135,13 +136,15 @@ SELECT results_eq(
 );
 
 SELECT is(
-  (SELECT count(*) FROM trip_schema.trip_members),
+  (SELECT count(*) FROM trip_schema.trip_members
+   WHERE trip_id = 'b1b2c3d4-e5f6-4a5b-8c9d-0123456789ab'),
   3::bigint,
   'owner can read all trip members'
 );
 
 SELECT is(
-  (SELECT count(*) FROM trip_schema.trip_invitations),
+  (SELECT count(*) FROM trip_schema.trip_invitations
+   WHERE trip_id = 'b1b2c3d4-e5f6-4a5b-8c9d-0123456789ab'),
   2::bigint,
   'owner can read all trip invitations'
 );
@@ -183,7 +186,8 @@ SELECT set_config(
 SET LOCAL ROLE authenticated;
 
 SELECT is(
-  (SELECT count(*) FROM trip_schema.trips),
+  (SELECT count(*) FROM trip_schema.trips
+   WHERE id = 'b1b2c3d4-e5f6-4a5b-8c9d-0123456789ab'),
   1::bigint,
   'editor can read the trip'
 );
@@ -226,7 +230,8 @@ SELECT results_eq(
 );
 
 SELECT is(
-  (SELECT count(*) FROM trip_schema.trip_members),
+  (SELECT count(*) FROM trip_schema.trip_members
+   WHERE trip_id = 'b1b2c3d4-e5f6-4a5b-8c9d-0123456789ab'),
   3::bigint,
   'editor can read trip members'
 );
@@ -261,13 +266,15 @@ SELECT set_config(
 SET LOCAL ROLE authenticated;
 
 SELECT is(
-  (SELECT count(*) FROM trip_schema.trips),
+  (SELECT count(*) FROM trip_schema.trips
+   WHERE id = 'b1b2c3d4-e5f6-4a5b-8c9d-0123456789ab'),
   1::bigint,
   'viewer can read the trip'
 );
 
 SELECT is(
-  (SELECT count(*) FROM trip_schema.trip_stops),
+  (SELECT count(*) FROM trip_schema.trip_stops
+   WHERE trip_id = 'b1b2c3d4-e5f6-4a5b-8c9d-0123456789ab'),
   3::bigint,
   'viewer can read itinerary stops'
 );
