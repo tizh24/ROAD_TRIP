@@ -84,6 +84,8 @@ test.describe("Journeys A and B — persisted trip planning", () => {
 
     const retry = await page.evaluate(
       async ({ url, headers, body }) => {
+        const csrf = document.cookie.match(/(?:^|; )rt_csrf=([^;]+)/)?.[1];
+        if (csrf) headers["x-csrf-token"] = decodeURIComponent(csrf);
         const response = await fetch(url, {
           method: "POST",
           headers,

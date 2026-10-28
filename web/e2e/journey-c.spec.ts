@@ -94,10 +94,10 @@ test.describe("Journey C — controlled collaboration", () => {
       .getByRole("listitem");
     await expect(stops).toHaveCount(2);
     const firstName = (
-      await stops.nth(0).locator("strong").textContent()
+      await stops.nth(0).getByRole("heading").textContent()
     )?.trim();
     const secondName = (
-      await stops.nth(1).locator("strong").textContent()
+      await stops.nth(1).getByRole("heading").textContent()
     )?.trim();
     expect(firstName).toBeTruthy();
     expect(secondName).toBeTruthy();
@@ -112,9 +112,9 @@ test.describe("Journey C — controlled collaboration", () => {
       .getByRole("button", { name: `Đưa ${secondName} lên` })
       .click();
     expect((await reorderResponse).ok()).toBe(true);
-    await expect(stops.nth(0).locator("strong")).toHaveText(secondName!);
+    await expect(stops.nth(0).getByRole("heading")).toHaveText(secondName!);
     await memberPage.reload();
-    await expect(stops.nth(0).locator("strong")).toHaveText(secondName!);
+    await expect(stops.nth(0).getByRole("heading")).toHaveText(secondName!);
 
     const removalResponse = ownerPage.waitForResponse(
       (response) =>
