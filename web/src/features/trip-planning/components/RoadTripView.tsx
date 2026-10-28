@@ -5,18 +5,9 @@ import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-import {
-  AlertCircle,
-  ArrowLeft,
-  CheckCircle2,
-  Circle,
-  ExternalLink,
-  MapPin,
-  Navigation,
-  PhoneCall,
-  ShieldAlert,
-  Smartphone,
-} from "lucide-react";
+import { AlertCircle, ArrowLeft, CheckCircle2, Circle, ExternalLink, MapPin, Navigation, Smartphone } from "lucide-react";
+import dynamic from "next/dynamic";
+import { Button } from "@/components/ui/button";
 import { GatewayApiError } from "@/features/trip-planning/api/gateway-request";
 import {
   getTrip,
@@ -26,6 +17,8 @@ import {
 import type { TripDetail } from "@/features/trip-planning/api/trip-model";
 import FeedbackState from "@/components/ui/FeedbackState";
 import { trackAnalytics } from "@/lib/analytics/analytics";
+
+const RouteMap = dynamic(() => import("./RouteMap"), { ssr: false, loading: () => <div className="h-[22rem] animate-pulse rounded-xl bg-muted p-6 text-sm text-muted-foreground">Đang tải bản đồ…</div> });
 
 type State =
   | { kind: "loading" }
@@ -172,9 +165,9 @@ export default function RoadTripView({ tripId }: { tripId: string }) {
 
   if (state.kind === "loading") {
     return (
-      <div className="page-shell w-full py-12" aria-busy="true">
-        <div className="h-10 w-72 animate-pulse rounded bg-border-main" />
-        <div className="surface-card mt-8 h-80 animate-pulse" />
+      <div className="page-shell w-full px-4 py-10 sm:px-6" aria-busy="true">
+        <div className="h-10 w-72 animate-pulse rounded bg-muted" />
+        <div className="mt-8 h-80 animate-pulse rounded-xl bg-muted" />
       </div>
     );
   }
@@ -191,7 +184,7 @@ export default function RoadTripView({ tripId }: { tripId: string }) {
               : "Bạn cần là thành viên của chuyến đi để truy cập chế độ đi đường."
           }
         >
-          <Link href="/dashboard" className="focus-ring text-sm font-bold text-primary hover:underline">
+          <Link href="/dashboard" className="focus-ring text-sm font-medium underline underline-offset-4">
             Về danh sách chuyến đi
           </Link>
         </FeedbackState>
@@ -202,13 +195,7 @@ export default function RoadTripView({ tripId }: { tripId: string }) {
   if (state.kind === "error") {
     return (
       <div className="page-shell py-16">
-        <FeedbackState
-          kind="error"
-          title="Không thể tải chuyến đi"
-          description={state.message}
-          actionLabel="Thử lại"
-          onAction={() => void load()}
-        />
+        <FeedbackState kind="error" title="Không thể tải chuyến đi" description={state.message} actionLabel="Thử lại" onAction={() => void load()} />
       </div>
     );
   }
@@ -217,9 +204,10 @@ export default function RoadTripView({ tripId }: { tripId: string }) {
   const activeDay = trip.days[dayIndex] ?? trip.days[0];
   const activeStops = activeDay ? activeDay.stops : [];
   const completedStopsInDay = activeStops.filter((stop) => checkIns[stop.id]).length;
+  const canComplete = trip.role === "OWNER" || trip.permission === "EDIT";
 
   return (
-    <div className="min-h-screen bg-background-warm pb-20">
+    <div className="page-shell px-4 py-6 sm:px-6 sm:py-10">
       <ConfirmDialog
         open={confirmingComplete}
         title="Hoàn tất chuyến đi?"
@@ -228,318 +216,173 @@ export default function RoadTripView({ tripId }: { tripId: string }) {
         onConfirm={confirmCompleteTrip}
         onClose={() => setConfirmingComplete(false)}
       />
-      {/* Top Banner / Mobile Handoff on Desktop */}
-      <section className="bg-secondary px-4 py-6 text-white sm:px-6 lg:py-8">
-        <div className="page-shell px-0">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <Link
-              href={`/planner/${trip.id}`}
-              className="focus-ring inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3.5 py-2 text-xs font-bold text-white/90 hover:bg-white/20"
-            >
-              <ArrowLeft size={14} />
-              <span>Quay lại chỉnh sửa lịch trình</span>
-            </Link>
-            <span className="inline-flex items-center gap-2 rounded-full bg-emerald-500/20 px-3 py-1.5 text-xs font-extrabold text-emerald-300">
-              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-              Chế độ đi đường (Road Mode)
-            </span>
-          </div>
 
-          <div className="mt-5 flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
-            <div>
-              <p className="text-xs font-bold uppercase tracking-wider text-white/60">
-                {trip.startDate} → {trip.endDate} · {trip.days.length} ngày
-              </p>
-              <h1 className="mt-1 text-2xl font-extrabold tracking-tight sm:text-4xl">
-                {trip.title}
-              </h1>
-            </div>
-            <div className="flex flex-wrap items-center gap-2">
-              <button
-                type="button"
-                onClick={() => void copyMobileLink()}
-                className="focus-ring inline-flex items-center gap-2 rounded-xl bg-white/10 px-3.5 py-2.5 text-xs font-bold text-white hover:bg-white/20 transition"
-              >
-                <Smartphone size={16} />
-                <span>{copiedLink ? "Đã sao chép liên kết!" : "Mở trên điện thoại"}</span>
-              </button>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <Link href={`/planner/${trip.id}`} className="focus-ring inline-flex min-h-11 items-center gap-1.5 rounded text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline">
+          <ArrowLeft className="size-4" aria-hidden="true" /> Quay lại chỉnh sửa lịch trình
+        </Link>
+        <p className="inline-flex items-center gap-2 text-sm">
+          <span className="size-2 rounded-full bg-success" aria-hidden="true" />
+          Chế độ đi đường (Road Mode)
+        </p>
+      </div>
 
-              {trip.status === "COMPLETED" ? (
-                <Link
-                  href={`/memory/${trip.id}`}
-                  className="focus-ring inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-3.5 py-2.5 text-xs font-bold text-white shadow-card hover:bg-emerald-700 transition"
-                >
-                  <CheckCircle2 size={16} />
-                  <span>Xem Kỷ niệm chuyến đi</span>
-                </Link>
-              ) : (trip.role === "OWNER" || trip.permission === "EDIT") && (
-                <button
-                  type="button"
-                  onClick={() => void handleCompleteTrip()}
-                  disabled={completingTrip}
-                  className="focus-ring inline-flex items-center gap-1.5 rounded-xl bg-primary-strong px-3.5 py-2.5 text-xs font-bold text-white shadow-card hover:bg-primary-strong/90 transition disabled:opacity-50"
-                >
-                  <CheckCircle2 size={16} />
-                  <span>{completingTrip ? "Đang xử lý…" : "Hoàn tất chuyến đi"}</span>
-                </button>
-              )}
-            </div>
-          </div>
+      <header className="mt-6 flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
+        <div>
+          <p className="text-sm tabular-nums text-muted-foreground">
+            {trip.startDate} → {trip.endDate} · {trip.days.length} ngày
+          </p>
+          <h1 className="mt-1 text-3xl font-medium tracking-tight sm:text-4xl">{trip.title}</h1>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <Button type="button" variant="outline" className="min-h-11" onClick={() => void copyMobileLink()}>
+            <Smartphone aria-hidden="true" />
+            {copiedLink ? "Đã sao chép liên kết!" : "Mở trên điện thoại"}
+          </Button>
+          {trip.status === "COMPLETED" ? (
+            <Button asChild className="min-h-11">
+              <Link href={`/memory/${trip.id}`}>
+                <CheckCircle2 aria-hidden="true" /> Xem Kỷ niệm chuyến đi
+              </Link>
+            </Button>
+          ) : (
+            canComplete && (
+              <Button type="button" className="min-h-11" onClick={() => void handleCompleteTrip()} disabled={completingTrip}>
+                <CheckCircle2 aria-hidden="true" />
+                {completingTrip ? "Đang xử lý…" : "Hoàn tất chuyến đi"}
+              </Button>
+            )
+          )}
+        </div>
+      </header>
+
+      <section aria-labelledby="desktop-handoff-banner" className="mt-8 rounded-xl bg-muted p-5">
+        <h2 id="desktop-handoff-banner" className="text-base font-medium">
+          Trải nghiệm tối ưu cho điện thoại khi đi đường
+        </h2>
+        <p className="mt-1 max-w-3xl text-sm leading-relaxed text-muted-foreground">
+          Giao diện đi đường được thiết kế nhỏ gọn, dễ thao tác một tay trên điện thoại khi đang di chuyển. Bạn có thể mở chỉ đường Google Maps trực tiếp cho từng điểm dừng, đánh dấu đã đến và gọi nhanh cứu hộ khẩn cấp.
+        </p>
+        <p className="mt-3 flex items-start gap-2 text-sm text-muted-foreground">
+          <AlertCircle className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+          <span>
+            <strong className="font-medium text-foreground">Lưu ý:</strong> Tính năng chia sẻ vị trí (Consented Live Tracking) cho phép bạn chủ động bật/tắt để các thành viên trong đoàn có thể biết vị trí của nhau.
+          </span>
+        </p>
+      </section>
+
+      <section aria-labelledby="location-sharing-title" className="mt-4 flex flex-wrap items-center justify-between gap-4 rounded-xl bg-muted p-5">
+        <div className="min-w-0">
+          <h3 id="location-sharing-title" className="text-base font-medium">
+            Chia sẻ vị trí với đoàn (Consented Live Tracking)
+          </h3>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {isSharingLocation ? "Vị trí GPS của bạn đang được chia sẻ cho các thành viên trong đoàn." : "Chỉ chia sẻ khi bạn cho phép và có thể tắt bất cứ lúc nào."}
+          </p>
+        </div>
+        <Button type="button" variant={isSharingLocation ? "default" : "outline"} className="min-h-11" aria-pressed={isSharingLocation} onClick={() => void handleToggleLocationSharing()}>
+          <Navigation aria-hidden="true" />
+          {isSharingLocation ? "Đang bật chia sẻ (Nhấn để tắt)" : "Bật chia sẻ vị trí"}
+        </Button>
+      </section>
+
+      <section aria-labelledby="emergency-bar-title" className="mt-4">
+        <h2 id="emergency-bar-title" className="sr-only">Hỗ trợ khẩn cấp</h2>
+        <div className="grid grid-cols-3 gap-2">
+          {[
+            { number: "113", label: "CSGT / Công an" },
+            { number: "115", label: "Cấp cứu y tế" },
+            { number: "116", label: "Cứu hộ đường bộ" },
+          ].map((item) => (
+            <a key={item.number} href={`tel:${item.number}`} className="focus-ring flex min-h-20 flex-col justify-center rounded-xl bg-muted px-4 py-3 transition-colors hover:bg-border">
+              <span className="text-3xl font-medium tabular-nums tracking-tight">{item.number}</span>
+              <span className="text-sm text-muted-foreground">{item.label}</span>
+            </a>
+          ))}
         </div>
       </section>
 
-      <div className="page-shell px-4 sm:px-6">
-        {/* Honest Desktop Handoff Banner */}
-        <section
-          aria-labelledby="desktop-handoff-banner"
-          className="surface-card -mt-4 border-l-4 border-l-primary p-4 sm:p-5 shadow-sm"
-        >
-          <div className="flex items-start gap-3">
-            <div className="rounded-xl bg-primary/10 p-2.5 text-primary shrink-0">
-              <Smartphone size={20} />
-            </div>
-            <div className="min-w-0 flex-1">
-              <h2 id="desktop-handoff-banner" className="text-sm font-extrabold text-text-main">
-                Trải nghiệm tối ưu cho điện thoại khi đi đường
-              </h2>
-              <p className="mt-1 text-xs leading-5 text-text-sub">
-                Giao diện đi đường được thiết kế nhỏ gọn, dễ thao tác một tay trên điện thoại khi đang di chuyển.
-                Bạn có thể mở chỉ đường Google Maps trực tiếp cho từng điểm dừng, đánh dấu đã đến và gọi nhanh cứu hộ khẩn cấp.
-              </p>
-              <div className="mt-3 flex items-center gap-2 text-[11px] text-text-sub bg-background-warm p-2.5 rounded-lg">
-                <AlertCircle size={14} className="text-secondary shrink-0" />
-                <span>
-                  <strong>Lưu ý:</strong> Tính năng chia sẻ vị trí (Consented Live Tracking) cho phép bạn chủ động bật/tắt để các thành viên trong đoàn có thể biết vị trí của nhau.
-                </span>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Consented Live Location Sharing Card */}
-        <section className="surface-card mt-6 p-4 sm:p-5 flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className={`p-2.5 rounded-xl ${isSharingLocation ? "bg-emerald-500/15 text-emerald-600" : "bg-background-warm text-text-sub"}`}>
-              <Navigation size={20} />
-            </div>
-            <div>
-              <h3 className="text-sm font-extrabold text-text-main">Chia sẻ vị trí với đoàn (Consented Live Tracking)</h3>
-              <p className="text-xs text-text-sub">
-                {isSharingLocation
-                  ? "Vị trí GPS của bạn đang được chia sẻ cho các thành viên trong đoàn."
-                  : "Chỉ chia sẻ khi bạn cho phép và có thể tắt bất cứ lúc nào."}
-              </p>
-            </div>
-          </div>
+      <nav aria-label="Chọn ngày hành trình" className="mt-10 flex gap-1.5 overflow-x-auto pb-1">
+        {trip.days.map((day, idx) => (
           <button
             type="button"
-            onClick={() => void handleToggleLocationSharing()}
-            className={`focus-ring rounded-xl px-4 py-2.5 text-xs font-bold transition ${
-              isSharingLocation
-                ? "bg-emerald-600 text-white shadow-card hover:bg-emerald-700"
-                : "border border-border-main bg-surface text-text-main hover:bg-background-warm"
-            }`}
+            key={day.id}
+            aria-pressed={idx === dayIndex}
+            onClick={() => setDayIndex(idx)}
+            className={`focus-ring flex min-h-16 min-w-32 shrink-0 flex-col items-start justify-center rounded-md px-4 text-left transition-colors ${idx === dayIndex ? "bg-primary text-primary-foreground" : "bg-muted hover:bg-border"}`}
           >
-            {isSharingLocation ? "Đang bật chia sẻ (Nhấn để tắt)" : "Bật chia sẻ vị trí"}
+            <span className="text-base">Ngày {day.dayIndex}</span>
+            <span className="text-sm tabular-nums opacity-80">{day.date}</span>
           </button>
-        </section>
+        ))}
+      </nav>
 
-        {/* Emergency Assistance Quick Bar */}
-        <section aria-labelledby="emergency-bar-title" className="mt-6">
-          <h2 id="emergency-bar-title" className="sr-only">Hỗ trợ khẩn cấp</h2>
-          <div className="grid grid-cols-3 gap-2.5 sm:gap-4">
-            <a
-              href="tel:113"
-              className="focus-ring surface-card flex flex-col items-center justify-center p-3 text-center hover:bg-danger/5 transition border-border-main"
-            >
-              <div className="rounded-full bg-danger/10 p-2 text-danger">
-                <ShieldAlert size={18} />
-              </div>
-              <span className="mt-1.5 text-xs font-bold text-text-main">CSGT / Công an</span>
-              <span className="text-[11px] font-extrabold text-danger">113</span>
-            </a>
-            <a
-              href="tel:115"
-              className="focus-ring surface-card flex flex-col items-center justify-center p-3 text-center hover:bg-primary/5 transition border-border-main"
-            >
-              <div className="rounded-full bg-primary/10 p-2 text-primary">
-                <PhoneCall size={18} />
-              </div>
-              <span className="mt-1.5 text-xs font-bold text-text-main">Cấp cứu y tế</span>
-              <span className="text-[11px] font-extrabold text-primary">115</span>
-            </a>
-            <a
-              href="tel:116"
-              className="focus-ring surface-card flex flex-col items-center justify-center p-3 text-center hover:bg-secondary/5 transition border-border-main"
-            >
-              <div className="rounded-full bg-secondary/10 p-2 text-secondary">
-                <Navigation size={18} />
-              </div>
-              <span className="mt-1.5 text-xs font-bold text-text-main">Cứu hộ đường bộ</span>
-              <span className="text-[11px] font-extrabold text-secondary">116</span>
-            </a>
+      {activeDay && (
+        <section className="mt-8" aria-labelledby="active-day-heading">
+          <div className="flex flex-wrap items-baseline justify-between gap-3">
+            <h2 id="active-day-heading" className="text-2xl font-medium tracking-tight">
+              Lộ trình Ngày {activeDay.dayIndex}
+              <span className="ml-3 text-base font-normal tabular-nums text-muted-foreground">{activeDay.date}</span>
+            </h2>
+            <p className="text-sm tabular-nums text-muted-foreground">
+              Đã đến {completedStopsInDay}/{activeStops.length} điểm
+            </p>
           </div>
-        </section>
 
-        {/* Day Selector */}
-        <div className="mt-6">
-          <nav aria-label="Chọn ngày hành trình" className="flex gap-2 overflow-x-auto pb-1">
-            {trip.days.map((day, idx) => {
-              const active = idx === dayIndex;
-              return (
-                <button
-                  type="button"
-                  key={day.id}
-                  onClick={() => setDayIndex(idx)}
-                  className={`focus-ring shrink-0 rounded-2xl px-4 py-2.5 text-left transition ${
-                    active
-                      ? "bg-secondary text-white shadow-card font-extrabold"
-                      : "surface-card text-text-main hover:bg-background font-semibold"
-                  }`}
-                >
-                  <span className="block text-xs uppercase opacity-80">Ngày {day.dayIndex}</span>
-                  <span className="text-sm">{day.date}</span>
-                </button>
-              );
-            })}
-          </nav>
-        </div>
-
-        {/* Active Day Route & Stops List */}
-        {activeDay && (
-          <section className="mt-6 space-y-4" aria-labelledby="active-day-heading">
-            <div className="surface-card flex items-center justify-between p-4 sm:p-5">
-              <div>
-                <p className="text-xs font-extrabold uppercase tracking-wider text-primary">
-                  Lộ trình Ngày {activeDay.dayIndex}
-                </p>
-                <h2 id="active-day-heading" className="mt-0.5 text-xl font-extrabold text-text-main">
-                  {activeDay.date}
-                </h2>
-              </div>
-              <span className="rounded-full bg-primary/10 px-3 py-1.5 text-xs font-bold text-primary">
-                Đã đến {completedStopsInDay}/{activeStops.length} điểm
-              </span>
+          {activeStops.length === 0 ? (
+            <div className="mt-5 flex flex-col items-center rounded-xl border border-dashed border-border px-6 py-12 text-center">
+              <h3 className="text-lg font-medium">Chưa có điểm dừng cho ngày này</h3>
+              <p className="mt-1 text-sm text-muted-foreground">Quay lại giao diện chỉnh sửa để thêm các điểm đến vào hành trình.</p>
+              <Button asChild className="mt-5 min-h-11">
+                <Link href={`/planner/${trip.id}`}>Thêm điểm dừng vào kế hoạch</Link>
+              </Button>
             </div>
-
-            {activeStops.length === 0 ? (
-              <div className="surface-card p-8 text-center">
-                <MapPin className="mx-auto text-primary" size={32} />
-                <h3 className="mt-3 text-lg font-extrabold text-text-main">
-                  Chưa có điểm dừng cho ngày này
-                </h3>
-                <p className="mt-1 text-sm text-text-sub">
-                  Quay lại giao diện chỉnh sửa để thêm các điểm đến vào hành trình.
-                </p>
-                <Link
-                  href={`/planner/${trip.id}`}
-                  className="focus-ring mt-4 inline-flex items-center gap-2 rounded-xl bg-primary-strong px-4 py-2.5 text-sm font-bold text-white shadow-card hover:bg-primary-strong/90 transition"
-                >
-                  Thêm điểm dừng vào kế hoạch
-                </Link>
+          ) : (
+            <>
+              <div className="mt-5 overflow-hidden rounded-xl bg-muted">
+                <RouteMap stops={activeStops} />
               </div>
-            ) : (
-              <ol className="space-y-3">
+              <ol className="mt-5 grid gap-1">
                 {activeStops.map((stop, index) => {
                   const isCheckedIn = !!checkIns[stop.id];
-                  const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
-                    `${stop.latitude},${stop.longitude}`,
-                  )}`;
-
+                  const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(`${stop.latitude},${stop.longitude}`)}`;
                   return (
-                    <li
-                      key={stop.id}
-                      className={`surface-card relative overflow-hidden p-4 sm:p-5 transition-all ${
-                        isCheckedIn ? "opacity-75 bg-background-warm/60" : ""
-                      }`}
-                    >
-                      <div className="flex items-start gap-3 sm:gap-4">
-                        {/* Stop Number Badge */}
-                        <div
-                          className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-extrabold text-white ${
-                            isCheckedIn ? "bg-emerald-600" : "bg-primary"
-                          }`}
-                        >
-                          {isCheckedIn ? <CheckCircle2 size={18} /> : stop.stopIndex}
+                    <li key={stop.id} className={`flex gap-4 rounded-lg px-4 py-4 sm:px-5 ${index % 2 === 0 ? "bg-muted" : "bg-muted/50"}`}>
+                      <span className="w-7 shrink-0 pt-0.5 text-xl tabular-nums">{isCheckedIn ? <CheckCircle2 className="size-6 text-success" aria-hidden="true" /> : stop.stopIndex}</span>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-baseline justify-between gap-2">
+                          <h3 className={`text-lg font-medium ${isCheckedIn ? "text-muted-foreground line-through" : ""}`}>{stop.name}</h3>
+                          <span className={`text-sm ${isCheckedIn ? "text-success" : "text-muted-foreground"}`}>{isCheckedIn ? "Đã đến" : `Chặng ${index + 1}`}</span>
                         </div>
-
-                        {/* Stop Details */}
-                        <div className="min-w-0 flex-1">
-                          <div className="flex flex-wrap items-start justify-between gap-2">
-                            <div>
-                              <h3
-                                className={`text-base font-extrabold text-text-main ${
-                                  isCheckedIn ? "line-through opacity-75" : ""
-                                }`}
-                              >
-                                {stop.name}
-                              </h3>
-                              <p className="mt-0.5 text-xs text-text-sub flex items-center gap-1">
-                                <MapPin size={12} className="shrink-0" />
-                                <span className="truncate">{stop.address}</span>
-                              </p>
-                            </div>
-                            <span
-                              className={`rounded-full px-2.5 py-1 text-[11px] font-bold ${
-                                isCheckedIn
-                                  ? "bg-emerald-500/15 text-emerald-800"
-                                  : "bg-background-warm text-text-sub"
-                              }`}
-                            >
-                              {isCheckedIn ? "Đã đến" : `Chặng ${index + 1}`}
-                            </span>
-                          </div>
-
-                          {stop.notes && (
-                            <p className="mt-2.5 rounded-xl bg-background-warm p-2.5 text-xs text-text-sub leading-relaxed">
-                              <strong>Ghi chú:</strong> {stop.notes}
-                            </p>
-                          )}
-
-                          {/* Action Buttons: Check-in & Directions */}
-                          <div className="mt-4 flex flex-wrap items-center gap-2">
-                            <button
-                              type="button"
-                              onClick={() => toggleCheckIn(stop.id)}
-                              className={`focus-ring inline-flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-bold transition ${
-                                isCheckedIn
-                                  ? "border border-border-main bg-surface text-text-sub hover:bg-background-warm"
-                                  : "bg-emerald-600 text-white shadow-card hover:bg-emerald-700"
-                              }`}
-                            >
-                              {isCheckedIn ? (
-                                <>
-                                  <Circle size={14} />
-                                  <span>Đánh dấu chưa đến</span>
-                                </>
-                              ) : (
-                                <>
-                                  <CheckCircle2 size={14} />
-                                  <span>Đã đến nơi</span>
-                                </>
-                              )}
-                            </button>
-
-                            <a
-                              href={googleMapsUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="focus-ring inline-flex items-center gap-1.5 rounded-xl border border-border-main bg-surface px-3.5 py-2 text-xs font-bold text-text-main hover:bg-background-warm transition"
-                            >
-                              <ExternalLink size={14} />
-                              <span>Mở chỉ đường Google Maps</span>
+                        <p className="mt-0.5 flex items-center gap-1 text-sm text-muted-foreground">
+                          <MapPin className="size-3.5 shrink-0" aria-hidden="true" />
+                          <span className="truncate">{stop.address}</span>
+                        </p>
+                        {stop.notes && (
+                          <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                            <strong className="font-medium text-foreground">Ghi chú:</strong> {stop.notes}
+                          </p>
+                        )}
+                        <div className="mt-4 flex flex-wrap items-center gap-2">
+                          <Button type="button" variant={isCheckedIn ? "outline" : "default"} className="min-h-11" onClick={() => toggleCheckIn(stop.id)}>
+                            {isCheckedIn ? <Circle aria-hidden="true" /> : <CheckCircle2 aria-hidden="true" />}
+                            {isCheckedIn ? "Đánh dấu chưa đến" : "Đã đến nơi"}
+                          </Button>
+                          <Button asChild variant="outline" className="min-h-11">
+                            <a href={googleMapsUrl} target="_blank" rel="noopener noreferrer">
+                              <ExternalLink aria-hidden="true" /> Mở chỉ đường Google Maps
                             </a>
-                          </div>
+                          </Button>
                         </div>
                       </div>
                     </li>
                   );
                 })}
               </ol>
-            )}
-          </section>
-        )}
-      </div>
+            </>
+          )}
+        </section>
+      )}
     </div>
   );
 }

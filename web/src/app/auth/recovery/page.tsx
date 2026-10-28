@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { requestGateway } from "@/features/trip-planning/api/gateway-request";
 import { z } from "zod";
+import AuthStage from "@/features/auth/components/AuthStage";
+import { Card } from "@/components/ui/card";
 
 // Supabase delivers recovery tokens in the URL fragment. They are handed to the
 // Gateway immediately, which verifies them and issues HttpOnly cookies.
@@ -36,17 +38,20 @@ export default function RecoveryPage() {
   }, [router]);
 
   return (
-    <main className="flex min-h-screen items-center justify-center px-4">
-      {failed ? (
-        <p role="alert" className="text-center text-sm">
-          Liên kết đặt lại mật khẩu không hợp lệ hoặc đã hết hạn.{" "}
-          <Link href="/forgot-password" className="font-bold text-primary underline">
-            Yêu cầu liên kết mới
-          </Link>
-        </p>
-      ) : (
-        <p role="status" className="text-sm">Đang xác minh liên kết…</p>
-      )}
-    </main>
+    <AuthStage backHref="/login" backLabel="Về đăng nhập">
+      <Card className="relative z-10 w-full max-w-sm gap-4 p-8 shadow-lg">
+        <h1 className="text-xl font-semibold">Đặt lại mật khẩu</h1>
+        {failed ? (
+          <p role="alert" className="text-sm text-muted-foreground">
+            Liên kết đặt lại mật khẩu không hợp lệ hoặc đã hết hạn.{" "}
+            <Link href="/forgot-password" className="font-medium text-foreground underline underline-offset-4">
+              Yêu cầu liên kết mới
+            </Link>
+          </p>
+        ) : (
+          <p role="status" className="text-sm text-muted-foreground">Đang xác minh liên kết…</p>
+        )}
+      </Card>
+    </AuthStage>
   );
 }

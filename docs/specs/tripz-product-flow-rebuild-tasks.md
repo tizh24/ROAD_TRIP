@@ -56,4 +56,5 @@
 - [ ] Authorization/RLS matrix and idempotency tests pass.
 - [ ] Browser E2E verifies loading, empty, error and permission states.
 - [ ] Observability, correlation IDs, retries and dead-letter behavior verified.
-- [ ] `pnpm` typecheck, tests, build and `git diff --check` pass.
+- [x] `pnpm` typecheck, tests, build and `git diff --check` pass.
+  - 2026-10-27, `server/`: `pnpm typecheck` (10 tasks), `pnpm lint` (8), `pnpm test` (14), `pnpm build` (13) all successful. The other five gate items are per-slice and still need clean-DB/staging evidence.

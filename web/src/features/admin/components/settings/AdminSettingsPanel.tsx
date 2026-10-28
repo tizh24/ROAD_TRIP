@@ -2,13 +2,11 @@
 import { toast } from "@/components/ui/sonner";
 
 import React, { useCallback, useEffect, useState } from "react";
-import {
-  CheckCircle2,
-  Mail,
-  RefreshCw,
-  Search,
-  Users,
-} from "lucide-react";
+import { CheckCircle2, RefreshCw, Search } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
+import { WorkspacePage } from "@/components/shell/WorkspacePage";
 import {
   getAdminUsers,
   updateAdminUserRole,
@@ -63,114 +61,83 @@ export default function AdminSettingsPanel() {
   });
 
   return (
-    <div className="mx-auto min-h-full max-w-[1400px] bg-background p-4 sm:p-8">
-      {/* Header */}
-      <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <p className="text-xs font-extrabold uppercase tracking-[.16em] text-secondary">
-            Platform Capabilities · Admin Console
-          </p>
-          <h1 className="mt-1 text-3xl font-extrabold tracking-[-.03em] text-text-main">
-            Quản trị Tài khoản & Phân quyền
-          </h1>
-          <p className="mt-1 text-sm text-text-sub">
-            Quản lý vai trò người dùng (USER, PARTNER, MODERATOR, ADMIN) và lưu vết kiểm toán hệ thống.
-          </p>
+    <WorkspacePage
+      title="Quản trị tài khoản & phân quyền"
+      description="Quản lý vai trò người dùng (USER, PARTNER, MODERATOR, ADMIN) và lưu vết kiểm toán hệ thống."
+    >
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="relative w-full max-w-md">
+          <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
+          <Input
+            type="text"
+            aria-label="Tìm theo tên hoặc email người dùng"
+            placeholder="Tìm theo tên hoặc email người dùng..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="h-11 pl-9"
+          />
         </div>
-
-        <button
-          onClick={loadUsers}
-          className="inline-flex items-center gap-2 rounded-xl bg-secondary px-4 py-2 text-xs font-bold text-white hover:bg-secondary/90 transition"
-        >
-          <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
+        <Button type="button" variant="outline" className="min-h-11" onClick={loadUsers}>
+          <RefreshCw className={loading ? "animate-spin" : ""} aria-hidden="true" />
           Làm mới
-        </button>
+        </Button>
       </div>
 
       {successMessage && (
-        <div className="mb-6 flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-xs font-bold text-emerald-800">
-          <CheckCircle2 size={16} />
-          <span>{successMessage}</span>
-        </div>
+        <p role="status" className="mt-4 flex items-center gap-2 text-sm text-success">
+          <CheckCircle2 className="size-4" aria-hidden="true" />
+          {successMessage}
+        </p>
       )}
 
-      {/* Search Bar */}
-      <div className="mb-6 flex items-center rounded-2xl border border-border-main bg-white px-4 py-2.5 shadow-sm max-w-md">
-        <Search size={16} className="text-text-sub mr-2.5" />
-        <input
-          type="text"
-          placeholder="Tìm theo tên hoặc email người dùng..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="w-full bg-transparent text-xs text-text-main outline-none"
-        />
-      </div>
-
-      {/* Users Table */}
       {loading ? (
-        <div className="py-20 text-center text-sm text-text-sub">
-          Đang tải danh sách tài khoản người dùng...
+        <div className="mt-6 grid gap-1" aria-busy="true" aria-label="Đang tải danh sách tài khoản">
+          {[1, 2, 3, 4].map((item) => (
+            <Skeleton key={item} className="h-16 rounded-lg" />
+          ))}
         </div>
       ) : error ? (
-        <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-center text-red-700">
-          <p className="font-semibold">{error}</p>
+        <div className="mt-6 rounded-xl bg-muted p-6">
+          <p role="alert" className="text-sm text-destructive">{error}</p>
+          <Button type="button" className="mt-4 min-h-11" onClick={loadUsers}>Thử lại</Button>
         </div>
       ) : filteredUsers.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-border-main bg-white p-12 text-center text-text-sub">
-          <Users className="mx-auto opacity-40" size={36} />
-          <p className="mt-2 text-sm font-bold">Không tìm thấy người dùng phù hợp</p>
+        <div className="mt-6 rounded-xl border border-dashed border-border px-6 py-14 text-center">
+          <p className="text-base font-medium">Không tìm thấy người dùng phù hợp</p>
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-2xl border border-border-main bg-white shadow-sm">
-          <table className="w-full text-left text-xs text-text-main">
-            <thead className="border-b border-border-main bg-gray-50/70 text-[11px] font-extrabold uppercase text-text-sub">
-              <tr>
-                <th className="px-5 py-3.5">Người dùng</th>
-                <th className="px-5 py-3.5">Email liên kết</th>
-                <th className="px-5 py-3.5">Trạng thái</th>
-                <th className="px-5 py-3.5">Ngày tham gia</th>
-                <th className="px-5 py-3.5">Vai trò nền tảng</th>
+        <div className="mt-6 overflow-x-auto">
+          <table className="w-full min-w-[44rem] text-left text-sm">
+            <thead>
+              <tr className="text-muted-foreground">
+                <th scope="col" className="px-4 pb-2 font-normal">Người dùng</th>
+                <th scope="col" className="px-4 pb-2 font-normal">Email liên kết</th>
+                <th scope="col" className="px-4 pb-2 font-normal">Trạng thái</th>
+                <th scope="col" className="px-4 pb-2 font-normal">Ngày tham gia</th>
+                <th scope="col" className="px-4 pb-2 font-normal">Vai trò nền tảng</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border-main">
-              {filteredUsers.map((user) => (
-                <tr key={user.id} className="hover:bg-gray-50/50 transition">
-                  <td className="px-5 py-4">
-                    <div className="font-bold text-text-main text-sm">{user.fullName}</div>
-                    <div className="text-[11px] font-mono text-text-sub truncate max-w-[200px]">
-                      {user.id}
-                    </div>
+            <tbody>
+              {filteredUsers.map((user, index) => (
+                <tr key={user.id} className={index % 2 === 0 ? "bg-muted" : "bg-muted/50"}>
+                  <td className="rounded-l-lg px-4 py-3">
+                    <div className="font-medium">{user.fullName}</div>
+                    <div className="max-w-[200px] truncate font-mono text-xs text-muted-foreground">{user.id}</div>
                   </td>
-
-                  <td className="px-5 py-4 text-text-sub">
-                    <div className="flex items-center gap-1.5">
-                      <Mail size={13} className="text-secondary" />
-                      <span>{user.email}</span>
-                    </div>
-                  </td>
-
-                  <td className="px-5 py-4">
-                    <span
-                      className={`inline-block rounded-full px-2.5 py-0.5 text-[10px] font-bold ${
-                        user.status === "ACTIVE"
-                          ? "bg-emerald-100 text-emerald-800"
-                          : "bg-red-100 text-red-800"
-                      }`}
-                    >
+                  <td className="px-4 py-3 text-muted-foreground">{user.email}</td>
+                  <td className="px-4 py-3">
+                    <span className={user.status === "ACTIVE" ? "text-success" : "text-destructive"}>
                       {user.status === "ACTIVE" ? "Hoạt động" : "Bị khóa"}
                     </span>
                   </td>
-
-                  <td className="px-5 py-4 text-text-sub">
-                    {new Date(user.createdAt).toLocaleDateString("vi-VN")}
-                  </td>
-
-                  <td className="px-5 py-4">
+                  <td className="px-4 py-3 tabular-nums text-muted-foreground">{new Date(user.createdAt).toLocaleDateString("vi-VN")}</td>
+                  <td className="rounded-r-lg px-4 py-2">
                     <select
+                      aria-label={`Vai trò của ${user.fullName}`}
                       value={user.role}
                       disabled={updatingId === user.id}
                       onChange={(e) => handleRoleChange(user.id, e.target.value as AdminUser["role"])}
-                      className="rounded-xl border border-border-main bg-white px-3 py-1.5 text-xs font-bold text-text-main outline-none focus:border-secondary transition cursor-pointer disabled:opacity-50"
+                      className="field min-h-11 bg-card"
                     >
                       <option value="USER">USER (Người dùng thường)</option>
                       <option value="PARTNER">PARTNER (Đối tác kinh doanh)</option>
@@ -184,6 +151,6 @@ export default function AdminSettingsPanel() {
           </table>
         </div>
       )}
-    </div>
+    </WorkspacePage>
   );
 }

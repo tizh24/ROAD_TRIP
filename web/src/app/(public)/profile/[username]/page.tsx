@@ -3,13 +3,9 @@ import { toast } from "@/components/ui/sonner";
 
 import Link from "next/link";
 import { use, useCallback, useEffect, useState } from "react";
-import {
-  Calendar,
-  Compass,
-  UserCheck,
-  UserPlus,
-  Wallet,
-} from "lucide-react";
+import { UserCheck, UserPlus } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   fetchUserProfile,
   toggleUserFollow,
@@ -72,97 +68,91 @@ export default function PublicProfilePage({
 
   if (loading) {
     return (
-      <div className="flex min-h-[60vh] items-center justify-center bg-background-warm">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+      <div className="page-shell max-w-4xl px-4 py-10 sm:px-6" aria-busy="true" aria-label="Đang tải">
+        <Skeleton className="size-24 rounded-full" />
+        <Skeleton className="mt-6 h-9 w-64" />
+        <Skeleton className="mt-8 h-32 rounded-lg" />
       </div>
     );
   }
 
   if (error || !profile) {
     return (
-      <div className="min-h-screen bg-background-warm px-4 py-12 text-center">
-        <div className="mx-auto max-w-md rounded-2xl bg-white p-8 shadow-sm">
-          <h2 className="text-xl font-bold text-red-600">Không thể tải thông tin</h2>
-          <p className="mt-2 text-sm text-text-sub">{error || "Hồ sơ không tồn tại."}</p>
-          <Link
-            href="/feed"
-            className="mt-6 inline-flex rounded-xl bg-primary-strong px-4 py-2 text-sm font-bold text-white hover:bg-primary-strong/90"
-          >
-            Quay lại bảng tin
-          </Link>
-        </div>
+      <div className="page-shell max-w-md px-4 py-20 text-center">
+        <h2 className="text-xl font-medium">Không thể tải thông tin</h2>
+        <p role="alert" className="mt-2 text-sm text-muted-foreground">{error || "Hồ sơ không tồn tại."}</p>
+        <Button asChild className="mt-6 min-h-11">
+          <Link href="/feed">Quay lại bảng tin</Link>
+        </Button>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background-warm px-4 py-8 text-text-main sm:px-6 sm:py-12">
-      <div className="page-shell max-w-4xl px-0">
-        <section className="overflow-hidden rounded-3xl border border-border-main bg-white p-6 shadow-sm sm:p-8">
-          <div className="flex flex-col items-center gap-6 text-center sm:flex-row sm:text-left">
-            {profile.avatarUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element -- profile avatars are user-supplied URLs with no fixed host allowlist.
-              <img
-                src={profile.avatarUrl}
-                alt={profile.fullName}
-                className="h-24 w-24 rounded-full object-cover ring-4 ring-primary/20"
-              />
-            ) : (
-              <div className="flex h-24 w-24 items-center justify-center rounded-full bg-primary/10 text-3xl font-black text-primary">
-                {profile.fullName.slice(0, 1).toUpperCase()}
-              </div>
-            )}
+    <div className="page-shell max-w-4xl px-4 py-8 sm:px-6 sm:py-12">
+      <header className="flex flex-col gap-6 sm:flex-row sm:items-center">
+        {profile.avatarUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element -- profile avatars are user-supplied URLs with no fixed host allowlist.
+          <img src={profile.avatarUrl} alt={profile.fullName} className="size-24 rounded-full object-cover" />
+        ) : (
+          <span className="flex size-24 items-center justify-center rounded-full bg-muted text-3xl font-medium" aria-hidden="true">
+            {profile.fullName.slice(0, 1).toUpperCase()}
+          </span>
+        )}
 
-            <div className="flex-1">
-              <h1 className="text-2xl font-black text-text-main sm:text-3xl">{profile.fullName}</h1>
-              <p className="mt-1 text-sm text-text-sub">Thành viên cộng đồng phượt Tripz</p>
-              <div className="mt-4 flex flex-wrap justify-center gap-6 text-sm sm:justify-start">
-                <div><span className="font-extrabold text-text-main">{profile.followerCount}</span> <span className="text-text-sub">Người theo dõi</span></div>
-                <div><span className="font-extrabold text-text-main">{profile.followingCount}</span> <span className="text-text-sub">Đang theo dõi</span></div>
-                <div><span className="font-extrabold text-text-main">{profile.publicTrips.length}</span> <span className="text-text-sub">Chuyến đi công khai</span></div>
-              </div>
+        <div className="flex-1">
+          <h1 className="text-3xl font-medium tracking-tight">{profile.fullName}</h1>
+          <p className="mt-1 text-sm text-muted-foreground">Thành viên cộng đồng phượt Tripz</p>
+          <dl className="mt-4 flex flex-wrap gap-x-8 gap-y-2 text-sm">
+            <div className="flex items-baseline gap-1.5">
+              <dd className="order-first text-xl font-medium tabular-nums">{profile.followerCount}</dd>
+              <dt className="text-muted-foreground">Người theo dõi</dt>
             </div>
+            <div className="flex items-baseline gap-1.5">
+              <dd className="order-first text-xl font-medium tabular-nums">{profile.followingCount}</dd>
+              <dt className="text-muted-foreground">Đang theo dõi</dt>
+            </div>
+            <div className="flex items-baseline gap-1.5">
+              <dd className="order-first text-xl font-medium tabular-nums">{profile.publicTrips.length}</dd>
+              <dt className="text-muted-foreground">Chuyến đi công khai</dt>
+            </div>
+          </dl>
+        </div>
 
-            <button
-              onClick={handleToggleFollow}
-              disabled={updatingFollow}
-              className={`inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-bold shadow-sm transition active:scale-95 disabled:opacity-50 ${following ? "border border-border-main bg-gray-100 text-text-main hover:bg-gray-200" : "bg-primary-strong text-white hover:bg-primary-strong/90"}`}
-            >
-              {following ? <><UserCheck size={16} /> Đang theo dõi</> : <><UserPlus size={16} /> Theo dõi</>}
-            </button>
+        <Button type="button" variant={following ? "outline" : "default"} aria-pressed={following} className="min-h-11 self-start sm:self-auto" onClick={handleToggleFollow} disabled={updatingFollow}>
+          {following ? <UserCheck aria-hidden="true" /> : <UserPlus aria-hidden="true" />}
+          {following ? "Đang theo dõi" : "Theo dõi"}
+        </Button>
+      </header>
+
+      <section className="mt-14" aria-labelledby="shared-trips">
+        <h2 id="shared-trips" className="text-2xl font-medium tracking-tight">Hành trình đã chia sẻ</h2>
+        <p className="mt-1 text-sm text-muted-foreground">Các chuyến đi được công khai để mọi người có thể tham khảo hoặc sao chép.</p>
+
+        {profile.publicTrips.length === 0 ? (
+          <div className="mt-6 rounded-xl border border-dashed border-border px-6 py-14 text-center">
+            <p className="text-base font-medium">Chưa có hành trình công khai nào</p>
+            <p className="mt-1 text-sm text-muted-foreground">Người dùng này chưa chia sẻ chuyến đi công khai nào lên cộng đồng.</p>
           </div>
-        </section>
-
-        <section className="mt-10">
-          <div>
-            <h2 className="text-xl font-black text-text-main sm:text-2xl">Hành trình đã chia sẻ</h2>
-            <p className="mt-0.5 text-xs text-text-sub">Các chuyến đi được công khai để mọi người có thể tham khảo hoặc sao chép.</p>
-          </div>
-
-          {profile.publicTrips.length === 0 ? (
-            <div className="mt-6 rounded-2xl border border-dashed border-border-main bg-white p-12 text-center text-text-sub">
-              <Compass className="mx-auto text-primary" size={36} />
-              <p className="mt-3 text-sm font-bold text-text-main">Chưa có hành trình công khai nào</p>
-              <p className="mt-1 text-xs text-text-sub">Người dùng này chưa chia sẻ chuyến đi công khai nào lên cộng đồng.</p>
-            </div>
-          ) : (
-            <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2">
-              {profile.publicTrips.map((trip) => (
-                <div key={trip.id} className="flex flex-col justify-between rounded-2xl border border-border-main bg-white p-5 shadow-sm transition hover:shadow-md">
-                  <div>
-                    <h3 className="text-base font-bold text-text-main">{trip.title}</h3>
-                    <div className="mt-3 flex items-center gap-2 text-xs text-text-sub"><Calendar size={14} className="text-primary" /><span>{new Date(trip.startDate).toLocaleDateString("vi-VN")} - {new Date(trip.endDate).toLocaleDateString("vi-VN")}</span></div>
-                    {trip.budgetAmount > 0 && <div className="mt-2 flex items-center gap-2 text-xs text-text-sub"><Wallet size={14} className="text-emerald-600" /><span>Dự trù: {new Intl.NumberFormat("vi-VN").format(trip.budgetAmount)} {trip.currency}</span></div>}
-                  </div>
-                  <div className="mt-5 border-t border-border-main pt-3">
-                    <Link href={`/road/${trip.id}`} className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-background-warm px-4 py-2 text-xs font-bold text-text-main transition hover:bg-primary hover:text-white"><Compass size={14} /> Xem chi tiết lộ trình</Link>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </section>
-      </div>
+        ) : (
+          <ul className="mt-6 grid gap-1">
+            {profile.publicTrips.map((trip, index) => (
+              <li key={trip.id} className={`rounded-lg ${index % 2 === 0 ? "bg-muted" : "bg-muted/50"}`}>
+                <Link href={`/road/${trip.id}`} className="focus-ring grid gap-x-8 gap-y-1 rounded-lg px-5 py-4 transition-colors hover:bg-border/60 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
+                  <span className="min-w-0">
+                    <span className="block truncate text-lg font-medium">{trip.title}</span>
+                    <span className="block text-sm tabular-nums text-muted-foreground">
+                      {new Date(trip.startDate).toLocaleDateString("vi-VN")} - {new Date(trip.endDate).toLocaleDateString("vi-VN")}
+                      {trip.budgetAmount > 0 && <> · Dự trù: {new Intl.NumberFormat("vi-VN").format(trip.budgetAmount)} {trip.currency}</>}
+                    </span>
+                  </span>
+                  <span className="text-sm font-medium">Xem chi tiết lộ trình</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
     </div>
   );
 }

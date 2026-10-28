@@ -26,13 +26,28 @@ test.describe("accessibility and responsive smoke", () => {
 
   test("critical login controls have visible keyboard focus", async ({ page }) => {
     await page.goto("/login");
-    await page.keyboard.press("Tab");
-    await expect(page.getByRole("link", { name: /Về trang chủ/i })).toBeFocused();
-    await page.keyboard.press("Tab");
-    await expect(page.getByLabel("Email")).toBeFocused();
-    await page.keyboard.press("Tab");
-    await expect(page.getByRole("link", { name: "Quên mật khẩu?" })).toBeFocused();
-    await page.keyboard.press("Tab");
-    await expect(page.getByLabel("Mật khẩu")).toBeFocused();
+    const order = [
+      page.getByRole("link", { name: /Về trang chủ/i }),
+      page.getByRole("button", { name: /Google/ }),
+      page.getByRole("button", { name: /Facebook/ }),
+      page.getByRole("button", { name: /Apple/ }),
+      page.getByLabel("Email"),
+      page.getByRole("link", { name: "Quên mật khẩu?" }),
+      page.getByLabel("Mật khẩu"),
+      page.getByRole("button", { name: "Đăng nhập bằng email" }),
+    ];
+    for (const control of order) {
+      await page.keyboard.press("Tab");
+      await expect(control).toBeFocused();
+    }
+  });
+
+  test("social sign-in buttons are present and say they are not enabled yet", async ({ page }) => {
+    await page.goto("/login");
+    for (const name of ["Google", "Facebook", "Apple"]) {
+      await page.getByRole("button", { name: new RegExp(name) }).click();
+      await expect(page.getByText(`Đăng nhập bằng ${name} chưa được bật`)).toBeVisible();
+    }
+    await expect(page).toHaveURL(/\/login$/);
   });
 });

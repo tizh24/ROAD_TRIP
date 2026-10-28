@@ -1,4 +1,22 @@
 "use client";
 import Link from "next/link";
-import { AlertTriangle, ArrowRight, ClipboardCheck, ShieldCheck } from "lucide-react";
-export default function ModerationPanel() { return <div className="min-h-full bg-[#f4f6f3] p-4 sm:p-8"><div className="mx-auto max-w-6xl"><header className="flex flex-col gap-4 border-b border-border-main pb-8 sm:flex-row sm:items-end sm:justify-between"><div><p className="text-xs font-extrabold uppercase tracking-[.16em] text-secondary">Trust & safety</p><h1 className="mt-3 text-4xl font-extrabold tracking-[-.04em] text-text-main">Hàng đợi kiểm duyệt</h1><p className="mt-3 max-w-xl text-sm leading-6 text-text-sub">Mọi quyết định cần có nội dung, bằng chứng và audit trail. Hành động chỉ khả dụng khi moderation API được kết nối.</p></div><span className="w-fit rounded-full bg-background-warm px-3 py-2 text-xs font-bold text-text-sub">Chưa có dữ liệu live</span></header><section className="mt-8 grid gap-5 lg:grid-cols-[minmax(0,1fr)_20rem]"><div className="rounded-[1.75rem] border border-border-main bg-surface p-7"><ClipboardCheck className="text-secondary" size={26} /><h2 className="mt-6 text-2xl font-extrabold">Hàng đợi đang trống</h2><p className="mt-3 max-w-lg text-sm leading-6 text-text-sub">Khi có report hoặc nội dung chờ xét duyệt, chúng sẽ xuất hiện tại đây với mức độ ưu tiên, ngữ cảnh và các thao tác đã được kiểm soát.</p></div><aside className="rounded-[1.75rem] bg-secondary p-6 text-white"><ShieldCheck className="text-[#f2c369]" size={22} /><h2 className="mt-5 text-xl font-extrabold">Nguyên tắc xử lý</h2><p className="mt-3 text-sm leading-6 text-white/75">Không approve, reject hoặc remove nội dung nếu không có data source và xác nhận action thật.</p><Link href="/admin/settings" className="focus-ring mt-6 inline-flex items-center gap-2 text-sm font-bold text-[#f2c369] underline">Mở Settings <ArrowRight size={15} /></Link></aside></section><div className="mt-6 flex gap-3 rounded-2xl border border-warning/30 bg-warning/10 p-4 text-sm text-text-main"><AlertTriangle className="shrink-0 text-warning" size={18} />Chế độ này không mô phỏng các quyết định kiểm duyệt hoặc audit event.</div></div></div>; }
+import { WorkspacePage, EmptyWorkspace } from "@/components/shell/WorkspacePage";
+
+export default function ModerationPanel() {
+  return (
+    <WorkspacePage
+      title="Hàng đợi kiểm duyệt"
+      description="Mọi quyết định cần có nội dung, bằng chứng và audit trail. Hành động chỉ khả dụng khi moderation API được kết nối."
+      status="Chưa có dữ liệu live"
+    >
+      <EmptyWorkspace title="Hàng đợi đang trống" text="Khi có report hoặc nội dung chờ xét duyệt, chúng sẽ xuất hiện tại đây với mức độ ưu tiên, ngữ cảnh và các thao tác đã được kiểm soát.">
+        <p className="mt-6 max-w-md text-sm leading-relaxed text-muted-foreground">
+          Không approve, reject hoặc remove nội dung nếu không có data source và xác nhận action thật. Chế độ này không mô phỏng các quyết định kiểm duyệt hoặc audit event.
+        </p>
+        <Link href="/admin/settings" className="focus-ring mt-3 inline-flex min-h-11 items-center text-sm font-medium underline underline-offset-4">
+          Mở Settings
+        </Link>
+      </EmptyWorkspace>
+    </WorkspacePage>
+  );
+}

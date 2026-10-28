@@ -15,11 +15,20 @@ test.describe("navigation responsive smoke", () => {
       await page.goto("/");
       await expect(page.locator("header")).toBeVisible();
       expect(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth)).toBe(false);
-
-      if (viewport.name !== "desktop") {
-        await page.getByRole("button", { name: "Mở điều hướng" }).click();
-        await expect(page.getByRole("navigation", { name: "Điều hướng di động" })).toBeVisible();
-      }
     });
   }
+
+  test("the shared navbar sheet traps focus, closes on Escape and returns focus", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/explore");
+    const trigger = page.getByRole("button", { name: "Mở điều hướng" });
+    await trigger.click();
+    const dialog = page.getByRole("dialog");
+    await expect(dialog).toBeVisible();
+    await expect(dialog.getByRole("link", { name: "Khám phá" })).toBeVisible();
+    await expect.poll(() => page.evaluate(() => Boolean(document.activeElement?.closest('[role="dialog"]')))).toBe(true);
+    await page.keyboard.press("Escape");
+    await expect(dialog).toBeHidden();
+    await expect(page.getByRole("button", { name: /điều hướng/ })).toBeFocused();
+  });
 });

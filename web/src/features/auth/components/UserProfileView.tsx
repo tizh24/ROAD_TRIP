@@ -1,8 +1,67 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Bookmark, Compass, Settings, ShieldCheck } from "lucide-react";
+import { ArrowRight, Settings } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function UserProfileView() {
-  return <div className="min-h-screen bg-background pb-16"><section className="bg-secondary px-4 py-14 text-white sm:px-6"><div className="page-shell px-0"><p className="text-xs font-extrabold uppercase tracking-[.16em] text-amber-200">Không gian cá nhân</p><h1 className="mt-3 max-w-2xl text-4xl font-extrabold tracking-[-.04em] sm:text-5xl">Nơi những hành trình<br />thuộc về bạn.</h1><p className="mt-4 max-w-xl text-sm leading-6 text-white/75">Hồ sơ sẽ phản ánh những chuyến đi, câu chuyện và mức riêng tư bạn chọn chia sẻ.</p></div></section><div className="page-shell grid gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[18rem_minmax(0,1fr)]"><aside className="surface-card h-fit p-6"><div className="flex h-16 w-16 items-center justify-center rounded-xl bg-primary-strong text-2xl font-extrabold text-white">RT</div><h2 className="mt-5 text-2xl font-extrabold">Hồ sơ của bạn</h2><p className="mt-2 text-sm leading-6 text-text-sub">Thông tin công khai và avatar sẽ được hiển thị khi profile editing được kết nối.</p><Link href="/profile/settings" className="focus-ring mt-6 inline-flex items-center gap-2 text-sm font-bold text-primary hover:underline"><Settings size={16} /> Cài đặt hồ sơ</Link></aside><section className="space-y-8"><div className="border-b border-border-main pb-6"><p className="text-xs font-extrabold uppercase tracking-[.16em] text-primary">Hành trình</p><h2 className="mt-2 text-3xl font-extrabold tracking-[-.03em]">Những gì bạn đang lên kế hoạch.</h2><p className="mt-3 text-sm text-text-sub">Danh sách thực tế của bạn luôn ở My Journeys.</p><Link href="/trips" className="focus-ring mt-5 inline-flex items-center gap-2 rounded-lg bg-primary-strong px-5 py-3 text-sm font-bold text-white hover:bg-primary-strong/90">Mở My Journeys <ArrowRight size={16} /></Link></div><div className="grid gap-5 sm:grid-cols-2"><section className="surface-card p-6"><Compass className="text-secondary" /><h3 className="mt-5 text-xl font-extrabold">Chuyến đi của tôi</h3><p className="mt-2 text-sm leading-6 text-text-sub">Tạo, tiếp tục và quản lý các lịch trình mà bạn có quyền truy cập.</p><Link href="/trips" className="focus-ring mt-5 inline-flex text-sm font-bold text-primary underline">Xem hành trình</Link></section><section className="surface-card p-6"><Bookmark className="text-secondary" /><h3 className="mt-5 text-xl font-extrabold">Đã lưu</h3><p className="mt-2 text-sm leading-6 text-text-sub">Tính năng lưu lộ trình công khai chưa được kết nối trong phiên bản này.</p><span className="mt-5 inline-block rounded-full bg-background-warm px-3 py-1.5 text-xs font-bold text-text-sub">Chưa khả dụng</span></section></div><div className="flex gap-3 rounded-card border border-border-main bg-surface p-5 text-sm text-text-sub"><ShieldCheck className="shrink-0 text-secondary" size={19} />Các thiết lập riêng tư, vị trí và dữ liệu tài khoản được quản lý trong Settings.</div></section></div></div>;
+  return (
+    <div className="page-shell px-4 py-8 sm:px-6 sm:py-10">
+      <header>
+        <h1 className="max-w-2xl text-3xl font-medium tracking-tight sm:text-4xl">
+          Nơi những hành trình
+          <br />
+          thuộc về bạn.
+        </h1>
+        <p className="mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground">
+          Hồ sơ sẽ phản ánh những chuyến đi, câu chuyện và mức riêng tư bạn chọn chia sẻ.
+        </p>
+      </header>
+
+      <div className="mt-12 grid gap-10 lg:grid-cols-[18rem_minmax(0,1fr)]">
+        <aside className="h-fit rounded-xl bg-muted p-6">
+          <div className="flex size-14 items-center justify-center rounded-lg bg-primary text-xl font-medium text-primary-foreground" aria-hidden="true">RT</div>
+          <h2 className="mt-5 text-xl font-medium">Hồ sơ của bạn</h2>
+          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+            Thông tin công khai và avatar sẽ được hiển thị khi profile editing được kết nối.
+          </p>
+          <Link href="/profile/settings" className="focus-ring mt-6 inline-flex min-h-11 items-center gap-2 text-sm font-medium underline underline-offset-4">
+            <Settings className="size-4" aria-hidden="true" /> Cài đặt hồ sơ
+          </Link>
+        </aside>
+
+        <div className="space-y-10">
+          <section aria-labelledby="profile-trips">
+            <h2 id="profile-trips" className="text-2xl font-medium tracking-tight">Những gì bạn đang lên kế hoạch.</h2>
+            <p className="mt-3 text-sm text-muted-foreground">Danh sách thực tế của bạn luôn ở My Journeys.</p>
+            <Button asChild className="mt-5 min-h-11">
+              <Link href="/trips">
+                Mở My Journeys <ArrowRight aria-hidden="true" />
+              </Link>
+            </Button>
+          </section>
+
+          <dl className="grid gap-1">
+            <div className="rounded-lg bg-muted px-5 py-4">
+              <dt className="text-base font-medium">Chuyến đi của tôi</dt>
+              <dd className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                Tạo, tiếp tục và quản lý các lịch trình mà bạn có quyền truy cập.{" "}
+                <Link href="/trips" className="focus-ring font-medium text-foreground underline underline-offset-4">Xem hành trình</Link>
+              </dd>
+            </div>
+            <div className="rounded-lg bg-muted/50 px-5 py-4">
+              <dt className="text-base font-medium">Đã lưu</dt>
+              <dd className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                Tính năng lưu lộ trình công khai chưa được kết nối trong phiên bản này. Chưa khả dụng.
+              </dd>
+            </div>
+          </dl>
+
+          <p className="text-sm text-muted-foreground">
+            Các thiết lập riêng tư, vị trí và dữ liệu tài khoản được quản lý trong Settings.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
 }

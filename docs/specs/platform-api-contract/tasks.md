@@ -38,9 +38,9 @@
 > Superseded in practice by `docs/specs/tripz-product-flow-rebuild-spec.md`
 > (Slices 3–6); see ADR-0005 for the interim service placement.
 
-- [ ] Road-trip execution: check-in, expense and memory lifecycle/privacy.
-- [ ] Community: profiles, posts, comments, reviews, social graph/moderation.
-- [ ] Partner: organization, listing, campaign and analytics rules.
-- [ ] Monetization: plan, invoice, affiliate, payment and verified webhook
+- Road-trip execution: check-in, expense and memory lifecycle/privacy.
+- Community: profiles, posts, comments, reviews, social graph/moderation.
+- Partner: organization, listing, campaign and analytics rules.
+- Monetization: plan, invoice, affiliate, payment and verified webhook
   state machine.
-- [ ] Media and notification: upload policy, retention, inbox and preferences.
+- Media and notification: upload policy, retention, inbox and preferences.

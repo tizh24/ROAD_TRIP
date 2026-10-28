@@ -91,7 +91,29 @@ async function createUser(role) {
     user_metadata: { full_name: `E2E ${role}` },
   });
   if (error || !data.user) throw new Error(`Could not create local ${role} user: ${error?.message ?? 'missing response user'}`);
+  await waitForProfile(role, data.user.id);
   return user;
+}
+
+// The gateway rejects every request with AUTH_UNAVAILABLE unless the user's profile row is
+// readable with the service key, so prove that before any fixture request is made.
+async function waitForProfile(role, userId) {
+  let detail = 'not checked';
+  for (let attempt = 1; attempt <= 15; attempt += 1) {
+    const { data, error } = await admin
+      .from('user_profiles')
+      .select('id,role,status')
+      .eq('id', userId)
+      .maybeSingle();
+    if (!error && data) {
+      process.stdout.write(`Profile ready for ${role}: role=${data.role} status=${data.status}
+`);
+      return;
+    }
+    detail = error ? `${error.code ?? ''} ${error.message}` : 'row missing (profile trigger did not run)';
+    await new Promise((done) => setTimeout(done, 2000));
+  }
+  throw new Error(`Profile for ${role} was not readable with the service key: ${detail}`);
 }
 
 async function saveStorageState(user, filename) {
@@ -101,8 +123,23 @@ async function saveStorageState(user, filename) {
     await page.goto(new URL('/login', baseUrl).href);
     await page.getByLabel('Email').fill(user.email);
     await page.getByLabel('Mật khẩu').fill(user.password);
+    const seen = [];
+    page.on('response', (response) => {
+      if (response.request().method() === 'POST') seen.push(`${response.status()} ${new URL(response.url()).pathname}`);
+    });
     await page.getByRole('button', { name: 'Đăng nhập' }).click();
-    await page.waitForURL((url) => url.pathname !== '/login', { timeout: 30_000 });
+    try {
+      await page.waitForURL((url) => url.pathname !== '/login', { timeout: 30_000 });
+    } catch (cause) {
+      const alert = await page.getByRole('alert').allTextContents().catch(() => []);
+      throw new Error(
+        `Login did not leave /login (now ${page.url()}). POST responses: ${seen.join(', ') || 'none'}. Form alert: ${alert.join(' | ') || 'none'}.`,
+        { cause },
+      );
+    }
+    if (!(await context.cookies()).some((cookie) => cookie.name === 'rt_access')) {
+      throw new Error(`Login reached ${page.url()} but no rt_access cookie was stored.`);
+    }
     await context.storageState({ path: resolve(outputDir, filename) });
   } finally {
     await context.close();
@@ -110,17 +147,26 @@ async function saveStorageState(user, filename) {
 }
 
 async function gatewayPost(path, token, body) {
-  const response = await fetch(new URL(`/api/v1/${path}`, apiUrl), {
-    method: 'POST',
-    headers: {
-      authorization: `Bearer ${token}`,
-      'content-type': 'application/json',
-      'idempotency-key': randomUUID(),
-    },
-    body: JSON.stringify(body),
-  });
-  if (!response.ok) throw new Error(`Gateway fixture request failed: ${response.status} ${path}`);
-  return (await response.json()).data;
+  // The gateway answers 502/503/504 while an upstream is still warming up; retry a few times
+  // and keep the last response body so a persistent failure explains itself.
+  let last = 'no response';
+  for (let attempt = 1; attempt <= 5; attempt += 1) {
+    const response = await fetch(new URL(`/api/v1/${path}`, apiUrl), {
+      method: 'POST',
+      headers: {
+        authorization: `Bearer ${token}`,
+        'content-type': 'application/json',
+        'idempotency-key': randomUUID(),
+      },
+      body: JSON.stringify(body),
+    });
+    if (response.ok) return (await response.json()).data;
+    last = `${response.status} ${(await response.text()).slice(0, 300)}`;
+    process.stdout.write(`Gateway POST ${path} attempt ${attempt} failed: ${last}\n`);
+    if (![502, 503, 504].includes(response.status)) break;
+    await new Promise((done) => setTimeout(done, attempt * 3000));
+  }
+  throw new Error(`Gateway fixture request failed: ${last} (${path})`);
 }
 
 function required(name) {

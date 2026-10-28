@@ -1,67 +1,35 @@
 ---
 name: Tripz
-description: Premium editorial road-trip platform for Vietnam
+description: Neutral, task-first interface for a Vietnamese road-trip planner
 colors:
-  primary: "#E87535"
-  primary-hover: "#C95C24"
-  secondary: "#1B1B1B"
-  accent: "#FFF1E6"
-  accent-sub: "#F8DDC9"
-  success: "#46705A"
-  warning: "#A35E00"
-  danger: "#B9382B"
-  info: "#0369A1"
-  background: "#FAF9F6"
-  background-warm: "#FFF1E6"
-  surface: "#FFFFFF"
-  surface-tint: "#F8E6D8"
-  text-main: "#1B1B1B"
-  text-sub: "#6E665E"
-  border-main: "#EAE7E2"
-  border-light: "#F0EDE8"
+  background: "oklch(1 0 0)"
+  foreground: "oklch(0.145 0 0)"
+  primary: "oklch(0.205 0 0)"
+  muted: "oklch(0.97 0 0)"
+  muted-foreground: "oklch(0.556 0 0)"
+  border: "oklch(0.922 0 0)"
+  destructive: "oklch(0.577 0.245 27.325)"
+  chart-1: "oklch(0.646 0.222 41.116)"
+  chart-2: "oklch(0.6 0.118 184.704)"
+  chart-3: "oklch(0.398 0.07 227.392)"
+  chart-4: "oklch(0.828 0.189 84.429)"
+  chart-5: "oklch(0.769 0.188 70.08)"
 typography:
-  display:
-    fontFamily: "Be Vietnam Pro, Satoshi, Aptos Display, Segoe UI, sans-serif"
-    fontSize: "clamp(2.5rem, 6vw, 4.5rem)"
-    fontWeight: 800
-    lineHeight: 1.05
-    letterSpacing: "-0.02em"
-  body:
-    fontFamily: "Inter, Be Vietnam Pro, Aptos, Segoe UI, sans-serif"
-    fontSize: "1rem"
-    fontWeight: 400
-    lineHeight: 1.5
+  family: "Inter"
+  numerals: "tabular-nums, regular weight"
 rounded:
-  card: "14px"
-  panel: "16px"
-  full: "9999px"
+  base: "0.625rem"
 ---
 
 # Design System: Tripz
 
-## Creative north star
+The previous orange, off-white, editorial system is retired. This file is the short contract; the reasoning is in `docs/design/direction.md`.
 
-Tripz is a premium Vietnamese road-trip editorial: sun-worn paper, charcoal ink, warm orange route markings and real travel photography. Public pages persuade through cinematic composition; planning, partner and admin surfaces keep the same material vocabulary while remaining task-first and dense enough to operate.
+## Rules
 
-## Foundations
-
-- **Canvas:** off-white `#FAF9F6`; surfaces are white only when they need separation.
-- **Ink:** charcoal `#1B1B1B` for headings and primary content; warm gray `#6E665E` for supporting text.
-- **Action:** Tripz orange `#E87535`, with `#C95C24` hover, is reserved for primary actions, active route states and meaningful emphasis.
-- **Rules and depth:** use warm borders (`#EAE7E2`) and soft brown-tinted elevation only for floating or interactive objects.
-- **Typography:** Be Vietnam Pro leads editorial headings; Inter carries body and operational text. Vietnamese diacritics must never clip.
-
-## Layout and interaction
-
-- Marketing surfaces use spacious asymmetric editorial compositions and photo-led moments.
-- Operate surfaces favour map-first or task-first layouts, visible hierarchy and compact but breathable scanning density.
-- Interactive targets are at least 44px on touch screens. Focus rings use the primary orange with a visible offset.
-- Motion is purposeful: route/waypoint sequences, concise feedback and state continuity. Respect `prefers-reduced-motion`.
-- Avoid generic dashboard card grids, excessive decoration, fabricated metrics and decorative controls without a real action.
-
-## Component rules
-
-- Buttons and inputs: 8–12px radius; cards: 12–16px; chips may use a pill radius.
-- Primary controls use orange; secondary controls stay restrained on surface/outline treatments.
-- Keep meaningful images accessible with specific alternative text.
-- Route maps, markers and route lines use the primary orange; status colours must remain semantically distinct.
+- Light theme only. Inter only. Neutral scale with a near-black primary action.
+- Color goes on data, not chrome: one chart color on the main data element, one small signal where a figure changed. Chart tokens `--chart-1..5` are for charts and for the auth stage wash only.
+- Landing follows the taste-skill `product-performs` direction: the working product appears as real HTML fragments (`data-ui`). No invented statistics, testimonials, ratings, traveler counts or prices.
+- App screens follow `achromatic-ledger`: flat surfaces separated by 1px rules, KPIs as type, tables with rules and right-aligned tabular figures, honest zeros and dashes, empty sections keep their frame. Shell is a labelled sidebar that collapses to an icon rail.
+- Shared primitives are shadcn/ui on Radix in `web/src/components/ui/`. Overlays use Dialog, AlertDialog, Sheet and Sonner only.
+- Accessibility: AA contrast, visible focus, one `main` and one `h1` per page, skip link, 44px touch targets on mobile, reduced-motion support.

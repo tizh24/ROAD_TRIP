@@ -1,6 +1,8 @@
 import LoginView from "@/features/auth/components/LoginView";
 import { getSafeInternalPath } from "@/lib/auth/route-protection";
 
+export const metadata = { title: "Đăng nhập" };
+
 type LoginPageProps = {
   searchParams: Promise<{ authError?: string; next?: string }>;
 };
