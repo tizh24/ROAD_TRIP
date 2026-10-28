@@ -125,17 +125,26 @@ async function saveStorageState(user, filename) {
 }
 
 async function gatewayPost(path, token, body) {
-  const response = await fetch(new URL(`/api/v1/${path}`, apiUrl), {
-    method: 'POST',
-    headers: {
-      authorization: `Bearer ${token}`,
-      'content-type': 'application/json',
-      'idempotency-key': randomUUID(),
-    },
-    body: JSON.stringify(body),
-  });
-  if (!response.ok) throw new Error(`Gateway fixture request failed: ${response.status} ${path}`);
-  return (await response.json()).data;
+  // The gateway answers 502/503/504 while an upstream is still warming up; retry a few times
+  // and keep the last response body so a persistent failure explains itself.
+  let last = 'no response';
+  for (let attempt = 1; attempt <= 5; attempt += 1) {
+    const response = await fetch(new URL(`/api/v1/${path}`, apiUrl), {
+      method: 'POST',
+      headers: {
+        authorization: `Bearer ${token}`,
+        'content-type': 'application/json',
+        'idempotency-key': randomUUID(),
+      },
+      body: JSON.stringify(body),
+    });
+    if (response.ok) return (await response.json()).data;
+    last = `${response.status} ${(await response.text()).slice(0, 300)}`;
+    process.stdout.write(`Gateway POST ${path} attempt ${attempt} failed: ${last}\n`);
+    if (![502, 503, 504].includes(response.status)) break;
+    await new Promise((done) => setTimeout(done, attempt * 3000));
+  }
+  throw new Error(`Gateway fixture request failed: ${last} (${path})`);
 }
 
 function required(name) {

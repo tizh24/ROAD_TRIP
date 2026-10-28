@@ -169,7 +169,25 @@ jobs:
           export NEXT_PUBLIC_SUPABASE_URL="$API_URL" NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY="$ANON_KEY" SUPABASE_LOCAL_SECRET_KEY="$SERVICE_ROLE_KEY"
           # docker-compose.yml reads these names for the gateway and core-trip-service.
           export SUPABASE_PUBLISHABLE_KEY="$ANON_KEY" SUPABASE_SERVICE_ROLE_KEY="$SERVICE_ROLE_KEY"
-          pnpm platform:up
+          # Registry pulls (Docker Hub base images) can be rate limited on shared runners.
+          # Retry with backoff and say explicitly when the failure is a registry limit.
+          up_ok=false
+          for attempt in 1 2 3 4; do
+            if timeout -k 10 600 pnpm platform:up 2>&1 | tee /tmp/platform-up.log; then
+              up_ok=true
+              break
+            fi
+            if grep -qiE 'toomanyrequests|rate limit|Data limit exceeded' /tmp/platform-up.log; then
+              echo "::warning::platform:up attempt $attempt hit a container registry rate limit"
+            else
+              echo "::warning::platform:up attempt $attempt failed (not a registry rate limit)"
+            fi
+            sleep $((attempt * 20))
+          done
+          if [ "$up_ok" != true ]; then
+            echo "::error::platform:up failed after four attempts; see the output above"
+            exit 1
+          fi
 
           for url in \
             "http://127.0.0.1:4100/health/ready" \
@@ -192,7 +210,11 @@ jobs:
             fi
           done
 
-          node ../web/scripts/prepare-local-e2e.mjs
+          node ../web/scripts/prepare-local-e2e.mjs || {
+            echo "::error::E2E fixture preparation failed; service warnings and errors follow"
+            docker compose -f infrastructure/docker-compose.yml logs --no-color 2>&1 | grep -E '"level":(40|50)' | tail -n 60 || true
+            exit 1
+          }
           export TEST_DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:54322/postgres TEST_DATABASE_ISOLATED=1
           export E2E_OWNER_STORAGE_STATE=.e2e/owner.json E2E_MEMBER_STORAGE_STATE=.e2e/member.json
           export E2E_TRIP_ID="$(jq -r .E2E_TRIP_ID ../web/.e2e/fixture.json)" E2E_MEMBER_EMAIL="$(jq -r .E2E_MEMBER_EMAIL ../web/.e2e/fixture.json)"
