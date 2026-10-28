@@ -5,6 +5,7 @@ import { App } from 'supertest/types';
 import { AppModule } from './../src/app.module';
 import { DatabaseService } from './../src/infrastructure/database/database.service';
 import { BullMqEventPublisher } from './../src/infrastructure/events/bullmq-event-publisher';
+import { OutboxPublisher } from './../src/infrastructure/events/outbox-publisher';
 
 describe('Health endpoints (e2e)', () => {
   let app: INestApplication<App>;
@@ -35,6 +36,9 @@ describe('Health endpoints (e2e)', () => {
       .useValue(database)
       .overrideProvider(BullMqEventPublisher)
       .useValue({ publish: jest.fn(), onModuleDestroy: jest.fn() })
+      // The real publisher starts a polling interval; health tests do not exercise it.
+      .overrideProvider(OutboxPublisher)
+      .useValue({ onModuleDestroy: jest.fn() })
       .compile();
 
     app = moduleFixture.createNestApplication();
