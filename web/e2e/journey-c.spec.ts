@@ -59,7 +59,7 @@ test.describe('Journey C — controlled collaboration', () => {
     await expect(memberPage.getByRole('combobox', { name: 'Thêm điểm dừng' })).toBeVisible();
     await expect(memberPage.getByRole('heading', { name: 'Cộng tác viên' })).toHaveCount(0);
 
-    const stops = memberPage.locator('ol > li');
+    const stops = memberPage.getByRole('list', { name: 'Điểm dừng ngày hiện tại' }).getByRole('listitem');
     await expect(stops).toHaveCount(2);
     const firstName = (await stops.nth(0).locator('strong').textContent())?.trim();
     const secondName = (await stops.nth(1).locator('strong').textContent())?.trim();

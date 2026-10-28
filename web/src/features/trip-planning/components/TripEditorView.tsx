@@ -268,7 +268,7 @@ export default function TripEditorView({ tripId }: { tripId: string }) {
                   <p className="mt-1 text-sm text-muted-foreground">{canEdit ? "Tìm địa điểm bên dưới để bắt đầu xây hành trình." : "Chủ chuyến đi chưa thêm địa điểm nào."}</p>
                 </div>
               ) : (
-                <ol className="grid gap-1">
+                <ol aria-label="Điểm dừng ngày hiện tại" className="grid gap-1">
                   {activeDay.stops.map((stop, index) => (
                     <StopCard
                       key={stop.id}

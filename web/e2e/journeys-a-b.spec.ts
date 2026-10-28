@@ -73,7 +73,7 @@ test.describe("Journeys A and B — persisted trip planning", () => {
       );
     }
 
-    await expect(page).toHaveURL(/\/trips\/[0-9a-f-]{36}$/i);
+    await expect(page).toHaveURL(/\/planner\/[0-9a-f-]{36}$/i);
     await expect(
       page.getByRole("heading", { level: 1, name: title }),
     ).toBeVisible();
@@ -95,7 +95,7 @@ test.describe("Journeys A and B — persisted trip planning", () => {
 
     await addPlace(page, "Hà Nội", places.hanoi.name);
     await addPlace(page, "Ninh Bình", places.ninhBinh.name);
-    const stops = page.locator("ol > li");
+    const stops = page.getByRole("list", { name: "Điểm dừng ngày hiện tại" }).getByRole("listitem");
     await expect(stops).toHaveCount(2);
     await expect(stops.nth(0)).toContainText(places.hanoi.name);
     await page
@@ -188,7 +188,8 @@ test.describe("Journeys A and B — persisted trip planning", () => {
 
 async function addPlace(page: Page, query: string, expectedName: string) {
   const search = page.getByRole("combobox", { name: "Thêm điểm dừng" });
-  const previousStopCount = await page.locator("ol > li").count();
+  const stops = page.getByRole("list", { name: "Điểm dừng ngày hiện tại" }).getByRole("listitem");
+  const previousStopCount = await stops.count();
   await search.fill(query);
   const addResponse = page.waitForResponse(
     (response) =>
@@ -198,7 +199,7 @@ async function addPlace(page: Page, query: string, expectedName: string) {
   await page.getByRole("option", { name: new RegExp(expectedName) }).click();
   expect((await addResponse).ok()).toBe(true);
   await expect(search).toHaveValue("");
-  await expect(page.locator("ol > li")).toHaveCount(previousStopCount + 1);
+  await expect(stops).toHaveCount(previousStopCount + 1);
   await expect(page.getByText(expectedName, { exact: true })).toBeVisible();
 }
 
