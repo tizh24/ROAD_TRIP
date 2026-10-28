@@ -2,7 +2,7 @@ name: CD
 
 on:
   push:
-    branches: [main]
+    branches: [dev, main]
     tags: ['v*']
   workflow_dispatch:
 
@@ -81,3 +81,42 @@ jobs:
           sarif_file: trivy-${{ matrix.name }}.sarif
       - uses: sigstore/cosign-installer@398d4b0eeef1380460a10c8013a76f728fb906ac
       - run: cosign sign --yes ghcr.io/${{ github.repository }}/${{ matrix.name }}@${{ steps.build.outputs.digest }}
+
+  deploy-vercel:
+    name: Deploy Vercel / ${{ github.ref_name }}
+    needs: build-push
+    if: ${{ github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    environment: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with: { persist-credentials: false }
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+      - name: Deploy
+        id: deploy
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$GITHUB_REF" = 'refs/heads/main' ]; then
+            url="$(npx vercel deploy --prod --yes --token="$VERCEL_TOKEN")"
+          else
+            url="$(npx vercel deploy --yes --token="$VERCEL_TOKEN")"
+          fi
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+      - name: Smoke test deployed web
+        env:
+          E2E_BASE_URL: ${{ steps.deploy.outputs.url }}
+        run: npm run test:staging:public
