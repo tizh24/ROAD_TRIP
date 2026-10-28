@@ -21,6 +21,9 @@ export function setGatewayTestEnv(
     RATE_LIMIT_MAX: '100',
     RATE_LIMIT_AUTHENTICATED_MAX: '300',
     AUTH_COOKIE_SECURE: 'false',
+    AUTH_ACCESS_COOKIE_NAME: 'rt_access',
+    AUTH_REFRESH_COOKIE_NAME: 'rt_refresh',
+    CSRF_COOKIE_NAME: 'rt_csrf',
     ...overrides,
   });
 }
